@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 578b5f543be554c0da9d967d6e6131f7
+AssemblyDefinitionImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 180747
+  packageName: Auto Dark Theme
+  packageVersion: 1.2.1
+  assetPath: Assets/Plugins/Auto Dark Theme/Editor/AutoDarkTheme.asmdef
+  uploadId: 395912

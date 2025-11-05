@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 52b103b929de549f6b9bf9d8a6eb7a05
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 180747
+  packageName: Auto Dark Theme
+  packageVersion: 1.2.1
+  assetPath: Assets/Plugins/Auto Dark Theme/Editor/Windows/RegistryMonitor.cs
+  uploadId: 395912

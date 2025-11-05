@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 537d6ba9750544139bbd551f870b05db
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 180747
+  packageName: Auto Dark Theme
+  packageVersion: 1.2.1
+  assetPath: Assets/Plugins/Auto Dark Theme/Editor/Schedule/ScheduledItems/BlockWrapper.cs
+  uploadId: 395912

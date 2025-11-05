@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 2a3cd3d2e18224f33821fe6580b7cbe0
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 180747
+  packageName: Auto Dark Theme
+  packageVersion: 1.2.1
+  assetPath: Assets/Plugins/Auto Dark Theme/Editor/Schedule/ScheduleTimer.cs
+  uploadId: 395912
