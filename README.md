@@ -300,10 +300,9 @@ This is a learning/portfolio project. Contributions and feedback welcome!
 ---
 
 ## Contact
-
-07515480932
-uabhanu@gmail.com
-www.bhanu-upadhyayula.com
+📞 07515480932  
+📧 uabhanu@gmail.com  
+🌐 www.bhanu-upadhyayula.com
 
 ---
 
