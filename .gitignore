@@ -99,3 +99,5 @@ InitTestScene*.unity*
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
 VoidWeave/UserSettings/
 VoidWeave/.bezisidekick/
+VoidWeave/Library/
+VoidWeave/Temp/
