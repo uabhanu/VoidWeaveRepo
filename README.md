@@ -237,8 +237,8 @@ Level 1 (Base) → Level 2 (+50%) → Level 3 (+100%)
 ## Roadmap
 
 ### ✅ Phase 1: Foundation (Current)
-- [ ] Project setup and architecture
-- [ ] Input handler implementation
+- [x] Project setup and architecture
+- [x] Input handler implementation
 - [ ] Core data structures
 - [ ] Player movement system
 - [ ] Dash ability
