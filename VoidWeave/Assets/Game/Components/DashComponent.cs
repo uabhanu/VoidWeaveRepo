@@ -1,5 +1,6 @@
 namespace Game.Components
 {
+    using System.Runtime.InteropServices;
     using Unity.Entities;
     using Unity.Mathematics;
 
@@ -11,6 +12,6 @@ namespace Game.Components
         public float DashDistance;
         public float DashDuration;
         public float DashTimer;
-        public bool IsDashing;
+        [MarshalAs(UnmanagedType.U1)] public bool IsDashing;
     }
 }

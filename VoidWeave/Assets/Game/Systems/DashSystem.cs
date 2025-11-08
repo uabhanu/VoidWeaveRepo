@@ -26,13 +26,7 @@ namespace Game.Systems
                 else { TryStartDash(ref dashComponent , inputDataComponent.DashPressed , inputDataComponent.MovementInput); }
             }
         }
-
-        [BurstCompile]
-        private static void UpdateCooldown(ref DashComponent dashComponent , float deltaTime)
-        {
-            if(dashComponent.CurrentCooldown > 0f) { dashComponent.CurrentCooldown -= deltaTime; }
-        }
-
+        
         [BurstCompile]
         private static void ProcessDash(ref LocalTransform localTransform , ref DashComponent dashComponent , float deltaTime)
         {
@@ -52,7 +46,7 @@ namespace Game.Systems
         }
 
         [BurstCompile]
-        private static void TryStartDash(ref DashComponent dashComponent , bool dashPressed , float2 movementInput)
+        private static void TryStartDash(ref DashComponent dashComponent , bool dashPressed , in float2 movementInput)
         {
             if(!dashPressed || dashComponent.CurrentCooldown > 0f) { return; }
 
@@ -62,6 +56,12 @@ namespace Game.Systems
                 dashComponent.IsDashing = true;
                 dashComponent.DashTimer = 0f;
             }
+        }
+        
+        [BurstCompile]
+        private static void UpdateCooldown(ref DashComponent dashComponent , float deltaTime)
+        {
+            if(dashComponent.CurrentCooldown > 0f) { dashComponent.CurrentCooldown -= deltaTime; }
         }
     }
 }
