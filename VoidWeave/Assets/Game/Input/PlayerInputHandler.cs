@@ -1,5 +1,8 @@
 namespace Game.Input
 {
+    using Components;
+    using Unity.Entities;
+    using Unity.Mathematics;
     using UnityEngine;
     using UnityEngine.InputSystem;
 
@@ -7,6 +10,8 @@ namespace Game.Input
     {
         #region Variables
 
+        private EntityManager _entityManager;
+        private Entity _inputEntity;
         private Camera _mainCamera;
         private PlayerInputActions _playerInputActions;
 
@@ -36,6 +41,12 @@ namespace Game.Input
             _playerInputActions = new PlayerInputActions();
         }
 
+        private void Start()
+        {
+            _entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+            _inputEntity = _entityManager.CreateEntity(typeof(InputDataComponent));
+        }
+
         private void OnEnable()
         {
             _playerInputActions.Player.Enable();
@@ -56,6 +67,11 @@ namespace Game.Input
             _playerInputActions.Player.Move.canceled -= OnMoveCanceled;
 
             _playerInputActions.Player.Disable();
+        }
+
+        private void Update()
+        {
+            if(_entityManager.Exists(_inputEntity)) { _entityManager.SetComponentData(_inputEntity , new InputDataComponent { CursorWorldPosition = new float2(CursorWorldPosition.x , CursorWorldPosition.y) , DashPressed = DashPressed , DeployPressed = DeployPressed , MovementInput = new float2(MovementInput.x , MovementInput.y) }); }
         }
 
         private void LateUpdate()
