@@ -12,8 +12,9 @@ namespace Game.Input
 
         private EntityManager _entityManager;
         private Entity _inputEntity;
-        private Camera _mainCamera;
         private PlayerInputActions _playerInputActions;
+        
+        [SerializeField] private Camera mainCamera;
 
         public Vector2 CursorWorldPosition{get; private set;}
         public bool DashPressed{get; private set;}
@@ -36,8 +37,7 @@ namespace Game.Input
 
             Instance = this;
             DontDestroyOnLoad(gameObject);
-
-            _mainCamera = Camera.main;
+            
             _playerInputActions = new PlayerInputActions();
         }
 
@@ -92,7 +92,7 @@ namespace Game.Input
         {
             Vector2 screenPosition = context.ReadValue<Vector2>();
 
-            if(_mainCamera) { CursorWorldPosition = _mainCamera.ScreenToWorldPoint(new Vector3(screenPosition.x , screenPosition.y , _mainCamera.nearClipPlane)); }
+            if(mainCamera) { CursorWorldPosition = mainCamera.ScreenToWorldPoint(new Vector3(screenPosition.x , screenPosition.y , mainCamera.nearClipPlane)); }
         }
 
         private void OnMovePerformed(InputAction.CallbackContext context) { MovementInput = context.ReadValue<Vector2>(); }
