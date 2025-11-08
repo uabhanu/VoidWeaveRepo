@@ -2,17 +2,19 @@
 
 All code elements must adhere strictly to the following standard C# and Unity conventions:
 
-| Category | Convention | Example |
-| :--- | :--- | :--- |
-| **Classes** | `PascalCase` | `SystemManager`, `InputHandler` |
-| **Methods/Functions** | `PascalCase` | `InitializeData()`, `OnWaveStart()` |
-| **Public Fields/Properties** | `PascalCase` | `MaxSpeed`, `CooldownDuration` |
-| **Private Fields (Non-Serialized)** | `camelCase` starting with underscore (`_`) | `_cachedValue`, `_currentState` |
-| **Private Fields (Serialized)** | `camelCase` (no underscore) | `playerHealth`, `dashDuration` |
-| **UI Labels (Non-Serialized)** | Use the name `_logLabel` | `private Label _logLabel;` |
-| **UI Labels (Serialized)** | Use the name `logLabel` | `[SerializeField] private Label logLabel;` |
-| **UI Visual Elements (Non-Serialized)** | Must include `VisualElement` in the name, starting with `_` | `private VisualElement _debugPanelVisualElement;` |
-| **UI Visual Elements (Serialized)** | Must include `VisualElement` in the name | `[SerializeField] private VisualElement debugPanelVisualElement;` |
+| Category                                | Convention                                                  | Example                                                           |
+| :-------------------------------------- | :---------------------------------------------------------- | :---------------------------------------------------------------- |
+| **Classes**                             | `PascalCase`                                                | `SystemManager`, `InputHandler`                                   |
+| **Methods/Functions**                   | `PascalCase`                                                | `InitializeData()`, `OnWaveStart()`                               |
+| **Public Fields/Properties**            | `PascalCase`                                                | `MaxSpeed`, `CooldownDuration`                                    |
+| **Private Fields (Non-Serialized)**     | `camelCase` starting with underscore (`_`)                  | `_cachedValue`, `_currentState`                                   |
+| **Private Fields (Serialized)**         | `camelCase` (no underscore)                                 | `playerHealth`, `dashDuration`                                    |
+| **UI Labels (Non-Serialized)**          | Use the name `_logLabel`                                    | `private Label _logLabel;`                                        |
+| **UI Labels (Serialized)**              | Use the name `logLabel`                                     | `[SerializeField] private Label logLabel;`                        |
+| **UI Visual Elements (Non-Serialized)** | Must include `VisualElement` in the name, starting with `_` | `private VisualElement _debugPanelVisualElement;`                 |
+| **UI Visual Elements (Serialized)**     | Must include `VisualElement` in the name                    | `[SerializeField] private VisualElement debugPanelVisualElement;` |
+| ECS Entity                              | Use the name NameEntity and not NameAuthoring               | PlayerEntity.cs , BulletEntity.cs                                 |
+| ECS Baker                               | Use nameEntityAuthoring and not just authoring              | playerEntityAuthoring , bulletEntityAuthoring                     |
 * **General Naming:** Use self-explanatory names for variables, methods, and types.
 
 ---
@@ -89,3 +91,37 @@ feature: Implement Project Style Guide Key achievements:
 - Defined strict Naming Conventions for serialised and non-serialised fields. 
 - Mandated the use of SOAP architecture for MonoBehaviour systems only. 
 - Confirmed whitespace rules for control structures and functions (e.g., if(condition)).
+
+## 7. 🐙 Pull Request Template
+
+Feature: Feature Name
+
+📋 Description
+
+Your text goes here
+
+✨ Changes
+
+**Changes Here**
+
+🔧 Technical Details
+
+**Files and other Dependencies info here**
+
+✅ Testing
+
+
+📦 Package Updates
+
+
+🔗 Related
+
+Branch: `Branch Name Here`
+
+Base: `develop`
+
+Next: `Branch Name and Tasks here`
+
+📝 Notes
+
+Any additional notes here

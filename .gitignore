@@ -104,3 +104,5 @@ VoidWeave/Temp/
 VoidWeave/.idea/
 VoidWeave/obj/
 VoidWeave/ProjectSettings/EntitiesClientSettings.asset
+VoidWeave/Assets/SceneDependencyCache/
+VoidWeave/Assets/SceneDependencyCache.meta
