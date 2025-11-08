@@ -239,9 +239,9 @@ Level 1 (Base) → Level 2 (+50%) → Level 3 (+100%)
 ### ✅ Phase 1: Foundation (Current)
 - [x] Project setup and architecture
 - [x] Input handler implementation
-- [ ] Core data structures
-- [ ] Player movement system
-- [ ] Dash ability
+- [x] Core data structures
+- [x] Player movement system
+- [x] Dash ability
 
 ### 🔄 Phase 2: Core Gameplay (Next)
 - [ ] Turret deployment system
