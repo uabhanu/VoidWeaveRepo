@@ -195,37 +195,6 @@ Level 1 (Base) → Level 2 (+50%) → Level 3 (+100%)
 **Input:** New Input System 1.14.2  
 **Language:** C# (.NET Standard 2.1)
 
-### Project Structure
-
-    Assets/
-    ├── Scripts/
-    │   ├── Input/
-    │   │   ├── PlayerInputHandler.cs
-    │   │   └── PlayerInputActions.cs
-    │   ├── Components/
-    │   │   ├── PlayerMovementComponent.cs
-    │   │   ├── DashComponent.cs
-    │   │   └── TurretDeploymentComponent.cs
-    │   ├── Systems/
-    │   │   ├── PlayerMovementSystem.cs
-    │   │   ├── DashSystem.cs
-    │   │   └── TurretTargetingSystem.cs
-    │   ├── Data/
-    │   │   ├── GameConfig.cs
-    │   │   ├── TurretNodeData.cs
-    │   │   └── EnemyData.cs
-    │   └── Utilities/
-    ├── Prefabs/
-    │   ├── Player.prefab
-    │   ├── Turrets/
-    │   └── Enemies/
-    ├── ScriptableObjects/
-    │   ├── Turrets/
-    │   └── Enemies/
-    └── Scenes/
-        ├── MainMenu.unity
-        └── GameArena.unity
-
 ### Performance Targets
 - 60 FPS minimum on mid-range hardware
 - 500+ active entities without frame drops
