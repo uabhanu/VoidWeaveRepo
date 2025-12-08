@@ -101,3 +101,8 @@ VoidWeave/UserSettings/
 VoidWeave/.bezisidekick/
 VoidWeave/Library/
 VoidWeave/Temp/
+VoidWeave/.idea/
+VoidWeave/Assets/SceneDependencyCache.meta
+VoidWeave/Assets/SceneDependencyCache/
+VoidWeave/obj/
+VoidWeave/ProjectSettings/EntitiesClientSettings.asset
