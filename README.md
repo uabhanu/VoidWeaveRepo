@@ -209,8 +209,8 @@ Level 1 (Base) → Level 2 (+50%) → Level 3 (+100%)
 - [ ] Project setup and architecture
 - [ ] Input handler implementation
 - [ ] Core data structures
-- [ ] Player movement system
-- [ ] Dash ability
+- [ ] Movement system
+- [ ] Dash system
 
 ### 🔄 Phase 2: Core Gameplay (Next)
 - [ ] Turret deployment system
