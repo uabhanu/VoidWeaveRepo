@@ -99,6 +99,8 @@ namespace Gameplay
     public struct ProjectileTag : IComponentData {}
 
     public struct StrikerTurretTag : IComponentData {}
+    
+    public struct TurretTargetTag : IComponentData {}
 
     #endregion
 }
