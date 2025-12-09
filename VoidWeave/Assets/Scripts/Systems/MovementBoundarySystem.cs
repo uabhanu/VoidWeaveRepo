@@ -44,7 +44,7 @@ namespace Systems
         public float ArenaLimitX;
         public float ArenaLimitY;
 
-        private void Execute(ref MovementInputComponent inputComponent , in LocalTransform localTransform)
+        private void Execute(ref MovementInputComponent inputComponent , in LocalTransform localTransform , in PlayerTag tag)
         {
             float2 input = inputComponent.MoveInput;
             float3 position = localTransform.Position;

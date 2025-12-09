@@ -19,7 +19,7 @@ namespace Entities
                 
                 AddComponent(entity , new StrikerTurretTag());
                 
-                AddComponent(entity , new TurretCooldownComponent());
+                AddComponent(entity , new TurretCooldownComponent { Timer = authoring.fireRate });
                 AddComponent(entity , new TurretDamageComponent { Damage = authoring.damage });
                 AddComponent(entity , new TurretDeploymentCostComponent { Cost = authoring.cost });
                 AddComponent(entity , new TurretFireRateComponent { Rate = authoring.fireRate });
