@@ -6,7 +6,8 @@ namespace Entities
 
     public class PlayerEntity : MonoBehaviour
     {
-        public float MoveSpeed = 5f;
+        [SerializeField] private float moveSpeed;
+        [SerializeField] private int startingResources;
 
         class PlayerBaker : Baker<PlayerEntity>
         {
@@ -14,11 +15,13 @@ namespace Entities
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
-                AddComponent(entity , new BaseMoveSpeedComponent { BaseSpeed = authoring.MoveSpeed });
+                AddComponent(entity , new BaseMoveSpeedComponent { BaseSpeed = authoring.moveSpeed });
+                AddComponent(entity, new CurrentEnergyComponent { Energy = authoring.startingResources });
+                AddComponent(entity, new TurretDeploymentInputComponent());
                 AddComponent(entity , new DashCooldownComponent());
                 AddComponent(entity , new DashDurationComponent());
                 AddComponent(entity , new DashInputComponent());
-                AddComponent(entity , new MoveSpeedComponent { MoveSpeed = authoring.MoveSpeed });
+                AddComponent(entity , new MoveSpeedComponent { MoveSpeed = authoring.moveSpeed });
                 AddComponent(entity , new MovementInputComponent());
                 AddComponent(entity , new PlayerTag());
             }
