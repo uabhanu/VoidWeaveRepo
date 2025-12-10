@@ -215,8 +215,8 @@ Level 1 (Base) → Level 2 (+50%) → Level 3 (+100%)
 ### 🔄 Phase 2: Core Gameplay (Next)
 - [x] Turret deployment system
 - [x] Enemy spawning system
-- [ ] Collision detection
-- [ ] Basic enemy AI
+- [x] Collision detection
+- [x] Basic enemy AI
 - [ ] Resource collection
 - [ ] Wave management
 
