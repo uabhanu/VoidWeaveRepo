@@ -213,7 +213,7 @@ Level 1 (Base) → Level 2 (+50%) → Level 3 (+100%)
 - [x] Dash system
 
 ### 🔄 Phase 2: Core Gameplay (Next)
-- [ ] Turret deployment system
+- [x] Turret deployment system
 - [ ] Enemy spawning system
 - [ ] Collision detection
 - [ ] Basic enemy AI
