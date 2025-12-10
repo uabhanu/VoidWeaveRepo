@@ -5,7 +5,7 @@ namespace Systems
     using Unity.Entities;
     using Unity.Mathematics;
     using Unity.Transforms;
-    
+
     [UpdateInGroup(typeof(SimulationSystemGroup))]
     public partial struct MovementSystem : ISystem
     {
@@ -13,13 +13,16 @@ namespace Systems
         public void OnUpdate(ref SystemState state)
         {
             float deltaTime = SystemAPI.Time.DeltaTime;
-
-            new MovementJob { DeltaTime = deltaTime }.ScheduleParallel();
+            
+            new GuidedMovementJob { DeltaTime = deltaTime }.ScheduleParallel();
+            new InputMovementJob { DeltaTime = deltaTime }.ScheduleParallel();
         }
     }
 
+    // Runs on Player (No SeekerTag)
     [BurstCompile]
-    public partial struct MovementJob : IJobEntity
+    [WithNone(typeof(SeekerTag))]
+    public partial struct InputMovementJob : IJobEntity
     {
         public float DeltaTime;
 
@@ -28,11 +31,30 @@ namespace Systems
             float2 inputVector = movementInputComponent.MoveInput;
             float speed = moveSpeedComponent.MoveSpeed;
 
-            // Calculate the movement vector (Vector * Speed * Time)
-            float2 movementStep = inputVector * speed * DeltaTime;
+            localTransform.Position.xy += inputVector * speed * DeltaTime;
+        }
+    }
 
-            // Update the LocalTransform component's position
-            localTransform.Position.xy += movementStep;
+    // Runs on AI (SeekerTag)
+    // Directly calculates direction from TargetPosition, replacing GuidanceSystem
+    [BurstCompile]
+    [WithAll(typeof(SeekerTag))]
+    public partial struct GuidedMovementJob : IJobEntity
+    {
+        public float DeltaTime;
+
+        private void Execute(ref LocalTransform localTransform , in MoveSpeedComponent moveSpeedComponent , in TargetPositionComponent targetPositionComponent)
+        {
+            float3 currentPos = localTransform.Position;
+            float3 targetPos = targetPositionComponent.TargetPosition;
+            float speed = moveSpeedComponent.MoveSpeed;
+
+            // 1. Calculate Direction
+            float3 direction = targetPos - currentPos;
+            float2 normalizedDir = math.normalizesafe(direction).xy;
+
+            // 2. Move
+            localTransform.Position.xy += normalizedDir * speed * DeltaTime;
         }
     }
 }

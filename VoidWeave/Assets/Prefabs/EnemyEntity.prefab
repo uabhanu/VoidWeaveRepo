@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f38b4e5478b0904193189668a74c539, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entities.EnemyEntity
+  moveSpeed: 2.25
 --- !u!212 &2416083693835027147
 SpriteRenderer:
   m_ObjectHideFlags: 0

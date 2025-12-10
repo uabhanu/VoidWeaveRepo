@@ -24,6 +24,7 @@ namespace Entities
                 AddComponent(entity , new MoveSpeedComponent { MoveSpeed = authoring.moveSpeed });
                 AddComponent(entity , new MovementInputComponent());
                 AddComponent(entity , new PlayerTag());
+                AddComponent(entity , new TargetTag());
             }
         }
     }
