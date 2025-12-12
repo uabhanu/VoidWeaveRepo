@@ -136,6 +136,8 @@ namespace Gameplay
     
     public struct TargetTag : IComponentData {}
     
+    public struct TeamComponent : IComponentData { public int ID; } // 0 = Player , 1 = Enemy and so on
+    
     public struct TurretTargetTag : IComponentData {}
 
     #endregion

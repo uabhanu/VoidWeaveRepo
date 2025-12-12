@@ -15,7 +15,6 @@ namespace Systems
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
-            state.RequireForUpdate<BulletPrefabComponent>();
         }
 
         [BurstCompile]
@@ -26,15 +25,15 @@ namespace Systems
             var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
             var ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter();
 
-            Entity bulletPrefab = SystemAPI.GetSingleton<BulletPrefabComponent>().BulletPrefab;
+            var targetQuery = SystemAPI.QueryBuilder().WithAll<LocalToWorld , TeamComponent>().Build();
+            var targetTransforms = targetQuery.ToComponentDataListAsync<LocalToWorld>(Allocator.TempJob , out var gatherHandle1);
+            var targetTeams = targetQuery.ToComponentDataListAsync<TeamComponent>(Allocator.TempJob, out var gatherHandle2);
 
-            var enemyQuery = SystemAPI.QueryBuilder().WithAll<TurretTargetTag , LocalToWorld>().Build();
-            var enemyTransforms = enemyQuery.ToComponentDataListAsync<LocalToWorld>(Allocator.TempJob , out var gatherHandle);
+            var combinedDependency = JobHandle.CombineDependencies(state.Dependency , gatherHandle1 , gatherHandle2);
+            var jobHandle = new TurretShootJob { DeltaTime = deltaTime , TargetTeams = targetTeams , TargetPositions = targetTransforms , EntityCommandBuffer = ecb }.ScheduleParallel(combinedDependency);
 
-            var combinedDependency = JobHandle.CombineDependencies(state.Dependency , gatherHandle);
-            var jobHandle = new TurretShootJob { BulletPrefab = bulletPrefab , DeltaTime = deltaTime , EnemyPositions = enemyTransforms , EntityCommandBuffer = ecb }.ScheduleParallel(combinedDependency);
-
-            enemyTransforms.Dispose(jobHandle);
+            targetTeams.Dispose(jobHandle);
+            targetTransforms.Dispose(jobHandle);
 
             state.Dependency = jobHandle;
         }
@@ -43,12 +42,12 @@ namespace Systems
     [BurstCompile]
     public partial struct TurretShootJob : IJobEntity
     {
-        public Entity BulletPrefab;
         public EntityCommandBuffer.ParallelWriter EntityCommandBuffer;
         public float DeltaTime;
-        [ReadOnly] public NativeList<LocalToWorld> EnemyPositions;
+        [ReadOnly] public NativeList<TeamComponent> TargetTeams;
+        [ReadOnly] public NativeList<LocalToWorld> TargetPositions;
 
-        private void Execute([EntityIndexInQuery] int entityInQueryIndex , ref TurretCooldownComponent turretCooldownComponent , in TurretRangeComponent turretRangeComponent , in TurretFireRateComponent turretFireRateComponent , in LocalToWorld localToWorld)
+        private void Execute(in BulletPrefabComponent bulletPrefabComponent , [EntityIndexInQuery] int entityInQueryIndex , in LocalToWorld localToWorld , in TeamComponent teamComponent , ref TurretCooldownComponent turretCooldownComponent , in TurretFireRateComponent turretFireRateComponent , in TurretRangeComponent turretRangeComponent)
         {
             turretCooldownComponent.Timer -= DeltaTime;
 
@@ -56,19 +55,29 @@ namespace Systems
 
             float3 turretPos = localToWorld.Position;
             float closestDistSq = float.MaxValue;
-            float3 targetPos = float3.zero;
+            float3 bestTargetPos = float3.zero;
 
             float foundTarget = 0f;
 
-            for(int i = 0 ; i < EnemyPositions.Length ; i++)
+            for(int i = 0 ; i < TargetPositions.Length ; i++)
             {
-                float3 enemyPos = EnemyPositions[i].Position;
-                float distSq = math.distancesq(turretPos , enemyPos);
-                float isCloser = math.step(distSq , closestDistSq);
+                float3 currentTargetPos = TargetPositions[i].Position;
+                float distSq = math.distancesq(turretPos , currentTargetPos);
+                
+                bool isDifferentTeam = TargetTeams[i].ID != teamComponent.ID;
 
-                closestDistSq = math.select(closestDistSq , distSq , isCloser > 0.5f);
-                targetPos = math.select(targetPos , enemyPos , isCloser > 0.5f);
-                foundTarget = 1f;
+                // 2. Ghost Check: (Position is not 0,0,0). This is a compromise that is worth it.
+                bool isNotGhost = math.lengthsq(currentTargetPos) > 0.001f;
+
+                // 3. Distance Check: (Current < ClosestSoFar)
+                bool isCloserDist = distSq < closestDistSq;
+
+                // 4. COMBINE: Valid only if ALL are true
+                bool isValidTarget = isDifferentTeam & isNotGhost & isCloserDist;
+
+                closestDistSq = math.select(closestDistSq , distSq , isValidTarget);
+                bestTargetPos = math.select(bestTargetPos , currentTargetPos , isValidTarget);
+                foundTarget = math.select(foundTarget , 1f , isValidTarget);
             }
 
             float rangeSq = turretRangeComponent.Range * turretRangeComponent.Range;
@@ -81,8 +90,8 @@ namespace Systems
 
             for(int i = 0 ; i < fireCount ; i++)
             {
-                Entity newBullet = EntityCommandBuffer.Instantiate(entityInQueryIndex , BulletPrefab);
-                float3 direction = math.normalizesafe(targetPos - turretPos);
+                Entity newBullet = EntityCommandBuffer.Instantiate(entityInQueryIndex , bulletPrefabComponent.BulletPrefab);
+                float3 direction = math.normalizesafe(bestTargetPos - turretPos);
                 float angle = math.atan2(direction.y , direction.x) - math.PI / 2f;
                 quaternion rotation = quaternion.RotateZ(angle);
 

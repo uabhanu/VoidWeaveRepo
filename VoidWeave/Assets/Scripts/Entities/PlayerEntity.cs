@@ -23,6 +23,8 @@ namespace Entities
                 AddComponent(entity , new DashInputComponent());
                 AddComponent(entity , new MoveSpeedComponent { MoveSpeed = authoring.moveSpeed });
                 AddComponent(entity , new MovementInputComponent());
+                AddComponent(entity , new TeamComponent { ID = 0 });
+                
                 AddComponent(entity , new PlayerTag());
                 AddComponent(entity , new TargetTag());
             }
