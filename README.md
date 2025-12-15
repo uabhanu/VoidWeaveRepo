@@ -218,7 +218,7 @@ Level 1 (Base) → Level 2 (+50%) → Level 3 (+100%)
 - [x] Collision detection
 - [x] Basic enemy AI
 - [x] Resource collection
-- [ ] Wave management
+- [x] Wave management
 
 ### 📅 Phase 3: Combat Depth
 - [ ] All turret types functional
