@@ -217,7 +217,7 @@ Level 1 (Base) → Level 2 (+50%) → Level 3 (+100%)
 - [x] Enemy spawning system
 - [x] Collision detection
 - [x] Basic enemy AI
-- [ ] Resource collection
+- [x] Resource collection
 - [ ] Wave management
 
 ### 📅 Phase 3: Combat Depth
