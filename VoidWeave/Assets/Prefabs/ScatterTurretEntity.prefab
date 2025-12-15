@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Entities.ScatterTurretEntity
   bulletPrefab: {fileID: 7884734006532612169, guid: a34abe5c560aeac4b861daec3f6f2095, type: 3}
   cooldownTime: 2.5
-  damage: 25.4
+  damage: 12.2
   deploymentCost: 150
   fireRate: 0.5
   projectileCount: 3
