@@ -7,6 +7,7 @@ namespace Systems
     using Unity.Transforms;
 
     [UpdateInGroup(typeof(SimulationSystemGroup))]
+    [UpdateBefore(typeof(MovementSystem))]
     public partial struct MovementBoundarySystem : ISystem
     {
         // Define the REAL Camera Size (usually 5 in Unity 2D)

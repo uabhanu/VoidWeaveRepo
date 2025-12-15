@@ -9,6 +9,7 @@ namespace Systems
     using Unity.Transforms;
 
     [UpdateInGroup(typeof(SimulationSystemGroup))]
+    [UpdateBefore(typeof(MovementSystem))]
     public partial struct CollisionSystem : ISystem
     {
         private EntityQuery _targetQuery;
