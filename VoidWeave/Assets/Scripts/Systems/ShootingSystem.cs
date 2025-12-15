@@ -47,7 +47,7 @@ namespace Systems
         [ReadOnly] public NativeList<TeamComponent> TargetTeams;
         [ReadOnly] public NativeList<LocalToWorld> TargetPositions;
 
-        private void Execute(in BulletPrefabComponent bulletPrefabComponent , [EntityIndexInQuery] int entityInQueryIndex , in LocalToWorld localToWorld , in TeamComponent teamComponent , ref TurretCooldownComponent turretCooldownComponent , in TurretFireRateComponent turretFireRateComponent , in TurretRangeComponent turretRangeComponent)
+        private void Execute(in BulletEntityComponent bulletEntityComponent , [EntityIndexInQuery] int entityInQueryIndex , in LocalToWorld localToWorld , in TeamComponent teamComponent , ref TurretCooldownComponent turretCooldownComponent , in TurretFireRateComponent turretFireRateComponent , in TurretRangeComponent turretRangeComponent)
         {
             turretCooldownComponent.Timer -= DeltaTime;
 
@@ -90,7 +90,7 @@ namespace Systems
 
             for(int i = 0 ; i < fireCount ; i++)
             {
-                Entity newBullet = EntityCommandBuffer.Instantiate(entityInQueryIndex , bulletPrefabComponent.BulletPrefab);
+                Entity newBullet = EntityCommandBuffer.Instantiate(entityInQueryIndex , bulletEntityComponent.BulletEntity);
                 float3 direction = math.normalizesafe(bestTargetPos - turretPos);
                 float angle = math.atan2(direction.y , direction.x) - math.PI / 2f;
                 quaternion rotation = quaternion.RotateZ(angle);

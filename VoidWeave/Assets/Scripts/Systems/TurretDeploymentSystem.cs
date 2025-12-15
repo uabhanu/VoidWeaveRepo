@@ -16,7 +16,7 @@ namespace Systems
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
-            state.RequireForUpdate<TurretPrefabComponent>();
+            state.RequireForUpdate<TurretEntityComponent>();
         }
 
         [BurstCompile]
@@ -24,7 +24,7 @@ namespace Systems
         {
             var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
             var ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter();
-            var strikerPrefab = SystemAPI.GetSingleton<TurretPrefabComponent>().TurretPrefab;
+            var strikerPrefab = SystemAPI.GetSingleton<TurretEntityComponent>().TurretEntity;
 
             new DeploymentJob { DeployOffset = new float3(DEPLOY_OFFSET_X , 0 , 0) , EntityCommandBuffer = ecb , StrikerCost = STRIKER_COST , StrikerPrefab = strikerPrefab }.ScheduleParallel();
         }

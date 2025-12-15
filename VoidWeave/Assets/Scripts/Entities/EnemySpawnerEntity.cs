@@ -18,7 +18,7 @@ namespace Entities
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
-                AddComponent(entity , new EnemyPrefabComponent { EnemyPrefab = GetEntity(authoring.enemyPrefab , TransformUsageFlags.Dynamic) });
+                AddComponent(entity , new EnemyEntityComponent { EnemyEntity = GetEntity(authoring.enemyPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new EnemySpawnRadiusComponent { EnemySpawnRadius = authoring.enemySpawnRadius });
                 AddComponent(entity , new EnemySpawnRateComponent { EnemySpawnRate = authoring.enemySpawnRate });
                 AddComponent(entity , new EnemySpawnTimerComponent { EnemySpawnTimer = authoring.enemySpawnRate });

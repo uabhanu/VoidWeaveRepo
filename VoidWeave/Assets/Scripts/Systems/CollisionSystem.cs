@@ -17,8 +17,10 @@ namespace Systems
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
-            // Query for anything that is a "Target" (Enemies)
-            _targetQuery = SystemAPI.QueryBuilder().WithAll<TurretTargetTag , LocalToWorld>().Build();
+            state.RequireForUpdate<CurrentEnergyComponent>();
+            
+            // Query for anything that is a "Target"
+            _targetQuery = SystemAPI.QueryBuilder().WithAll<TurretTargetTag , LocalToWorld , LootAmountComponent , LootEntityComponent>().Build();
         }
 
         [BurstCompile]
@@ -30,23 +32,31 @@ namespace Systems
 
             // Collect Targets
             // We need Entities (to destroy them) and Positions (to check distance)
-            NativeList<Entity> targetEntities = _targetQuery.ToEntityListAsync(Allocator.TempJob , out JobHandle targetEntityHandle);
-            NativeList<LocalToWorld> targetPositions = _targetQuery.ToComponentDataListAsync<LocalToWorld>(Allocator.TempJob , out JobHandle targetPosHandle);
+            NativeList<Entity> targetEntitiesNativeList = _targetQuery.ToEntityListAsync(Allocator.TempJob , out JobHandle targetEntityJobHandle);
+            NativeList<LootAmountComponent> lootAmountsNativeList = _targetQuery.ToComponentDataListAsync<LootAmountComponent>(Allocator.TempJob , out JobHandle lootAmountJobHandle);
+            NativeList<LootEntityComponent> lootEntitiesNativeList = _targetQuery.ToComponentDataListAsync<LootEntityComponent>(Allocator.TempJob , out JobHandle lootEntityJobHandle);
+            NativeList<LocalToWorld> targetPositionsNativeList = _targetQuery.ToComponentDataListAsync<LocalToWorld>(Allocator.TempJob , out JobHandle targetPosJobHandle);
 
             // Combine Dependencies
-            JobHandle dependency = JobHandle.CombineDependencies(state.Dependency , targetEntityHandle , targetPosHandle);
+            JobHandle dependencyJobHandle = JobHandle.CombineDependencies(state.Dependency , targetEntityJobHandle , targetPosJobHandle);
+            dependencyJobHandle = JobHandle.CombineDependencies(dependencyJobHandle , lootEntityJobHandle);
+            dependencyJobHandle = JobHandle.CombineDependencies(dependencyJobHandle , lootAmountJobHandle);
 
             // Schedule Job
-            JobHandle jobHandle = new CollisionJob
+            JobHandle collisionJobHandle = new CollisionJob
             {
-                EntityCommandBuffer = ecb , TargetEntities = targetEntities , TargetPositions = targetPositions , HitRadiusSq = 0.5f * 0.5f // Threshold squared (0.5 units)
-            }.ScheduleParallel(dependency);
+                EntityCommandBuffer = ecb , LootAmountsNativeList = lootAmountsNativeList , LootEntitiesNativeList = lootEntitiesNativeList , TargetEntities = targetEntitiesNativeList , TargetPositions = targetPositionsNativeList , HitRadiusSq = 0.5f * 0.5f // Threshold squared (0.5 units)
+            }.ScheduleParallel(dependencyJobHandle);
+            
+            collisionJobHandle.Complete();
 
             // Dispose Lists after Job
-            targetEntities.Dispose(jobHandle);
-            targetPositions.Dispose(jobHandle);
+            lootAmountsNativeList.Dispose(collisionJobHandle);
+            lootEntitiesNativeList.Dispose(collisionJobHandle);
+            targetEntitiesNativeList.Dispose(collisionJobHandle);
+            targetPositionsNativeList.Dispose(collisionJobHandle);
 
-            state.Dependency = jobHandle;
+            state.Dependency = collisionJobHandle;
         }
     }
 
@@ -56,6 +66,8 @@ namespace Systems
     {
         public EntityCommandBuffer.ParallelWriter EntityCommandBuffer;
 
+        [ReadOnly] public NativeList<LootEntityComponent> LootEntitiesNativeList;
+        [ReadOnly] public NativeList<LootAmountComponent> LootAmountsNativeList;
         [ReadOnly] public NativeList<Entity> TargetEntities;
         [ReadOnly] public NativeList<LocalToWorld> TargetPositions;
 
@@ -92,12 +104,17 @@ namespace Systems
 
             // Convert float flag to int count (0 or 1)
             int destroyCount = (int)hasHit;
-
-            // Execute Destruction
+            
             for(int k = 0 ; k < destroyCount ; k++)
             {
                 EntityCommandBuffer.DestroyEntity(entityInQueryIndex , bulletEntity);
                 EntityCommandBuffer.DestroyEntity(entityInQueryIndex , TargetEntities[targetIndexToDestroy]);
+                
+                Entity newDrop = EntityCommandBuffer.Instantiate(entityInQueryIndex , LootEntitiesNativeList[targetIndexToDestroy].LootEntity);
+                EntityCommandBuffer.SetComponent(entityInQueryIndex , newDrop , LocalTransform.FromPosition(TargetPositions[targetIndexToDestroy].Position));
+                
+                int specificAmount = LootAmountsNativeList[targetIndexToDestroy].LootAmount;
+                EntityCommandBuffer.SetComponent(entityInQueryIndex , newDrop , new LootAmountComponent { LootAmount = specificAmount });
             }
         }
     }

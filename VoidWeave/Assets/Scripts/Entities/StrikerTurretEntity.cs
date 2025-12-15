@@ -19,7 +19,7 @@ namespace Entities
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
-                AddComponent(entity , new BulletPrefabComponent { BulletPrefab = GetEntity(authoring.bulletPrefab , TransformUsageFlags.Dynamic) });
+                AddComponent(entity , new BulletEntityComponent { BulletEntity = GetEntity(authoring.bulletPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new TeamComponent { ID = 0 });
                 AddComponent(entity , new TurretCooldownComponent { Timer = authoring.cooldownTime });
                 AddComponent(entity , new TurretDamageComponent { Damage = authoring.damage });
