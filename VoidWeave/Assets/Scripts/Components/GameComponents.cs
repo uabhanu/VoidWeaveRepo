@@ -1,4 +1,4 @@
-namespace Gameplay
+namespace Components
 {
     using Unity.Entities;
     using Unity.Mathematics;
@@ -7,12 +7,12 @@ namespace Gameplay
 
     public struct BaseMoveSpeedComponent : IComponentData
     {
-        public float BaseSpeed;
+        public float Speed;
     }
 
     public struct BulletEntityComponent : IComponentData
     {
-        public Entity BulletEntity;
+        public Entity Entity;
     }
 
     public struct CurrentEnergyComponent : IComponentData
@@ -34,47 +34,59 @@ namespace Gameplay
     {
         public float IsPressed;
     }
-    
+
     public struct EnemyEntityComponent : IComponentData
     {
-        public Entity EnemyEntity;
+        public Entity Entity;
     }
-    
+
     public struct EnemySpawnRadiusComponent : IComponentData
     {
-        public float EnemySpawnRadius;
+        public float Radius;
     }
 
     public struct EnemySpawnRateComponent : IComponentData
     {
-        public float EnemySpawnRate;
+        public float Rate;
     }
-    
+
     public struct EnemySpawnTimerComponent : IComponentData
     {
-        public float EnemySpawnTimer;
+        public float Timer;
     }
-    
+
+    // 1.0 if pressed
+    public struct StrikerTurretInputComponent : IComponentData
+    {
+        public float Input;
+    }
+
+    // 1.0 if pressed
+    public struct ScatterTurretInputComponent : IComponentData
+    {
+        public float Input;
+    }
+
     public struct LootAmountComponent : IComponentData
     {
-        public int LootAmount;
+        public int Amount;
     }
-    
+
     public struct LootEntityComponent : IComponentData
     {
-        public Entity LootEntity;
+        public Entity Entity;
     }
 
     public struct MoveSpeedComponent : IComponentData
     {
-        public float MoveSpeed;
+        public float Speed;
     }
 
     public struct MovementInputComponent : IComponentData
     {
-        public float2 MoveInput;
+        public float2 Input;
     }
-    
+
     public struct ProjectileDamageComponent : IComponentData
     {
         public float Damage;
@@ -84,15 +96,15 @@ namespace Gameplay
     {
         public float Timer;
     }
-    
+
     public struct RandomComponent : IComponentData
     {
-        public Random RandomValue;
+        public Random Random;
     }
-    
+
     public struct TargetPositionComponent : IComponentData
     {
-        public float3 TargetPosition;
+        public float3 Position;
     }
 
     public struct TurretCooldownComponent : IComponentData
@@ -105,9 +117,34 @@ namespace Gameplay
         public float Damage;
     }
 
-    public struct TurretDeploymentCostComponent : IComponentData
+    public struct ScatterTurretCostComponent : IComponentData
     {
         public int Cost;
+    }
+
+    public struct ScatterTurretEntityComponent : IComponentData
+    {
+        public Entity Entity;
+    }
+    
+    public struct SelectedTurretCostComponent : IComponentData
+    {
+        public int Cost;
+    }
+
+    public struct SelectedTurretEntityComponent : IComponentData
+    {
+        public Entity Entity;
+    }
+
+    public struct StrikerTurretCostComponent : IComponentData
+    {
+        public int Cost;
+    }
+
+    public struct StrikerTurretEntityComponent : IComponentData
+    {
+        public Entity Entity;
     }
 
     public struct TurretDeploymentInputComponent : IComponentData
@@ -122,36 +159,50 @@ namespace Gameplay
 
     public struct TurretEntityComponent : IComponentData
     {
-        public Entity TurretEntity;
+        public Entity Entity;
+    }
+
+    // How many projectiles spawn per shot
+    // Striker = 1, Scatter = 5
+    public struct TurretProjectileCountComponent : IComponentData
+    {
+        public int Count;
     }
 
     public struct TurretRangeComponent : IComponentData
     {
         public float Range;
     }
-    
+
+    // The total angle of the spread in degrees
+    // Striker = 0, Scatter = 30
+    public struct TurretSpreadComponent : IComponentData
+    {
+        public float Degrees;
+    }
+
     // Tracks the current wave number (1, 2, 3...)
     public struct WaveIndexComponent : IComponentData
     {
-        public int WaveIndex;
+        public int Index;
     }
-    
+
     // 0 = Preparation Phase, 1 = Combat Phase
     public struct WaveStateComponent : IComponentData
     {
-        public int WaveState;
+        public int State;
     }
-    
+
     // How many enemies are left to spawn in the current wave
     public struct WaveStockComponent : IComponentData
     {
-        public int WaveStock;
+        public int Stock;
     }
-    
+
     // Timer for the current phase (e.g., 30s prep time)
     public struct WaveTimerComponent : IComponentData
     {
-        public float WaveTimer;
+        public float Timer;
     }
 
     #endregion
@@ -159,21 +210,26 @@ namespace Gameplay
     #region Tags
 
     public struct EnemySpawnerTag : IComponentData {}
-    
+
     public struct LootPickupTag : IComponentData {}
-    
+
     public struct PlayerTag : IComponentData {}
-    
+
     public struct ProjectileTag : IComponentData {}
 
     public struct SeekerTag : IComponentData {}
-    
+
+    public struct ScatterTurretTag : IComponentData {}
+
     public struct StrikerTurretTag : IComponentData {}
-    
+
     public struct TargetTag : IComponentData {}
-    
-    public struct TeamComponent : IComponentData { public int ID; } // 0 = Player , 1 = Enemy and so on
-    
+
+    public struct TeamComponent : IComponentData
+    {
+        public int ID;
+    } // 0 = Player , 1 = Enemy and so on
+
     public struct TurretTargetTag : IComponentData {}
 
     #endregion

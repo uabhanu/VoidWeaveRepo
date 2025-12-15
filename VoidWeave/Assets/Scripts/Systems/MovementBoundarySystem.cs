@@ -1,6 +1,7 @@
+using Components;
+
 namespace Systems
 {
-    using Gameplay;
     using Unity.Burst;
     using Unity.Entities;
     using Unity.Mathematics;
@@ -46,7 +47,7 @@ namespace Systems
 
         private void Execute(ref MovementInputComponent inputComponent , in LocalTransform localTransform , in PlayerTag tag)
         {
-            float2 input = inputComponent.MoveInput;
+            float2 input = inputComponent.Input;
             float3 position = localTransform.Position;
 
             // X AXIS
@@ -65,7 +66,7 @@ namespace Systems
             float inputDown = math.min(0 , input.y) * canGoDown;
             input.y = inputUp + inputDown;
 
-            inputComponent.MoveInput = input;
+            inputComponent.Input = input;
         }
     }
 }

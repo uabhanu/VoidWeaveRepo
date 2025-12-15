@@ -147,6 +147,24 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""StrikerTurret"",
+                    ""type"": ""Button"",
+                    ""id"": ""5480ecd1-d44e-4753-aec4-4d2e47a0a37a"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""Hold"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ScatterTurret"",
+                    ""type"": ""Button"",
+                    ""id"": ""49863b0b-e3cc-4c8d-91e7-c64b205b2e48"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""Hold"",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Previous"",
                     ""type"": ""Button"",
                     ""id"": ""2776c80d-3c14-4091-8c56-d04ced07a2b0"",
@@ -159,7 +177,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""name"": ""Next"",
                     ""type"": ""Button"",
                     ""id"": ""b7230bb6-fc9b-4f52-8b25-f5e19cb2c2ba"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -535,6 +553,50 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
                     ""action"": ""Deploy"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1617db61-5cf8-4730-adad-72c433f980cf"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""StrikerTurret"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d34d046a-9a98-4d86-88a1-4c5b45e80018"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""StrikerTurret"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""20452391-b69f-499e-92b3-4b662a1bfc3a"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""ScatterTurret"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a7f437ce-3cd6-4d68-81fb-98fe8ba27e83"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""ScatterTurret"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -1150,6 +1212,8 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Player_Crouch = m_Player.FindAction("Crouch", throwIfNotFound: true);
         m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
         m_Player_Deploy = m_Player.FindAction("Deploy", throwIfNotFound: true);
+        m_Player_StrikerTurret = m_Player.FindAction("StrikerTurret", throwIfNotFound: true);
+        m_Player_ScatterTurret = m_Player.FindAction("ScatterTurret", throwIfNotFound: true);
         m_Player_Previous = m_Player.FindAction("Previous", throwIfNotFound: true);
         m_Player_Next = m_Player.FindAction("Next", throwIfNotFound: true);
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
@@ -1252,6 +1316,8 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Crouch;
     private readonly InputAction m_Player_Dash;
     private readonly InputAction m_Player_Deploy;
+    private readonly InputAction m_Player_StrikerTurret;
+    private readonly InputAction m_Player_ScatterTurret;
     private readonly InputAction m_Player_Previous;
     private readonly InputAction m_Player_Next;
     private readonly InputAction m_Player_Sprint;
@@ -1290,6 +1356,14 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Deploy".
         /// </summary>
         public InputAction @Deploy => m_Wrapper.m_Player_Deploy;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/StrikerTurret".
+        /// </summary>
+        public InputAction @StrikerTurret => m_Wrapper.m_Player_StrikerTurret;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/ScatterTurret".
+        /// </summary>
+        public InputAction @ScatterTurret => m_Wrapper.m_Player_ScatterTurret;
         /// <summary>
         /// Provides access to the underlying input action "Player/Previous".
         /// </summary>
@@ -1346,6 +1420,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Deploy.started += instance.OnDeploy;
             @Deploy.performed += instance.OnDeploy;
             @Deploy.canceled += instance.OnDeploy;
+            @StrikerTurret.started += instance.OnStrikerTurret;
+            @StrikerTurret.performed += instance.OnStrikerTurret;
+            @StrikerTurret.canceled += instance.OnStrikerTurret;
+            @ScatterTurret.started += instance.OnScatterTurret;
+            @ScatterTurret.performed += instance.OnScatterTurret;
+            @ScatterTurret.canceled += instance.OnScatterTurret;
             @Previous.started += instance.OnPrevious;
             @Previous.performed += instance.OnPrevious;
             @Previous.canceled += instance.OnPrevious;
@@ -1384,6 +1464,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Deploy.started -= instance.OnDeploy;
             @Deploy.performed -= instance.OnDeploy;
             @Deploy.canceled -= instance.OnDeploy;
+            @StrikerTurret.started -= instance.OnStrikerTurret;
+            @StrikerTurret.performed -= instance.OnStrikerTurret;
+            @StrikerTurret.canceled -= instance.OnStrikerTurret;
+            @ScatterTurret.started -= instance.OnScatterTurret;
+            @ScatterTurret.performed -= instance.OnScatterTurret;
+            @ScatterTurret.canceled -= instance.OnScatterTurret;
             @Previous.started -= instance.OnPrevious;
             @Previous.performed -= instance.OnPrevious;
             @Previous.canceled -= instance.OnPrevious;
@@ -1735,6 +1821,20 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnDeploy(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "StrikerTurret" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnStrikerTurret(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ScatterTurret" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnScatterTurret(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Previous" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

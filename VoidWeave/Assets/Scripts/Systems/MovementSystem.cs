@@ -1,6 +1,7 @@
+using Components;
+
 namespace Systems
 {
-    using Gameplay;
     using Unity.Burst;
     using Unity.Entities;
     using Unity.Mathematics;
@@ -28,15 +29,15 @@ namespace Systems
 
         private void Execute(ref LocalTransform localTransform , in MovementInputComponent movementInputComponent , in MoveSpeedComponent moveSpeedComponent)
         {
-            float2 inputVector = movementInputComponent.MoveInput;
-            float speed = moveSpeedComponent.MoveSpeed;
+            float2 inputVector = movementInputComponent.Input;
+            float speed = moveSpeedComponent.Speed;
 
             localTransform.Position.xy += inputVector * speed * DeltaTime;
         }
     }
 
     // Runs on AI (SeekerTag)
-    // Directly calculates direction from TargetPosition, replacing GuidanceSystem
+    // Directly calculates direction from Position, replacing GuidanceSystem
     [BurstCompile]
     [WithAll(typeof(SeekerTag))]
     public partial struct GuidedMovementJob : IJobEntity
@@ -46,8 +47,8 @@ namespace Systems
         private void Execute(ref LocalTransform localTransform , in MoveSpeedComponent moveSpeedComponent , in TargetPositionComponent targetPositionComponent)
         {
             float3 currentPos = localTransform.Position;
-            float3 targetPos = targetPositionComponent.TargetPosition;
-            float speed = moveSpeedComponent.MoveSpeed;
+            float3 targetPos = targetPositionComponent.Position;
+            float speed = moveSpeedComponent.Speed;
 
             // 1. Calculate Direction
             float3 direction = targetPos - currentPos;

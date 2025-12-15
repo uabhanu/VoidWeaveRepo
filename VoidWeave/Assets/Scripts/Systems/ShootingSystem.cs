@@ -1,6 +1,6 @@
 namespace Systems
 {
-    using Gameplay;
+    using Components;
     using Unity.Burst;
     using Unity.Collections;
     using Unity.Entities;
@@ -12,10 +12,7 @@ namespace Systems
     public partial struct ShootingSystem : ISystem
     {
         [BurstCompile]
-        public void OnCreate(ref SystemState state)
-        {
-            state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
-        }
+        public void OnCreate(ref SystemState state) { state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>(); }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
@@ -27,7 +24,7 @@ namespace Systems
 
             var targetQuery = SystemAPI.QueryBuilder().WithAll<LocalToWorld , TeamComponent>().Build();
             var targetTransforms = targetQuery.ToComponentDataListAsync<LocalToWorld>(Allocator.TempJob , out var gatherHandle1);
-            var targetTeams = targetQuery.ToComponentDataListAsync<TeamComponent>(Allocator.TempJob, out var gatherHandle2);
+            var targetTeams = targetQuery.ToComponentDataListAsync<TeamComponent>(Allocator.TempJob , out var gatherHandle2);
 
             var combinedDependency = JobHandle.CombineDependencies(state.Dependency , gatherHandle1 , gatherHandle2);
             var jobHandle = new TurretShootJob { DeltaTime = deltaTime , TargetTeams = targetTeams , TargetPositions = targetTransforms , EntityCommandBuffer = ecb }.ScheduleParallel(combinedDependency);
@@ -47,7 +44,7 @@ namespace Systems
         [ReadOnly] public NativeList<TeamComponent> TargetTeams;
         [ReadOnly] public NativeList<LocalToWorld> TargetPositions;
 
-        private void Execute(in BulletEntityComponent bulletEntityComponent , [EntityIndexInQuery] int entityInQueryIndex , in LocalToWorld localToWorld , in TeamComponent teamComponent , ref TurretCooldownComponent turretCooldownComponent , in TurretFireRateComponent turretFireRateComponent , in TurretRangeComponent turretRangeComponent)
+        private void Execute(in BulletEntityComponent bulletEntityComponent , [EntityIndexInQuery] int entityInQueryIndex , in LocalToWorld localToWorld , in TeamComponent teamComponent , ref TurretCooldownComponent turretCooldownComponent , in TurretDamageComponent turretDamageComponent , in TurretFireRateComponent turretFireRateComponent , in TurretProjectileCountComponent turretProjectileCountComponent , in TurretRangeComponent turretRangeComponent , in TurretSpreadComponent turretSpreadComponent)
         {
             turretCooldownComponent.Timer -= DeltaTime;
 
@@ -63,16 +60,16 @@ namespace Systems
             {
                 float3 currentTargetPos = TargetPositions[i].Position;
                 float distSq = math.distancesq(turretPos , currentTargetPos);
-                
+
                 bool isDifferentTeam = TargetTeams[i].ID != teamComponent.ID;
 
-                // 2. Ghost Check: (Position is not 0,0,0). This is a compromise that is worth it.
+                // Ghost Check: (Position is not 0,0,0). This is a compromise that is worth it.
                 bool isNotGhost = math.lengthsq(currentTargetPos) > 0.001f;
 
-                // 3. Distance Check: (Current < ClosestSoFar)
+                // Distance Check: (Current < ClosestSoFar)
                 bool isCloserDist = distSq < closestDistSq;
 
-                // 4. COMBINE: Valid only if ALL are true
+                // COMBINE: Valid only if ALL are true
                 bool isValidTarget = isDifferentTeam & isNotGhost & isCloserDist;
 
                 closestDistSq = math.select(closestDistSq , distSq , isValidTarget);
@@ -86,17 +83,30 @@ namespace Systems
 
             turretCooldownComponent.Timer = math.select(turretCooldownComponent.Timer , turretFireRateComponent.Rate , shouldFire > 0.5f);
 
-            int fireCount = (int)shouldFire;
+            int projectileCount = turretProjectileCountComponent.Count;
+            int totalFireCount = (int)shouldFire * projectileCount;
 
-            for(int i = 0 ; i < fireCount ; i++)
+            float divisor = math.max(1 , projectileCount - 1);
+            float totalSpreadRad = math.radians(turretSpreadComponent.Degrees);
+            float angleStep = totalSpreadRad / divisor;
+
+            float3 directionToTarget = math.normalizesafe(bestTargetPos - turretPos);
+            float baseAngle = math.atan2(directionToTarget.y , directionToTarget.x);
+            float startAngle = baseAngle - (totalSpreadRad * 0.5f);
+
+            for(int i = 0 ; i < totalFireCount ; i++)
             {
-                Entity newBullet = EntityCommandBuffer.Instantiate(entityInQueryIndex , bulletEntityComponent.BulletEntity);
-                float3 direction = math.normalizesafe(bestTargetPos - turretPos);
-                float angle = math.atan2(direction.y , direction.x) - math.PI / 2f;
-                quaternion rotation = quaternion.RotateZ(angle);
+                Entity newBullet = EntityCommandBuffer.Instantiate(entityInQueryIndex , bulletEntityComponent.Entity);
+                
+                float currentAngle = startAngle + angleStep * i;
+                float visualAngle = currentAngle - math.PI / 2f;
+                
+                quaternion rotation = quaternion.RotateZ(visualAngle);
+                float2 moveDirection = new float2(math.cos(currentAngle) , math.sin(currentAngle));
 
                 EntityCommandBuffer.SetComponent(entityInQueryIndex , newBullet , LocalTransform.FromPositionRotation(turretPos , rotation));
-                EntityCommandBuffer.SetComponent(entityInQueryIndex , newBullet , new MovementInputComponent { MoveInput = direction.xy });
+                EntityCommandBuffer.SetComponent(entityInQueryIndex , newBullet , new MovementInputComponent { Input = moveDirection });
+                EntityCommandBuffer.SetComponent(entityInQueryIndex , newBullet , new ProjectileDamageComponent { Damage = turretDamageComponent.Damage });
             }
         }
     }

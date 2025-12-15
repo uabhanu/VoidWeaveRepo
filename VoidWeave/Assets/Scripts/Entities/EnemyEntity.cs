@@ -1,6 +1,7 @@
+using Components;
+
 namespace Entities
 {
-    using Gameplay;
     using Unity.Entities;
     using UnityEngine;
 
@@ -16,10 +17,10 @@ namespace Entities
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
                 
-                AddComponent(entity , new LootAmountComponent { LootAmount = authoring.lootAmount });
-                AddComponent(entity , new LootEntityComponent { LootEntity = GetEntity(authoring.lootPrefab , TransformUsageFlags.Dynamic) });
+                AddComponent(entity , new LootAmountComponent { Amount = authoring.lootAmount });
+                AddComponent(entity , new LootEntityComponent { Entity = GetEntity(authoring.lootPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new MovementInputComponent());
-                AddComponent(entity , new MoveSpeedComponent { MoveSpeed = authoring.moveSpeed });
+                AddComponent(entity , new MoveSpeedComponent { Speed = authoring.moveSpeed });
                 AddComponent(entity , new TargetPositionComponent());
                 AddComponent(entity , new TeamComponent { ID = 1 });
                 

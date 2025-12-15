@@ -1,11 +1,10 @@
-using Components;
-
 namespace Entities
 {
+    using Components;
     using Unity.Entities;
     using UnityEngine;
 
-    public class StrikerTurretEntity : MonoBehaviour
+    public class ScatterTurretEntity : MonoBehaviour
     {
         [SerializeField] private GameObject bulletPrefab;
         [SerializeField] private float cooldownTime;
@@ -16,23 +15,23 @@ namespace Entities
         [SerializeField] private float range;
         [SerializeField] private float spreadDegrees;
 
-        class StrikerBaker : Baker<StrikerTurretEntity>
+        private class ScatterTurretBaker : Baker<ScatterTurretEntity>
         {
-            public override void Bake(StrikerTurretEntity authoring)
+            public override void Bake(ScatterTurretEntity authoring)
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-
+                
                 AddComponent(entity , new BulletEntityComponent { Entity = GetEntity(authoring.bulletPrefab , TransformUsageFlags.Dynamic) });
-                AddComponent(entity , new StrikerTurretCostComponent { Cost = authoring.deploymentCost });
+                AddComponent(entity , new ScatterTurretCostComponent { Cost = authoring.deploymentCost });
                 AddComponent(entity , new TeamComponent { ID = 0 });
                 AddComponent(entity , new TurretCooldownComponent { Timer = authoring.cooldownTime });
                 AddComponent(entity , new TurretDamageComponent { Damage = authoring.damage });
                 AddComponent(entity , new TurretFireRateComponent { Rate = authoring.fireRate });
-                AddComponent(entity, new TurretProjectileCountComponent { Count = authoring.projectileCount });
+                AddComponent(entity , new TurretProjectileCountComponent { Count = authoring.projectileCount });
                 AddComponent(entity , new TurretRangeComponent { Range = authoring.range });
-                AddComponent(entity, new TurretSpreadComponent { Degrees = authoring.spreadDegrees });
+                AddComponent(entity , new TurretSpreadComponent { Degrees = authoring.spreadDegrees });
                 
-                AddComponent(entity , new StrikerTurretTag());
+                AddComponent(entity , new ScatterTurretTag());
             }
         }
     }

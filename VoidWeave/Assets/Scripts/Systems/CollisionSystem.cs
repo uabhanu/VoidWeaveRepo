@@ -1,6 +1,7 @@
+using Components;
+
 namespace Systems
 {
-    using Gameplay;
     using Unity.Burst;
     using Unity.Collections;
     using Unity.Entities;
@@ -111,11 +112,11 @@ namespace Systems
                 EntityCommandBuffer.DestroyEntity(entityInQueryIndex , bulletEntity);
                 EntityCommandBuffer.DestroyEntity(entityInQueryIndex , TargetEntities[targetIndexToDestroy]);
                 
-                Entity newDrop = EntityCommandBuffer.Instantiate(entityInQueryIndex , LootEntitiesNativeList[targetIndexToDestroy].LootEntity);
+                Entity newDrop = EntityCommandBuffer.Instantiate(entityInQueryIndex , LootEntitiesNativeList[targetIndexToDestroy].Entity);
                 EntityCommandBuffer.SetComponent(entityInQueryIndex , newDrop , LocalTransform.FromPosition(TargetPositions[targetIndexToDestroy].Position));
                 
-                int specificAmount = LootAmountsNativeList[targetIndexToDestroy].LootAmount;
-                EntityCommandBuffer.SetComponent(entityInQueryIndex , newDrop , new LootAmountComponent { LootAmount = specificAmount });
+                int specificAmount = LootAmountsNativeList[targetIndexToDestroy].Amount;
+                EntityCommandBuffer.SetComponent(entityInQueryIndex , newDrop , new LootAmountComponent { Amount = specificAmount });
             }
         }
     }

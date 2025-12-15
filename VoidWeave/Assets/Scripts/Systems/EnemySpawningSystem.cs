@@ -1,6 +1,7 @@
+using Components;
+
 namespace Systems
 {
-    using Gameplay;
     using Unity.Burst;
     using Unity.Entities;
     using Unity.Mathematics;
@@ -36,18 +37,18 @@ namespace Systems
         
         private void Execute([EntityIndexInQuery] int entityInQueryIndex , in EnemyEntityComponent enemyEntityComponent , in EnemySpawnRadiusComponent enemySpawnRadiusComponent , in EnemySpawnRateComponent enemySpawnRateComponent , ref EnemySpawnTimerComponent enemySpawnTimerComponent , in LocalTransform localTransform , ref RandomComponent randomComponent , in WaveStateComponent waveStateComponent , ref WaveStockComponent waveStockComponent)
         {
-            enemySpawnTimerComponent.EnemySpawnTimer -= DeltaTime;
+            enemySpawnTimerComponent.Timer -= DeltaTime;
 
             // --- CHECKS ---
 
             // 1. Timer Ready?
-            float isTimerReady = math.step(enemySpawnTimerComponent.EnemySpawnTimer , 0f);
+            float isTimerReady = math.step(enemySpawnTimerComponent.Timer , 0f);
 
             // 2. Is Combat Phase? (State == 1)
-            float isCombat = math.step(0.9f , waveStateComponent.WaveState);
+            float isCombat = math.step(0.9f , waveStateComponent.State);
 
             // 3. Is Stock Available? (Value >= 1)
-            float hasStock = math.step(1 , waveStockComponent.WaveStock);
+            float hasStock = math.step(1 , waveStockComponent.Stock);
 
             // Combine triggers: All must be true (1.0) to spawn
             float shouldSpawn = isTimerReady * isCombat * hasStock;
@@ -55,26 +56,26 @@ namespace Systems
             // --- EXECUTE ---
 
             // Reset Timer if we spawned
-            enemySpawnTimerComponent.EnemySpawnTimer = math.select(enemySpawnTimerComponent.EnemySpawnTimer , enemySpawnRateComponent.EnemySpawnRate , shouldSpawn > 0.5f);
+            enemySpawnTimerComponent.Timer = math.select(enemySpawnTimerComponent.Timer , enemySpawnRateComponent.Rate , shouldSpawn > 0.5f);
 
             int spawnCount = (int)shouldSpawn;
 
             // Decrement Stock
-            waveStockComponent.WaveStock -= spawnCount;
+            waveStockComponent.Stock -= spawnCount;
 
             for(int i = 0 ; i < spawnCount ; i++)
             {
-                Entity newEnemy = EntityCommandBuffer.Instantiate(entityInQueryIndex , enemyEntityComponent.EnemyEntity);
+                Entity newEnemy = EntityCommandBuffer.Instantiate(entityInQueryIndex , enemyEntityComponent.Entity);
 
                 // Random Position Logic
-                float angle = randomComponent.RandomValue.NextFloat(0f , math.PI * 2);
-                float x = math.cos(angle) * enemySpawnRadiusComponent.EnemySpawnRadius;
-                float y = math.sin(angle) * enemySpawnRadiusComponent.EnemySpawnRadius;
+                float angle = randomComponent.Random.NextFloat(0f , math.PI * 2);
+                float x = math.cos(angle) * enemySpawnRadiusComponent.Radius;
+                float y = math.sin(angle) * enemySpawnRadiusComponent.Radius;
                 float3 spawnOffset = new float3(x , y , 0);
                 float3 finalPos = localTransform.Position + spawnOffset;
 
                 EntityCommandBuffer.SetComponent(entityInQueryIndex , newEnemy , LocalTransform.FromPosition(finalPos));
-                EntityCommandBuffer.SetComponent(entityInQueryIndex , newEnemy , new MovementInputComponent { MoveInput = new float2(0 , 0) });
+                EntityCommandBuffer.SetComponent(entityInQueryIndex , newEnemy , new MovementInputComponent { Input = new float2(0 , 0) });
             }
         }
     }

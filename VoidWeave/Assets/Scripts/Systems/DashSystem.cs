@@ -1,6 +1,7 @@
+using Components;
+
 namespace Systems
 {
-    using Gameplay;
     using Unity.Burst;
     using Unity.Entities;
     using Unity.Mathematics;
@@ -63,7 +64,7 @@ namespace Systems
             float currentMultiplier = (isDashing * SpeedMultiplier) + (1.0f - isDashing);
 
             // Write Final Speed
-            moveSpeedComponent.MoveSpeed = baseSpeedComponent.BaseSpeed * currentMultiplier;
+            moveSpeedComponent.Speed = baseSpeedComponent.Speed * currentMultiplier;
         }
     }
 }

@@ -1,6 +1,6 @@
 namespace Systems
 {
-    using Gameplay;
+    using Components;
     using Unity.Burst;
     using Unity.Entities;
     using Unity.Mathematics;
@@ -9,54 +9,45 @@ namespace Systems
     [UpdateInGroup(typeof(SimulationSystemGroup))]
     public partial struct TurretDeploymentSystem : ISystem
     {
-        private const float DEPLOY_OFFSET_X = 1.5f;
-        private const int STRIKER_COST = 100;
-
         [BurstCompile]
-        public void OnCreate(ref SystemState state)
-        {
-            state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
-            state.RequireForUpdate<TurretEntityComponent>();
-        }
+        public void OnCreate(ref SystemState state) { state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>(); }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
             var ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter();
-            var strikerPrefab = SystemAPI.GetSingleton<TurretEntityComponent>().TurretEntity;
 
-            new DeploymentJob { DeployOffset = new float3(DEPLOY_OFFSET_X , 0 , 0) , EntityCommandBuffer = ecb , StrikerCost = STRIKER_COST , StrikerPrefab = strikerPrefab }.ScheduleParallel();
+            new TurretDeploymentJob { EntityCommandBuffer = ecb }.ScheduleParallel();
         }
     }
 
     [BurstCompile]
-    public partial struct DeploymentJob : IJobEntity
+    public partial struct TurretDeploymentJob : IJobEntity
     {
-        public float3 DeployOffset;
         public EntityCommandBuffer.ParallelWriter EntityCommandBuffer;
-        public int StrikerCost;
-        public Entity StrikerPrefab;
 
-        private void Execute([EntityIndexInQuery] int entityInQueryIndex , ref CurrentEnergyComponent currentEnergyComponent , ref TurretDeploymentInputComponent turretDeploymentInputComponent , in LocalTransform localTransform)
+        private void Execute(ref CurrentEnergyComponent currentEnergyComponent , [EntityIndexInQuery] int entityInQueryIndex , in LocalTransform localTransform , in SelectedTurretCostComponent selectedTurretCostComponent , in SelectedTurretEntityComponent selectedTurretEntityComponent , in TurretDeploymentInputComponent turretDeploymentInputComponent)
         {
-            float canAfford = math.step((float)StrikerCost , (float)currentEnergyComponent.Energy);
-            float isInputPressed = math.step(0.5f , turretDeploymentInputComponent.IsPressed);
-            
-            float shouldDeploy = isInputPressed * canAfford;
-            
-            int spawnCount = (int)shouldDeploy;
-            
-            currentEnergyComponent.Energy -= (StrikerCost * spawnCount);
-            
-            turretDeploymentInputComponent.IsPressed *= (1 - spawnCount);
-            
-            for(int i = 0 ; i < spawnCount ; i++)
-            {
-                Entity newTurret = EntityCommandBuffer.Instantiate(entityInQueryIndex , StrikerPrefab);
-                float3 spawnPos = localTransform.Position + DeployOffset;
+            float isPressed = turretDeploymentInputComponent.IsPressed;
+            int cost = selectedTurretCostComponent.Cost;
+            Entity prefabToSpawn = selectedTurretEntityComponent.Entity;
 
-                EntityCommandBuffer.SetComponent(entityInQueryIndex , newTurret , LocalTransform.FromPosition(spawnPos));
+            // Calculate Conditions
+            bool hasEnoughEnergy = currentEnergyComponent.Energy >= cost;
+            bool isValidPrefab = prefabToSpawn != Entity.Null;
+            bool conditionsMet = (isPressed > 0.5f) && hasEnoughEnergy && isValidPrefab;
+
+            // Determine Count (1 if valid, 0 if not)
+            int deployCount = (int)math.select(0f , 1f , conditionsMet);
+            
+            // If count is 0, we subtract 0. If count is 1, we subtract cost.
+            currentEnergyComponent.Energy -= cost * deployCount;
+            
+            for(int i = 0 ; i < deployCount ; i++)
+            {
+                Entity newTurret = EntityCommandBuffer.Instantiate(entityInQueryIndex , prefabToSpawn);
+                EntityCommandBuffer.SetComponent(entityInQueryIndex , newTurret , LocalTransform.FromPosition(localTransform.Position));
             }
         }
     }
