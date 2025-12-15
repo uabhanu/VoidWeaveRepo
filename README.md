@@ -221,7 +221,7 @@ Level 1 (Base) → Level 2 (+50%) → Level 3 (+100%)
 - [x] Wave management
 
 ### 📅 Phase 3: Combat Depth
-- [ ] All turret types functional
+- [x] All turret types are functional
 - [ ] All enemy types with behaviours
 - [ ] Turret targeting systems
 - [ ] Bullet-hell patterns
