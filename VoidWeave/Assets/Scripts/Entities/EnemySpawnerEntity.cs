@@ -11,6 +11,7 @@ namespace Entities
         [SerializeField] private float enemySpawnRadius;
         [SerializeField] private float enemySpawnRate;
         [SerializeField] private uint randomSeed;
+        [SerializeField] private float waveTimer;
 
         private class EnemySpawnerBaker : Baker<EnemySpawnerEntity>
         {
@@ -22,6 +23,10 @@ namespace Entities
                 AddComponent(entity , new EnemySpawnRadiusComponent { EnemySpawnRadius = authoring.enemySpawnRadius });
                 AddComponent(entity , new EnemySpawnRateComponent { EnemySpawnRate = authoring.enemySpawnRate });
                 AddComponent(entity , new EnemySpawnTimerComponent { EnemySpawnTimer = authoring.enemySpawnRate });
+                AddComponent(entity , new WaveIndexComponent { WaveIndex = 0 });
+                AddComponent(entity , new WaveStateComponent { WaveState = 0 });
+                AddComponent(entity , new WaveStockComponent { WaveStock = 0 });
+                AddComponent(entity , new WaveTimerComponent { WaveTimer = authoring.waveTimer });
 
                 AddComponent(entity , new EnemySpawnerTag());
 

@@ -129,6 +129,30 @@ namespace Gameplay
     {
         public float Range;
     }
+    
+    // Tracks the current wave number (1, 2, 3...)
+    public struct WaveIndexComponent : IComponentData
+    {
+        public int WaveIndex;
+    }
+    
+    // 0 = Preparation Phase, 1 = Combat Phase
+    public struct WaveStateComponent : IComponentData
+    {
+        public int WaveState;
+    }
+    
+    // How many enemies are left to spawn in the current wave
+    public struct WaveStockComponent : IComponentData
+    {
+        public int WaveStock;
+    }
+    
+    // Timer for the current phase (e.g., 30s prep time)
+    public struct WaveTimerComponent : IComponentData
+    {
+        public float WaveTimer;
+    }
 
     #endregion
 
