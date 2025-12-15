@@ -8,7 +8,6 @@ namespace Systems
     using Unity.Transforms;
 
     [UpdateInGroup(typeof(SimulationSystemGroup))]
-    [UpdateBefore(typeof(MovementSystem))]
     public partial struct TargetingSystem : ISystem
     {
         private EntityQuery _enemyTargetQuery;

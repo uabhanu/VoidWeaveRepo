@@ -6,7 +6,6 @@ namespace Systems
     using Unity.Mathematics;
     
     [UpdateInGroup(typeof(SimulationSystemGroup))]
-    [UpdateBefore(typeof(MovementSystem))] // CRITICAL: Update speed BEFORE movement calculation
     public partial struct DashSystem : ISystem
     {
         private const float DASH_DURATION = 0.2f; // Length of dash
