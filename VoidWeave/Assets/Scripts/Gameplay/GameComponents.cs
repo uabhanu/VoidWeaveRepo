@@ -10,9 +10,9 @@ namespace Gameplay
         public float BaseSpeed;
     }
 
-    public struct BulletPrefabComponent : IComponentData
+    public struct BulletEntityComponent : IComponentData
     {
-        public Entity BulletPrefab;
+        public Entity BulletEntity;
     }
 
     public struct CurrentEnergyComponent : IComponentData
@@ -35,9 +35,9 @@ namespace Gameplay
         public float IsPressed;
     }
     
-    public struct EnemyPrefabComponent : IComponentData
+    public struct EnemyEntityComponent : IComponentData
     {
-        public Entity EnemyPrefab;
+        public Entity EnemyEntity;
     }
     
     public struct EnemySpawnRadiusComponent : IComponentData
@@ -53,6 +53,16 @@ namespace Gameplay
     public struct EnemySpawnTimerComponent : IComponentData
     {
         public float EnemySpawnTimer;
+    }
+    
+    public struct LootAmountComponent : IComponentData
+    {
+        public int LootAmount;
+    }
+    
+    public struct LootEntityComponent : IComponentData
+    {
+        public Entity LootEntity;
     }
 
     public struct MoveSpeedComponent : IComponentData
@@ -110,9 +120,9 @@ namespace Gameplay
         public float Rate;
     }
 
-    public struct TurretPrefabComponent : IComponentData
+    public struct TurretEntityComponent : IComponentData
     {
-        public Entity TurretPrefab;
+        public Entity TurretEntity;
     }
 
     public struct TurretRangeComponent : IComponentData
@@ -125,6 +135,8 @@ namespace Gameplay
     #region Tags
 
     public struct EnemySpawnerTag : IComponentData {}
+    
+    public struct LootPickupTag : IComponentData {}
     
     public struct PlayerTag : IComponentData {}
     

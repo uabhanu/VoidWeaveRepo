@@ -35,7 +35,7 @@ namespace Systems
         public EntityCommandBuffer.ParallelWriter EntityCommandBuffer;
 
         // Note: RandomComponent must be 'ref' because NextFloat() modifies its internal state
-        private void Execute([EntityIndexInQuery] int entityInQueryIndex , ref EnemySpawnTimerComponent enemySpawnTimerComponent , ref RandomComponent randomComponent , in EnemySpawnRateComponent enemySpawnRateComponent , in EnemySpawnRadiusComponent enemySpawnRadiusComponent , in EnemyPrefabComponent enemyPrefabComponent , in LocalTransform localTransform)
+        private void Execute([EntityIndexInQuery] int entityInQueryIndex , ref EnemySpawnTimerComponent enemySpawnTimerComponent , ref RandomComponent randomComponent , in EnemySpawnRateComponent enemySpawnRateComponent , in EnemySpawnRadiusComponent enemySpawnRadiusComponent , in EnemyEntityComponent enemyEntityComponent , in LocalTransform localTransform)
         {
             // 1. Countdown
             enemySpawnTimerComponent.EnemySpawnTimer -= DeltaTime;
@@ -54,7 +54,7 @@ namespace Systems
             for(int i = 0 ; i < spawnCount ; i++)
             {
                 // Instantiate
-                Entity newEnemy = EntityCommandBuffer.Instantiate(entityInQueryIndex , enemyPrefabComponent.EnemyPrefab);
+                Entity newEnemy = EntityCommandBuffer.Instantiate(entityInQueryIndex , enemyEntityComponent.EnemyEntity);
 
                 // Calculate Random Position on Circle
                 // Get a random angle between 0 and 2 PI
