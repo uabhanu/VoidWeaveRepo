@@ -1,6 +1,7 @@
+using Components;
+
 namespace Systems
 {
-    using Gameplay;
     using Unity.Burst;
     using Unity.Entities;
     using Unity.Mathematics;
@@ -49,17 +50,17 @@ namespace Systems
         private void Execute(ref WaveIndexComponent waveIndexComponent , ref WaveStateComponent waveStateComponent , ref WaveStockComponent waveStockComponent , ref WaveTimerComponent waveTimerComponent)
         {
             // Decrement Timer
-            waveTimerComponent.WaveTimer -= DeltaTime;
+            waveTimerComponent.Timer -= DeltaTime;
 
             // --- CONDITIONS (Branchless) ---
 
             // Current State
-            float isPrep = math.step(waveStateComponent.WaveState , 0.1f); // 1.0 if State == 0
-            float isCombat = math.step(0.9f , waveStateComponent.WaveState); // 1.0 if State == 1
+            float isPrep = math.step(waveStateComponent.State , 0.1f); // 1.0 if State == 0
+            float isCombat = math.step(0.9f , waveStateComponent.State); // 1.0 if State == 1
 
             // Triggers
-            float timerExpired = math.step(waveTimerComponent.WaveTimer , 0f);
-            float stockEmpty = math.step(waveStockComponent.WaveStock , 0);
+            float timerExpired = math.step(waveTimerComponent.Timer , 0f);
+            float stockEmpty = math.step(waveStockComponent.Stock , 0);
             float enemiesDead = math.step(AliveEnemyCount , 0);
 
             // Transitions
@@ -72,32 +73,32 @@ namespace Systems
             // --- UPDATE DATA ---
 
             // Increment Wave Index (Only when starting Combat)
-            waveIndexComponent.WaveIndex += (int)startCombat;
+            waveIndexComponent.Index += (int)startCombat;
 
             // Calculate New Stock Size (Difficulty Scaling)
-            int newStockAmount = BaseEnemies + (waveIndexComponent.WaveIndex * Increment);
+            int newStockAmount = BaseEnemies + (waveIndexComponent.Index * Increment);
 
             // Update Stock
             // If Starting Combat -> Set to New Amount
             // If Starting Prep -> Set to 0 (Clean up)
             // Else -> Keep current value
-            int currentStock = waveStockComponent.WaveStock;
+            int currentStock = waveStockComponent.Stock;
             currentStock = math.select(currentStock , newStockAmount , startCombat > 0.5f);
             currentStock = math.select(currentStock , 0 , startPrep > 0.5f);
-            waveStockComponent.WaveStock = currentStock;
+            waveStockComponent.Stock = currentStock;
 
             // Update Timer
             // If Starting Prep -> Reset to 30s
             // Else -> Keep current (Combat doesn't use the waveTimerComponent, but we let it run down)
-            waveTimerComponent.WaveTimer = math.select(waveTimerComponent.WaveTimer , PrepDuration , startPrep > 0.5f);
+            waveTimerComponent.Timer = math.select(waveTimerComponent.Timer , PrepDuration , startPrep > 0.5f);
 
             // Update Phase State
             // If StartCombat -> 1
             // If StartPrep -> 0
-            int nextState = waveStateComponent.WaveState;
+            int nextState = waveStateComponent.State;
             nextState = math.select(nextState , 1 , startCombat > 0.5f);
             nextState = math.select(nextState , 0 , startPrep > 0.5f);
-            waveStateComponent.WaveState = nextState;
+            waveStateComponent.State = nextState;
         }
     }
 }

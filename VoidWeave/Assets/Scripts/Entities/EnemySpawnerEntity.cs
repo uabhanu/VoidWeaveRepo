@@ -1,6 +1,7 @@
+using Components;
+
 namespace Entities
 {
-    using Gameplay;
     using Unity.Entities;
     using Unity.Mathematics;
     using UnityEngine;
@@ -19,19 +20,19 @@ namespace Entities
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
-                AddComponent(entity , new EnemyEntityComponent { EnemyEntity = GetEntity(authoring.enemyPrefab , TransformUsageFlags.Dynamic) });
-                AddComponent(entity , new EnemySpawnRadiusComponent { EnemySpawnRadius = authoring.enemySpawnRadius });
-                AddComponent(entity , new EnemySpawnRateComponent { EnemySpawnRate = authoring.enemySpawnRate });
-                AddComponent(entity , new EnemySpawnTimerComponent { EnemySpawnTimer = authoring.enemySpawnRate });
-                AddComponent(entity , new WaveIndexComponent { WaveIndex = 0 });
-                AddComponent(entity , new WaveStateComponent { WaveState = 0 });
-                AddComponent(entity , new WaveStockComponent { WaveStock = 0 });
-                AddComponent(entity , new WaveTimerComponent { WaveTimer = authoring.waveTimer });
+                AddComponent(entity , new EnemyEntityComponent { Entity = GetEntity(authoring.enemyPrefab , TransformUsageFlags.Dynamic) });
+                AddComponent(entity , new EnemySpawnRadiusComponent { Radius = authoring.enemySpawnRadius });
+                AddComponent(entity , new EnemySpawnRateComponent { Rate = authoring.enemySpawnRate });
+                AddComponent(entity , new EnemySpawnTimerComponent { Timer = authoring.enemySpawnRate });
+                AddComponent(entity , new WaveIndexComponent { Index = 0 });
+                AddComponent(entity , new WaveStateComponent { State = 0 });
+                AddComponent(entity , new WaveStockComponent { Stock = 0 });
+                AddComponent(entity , new WaveTimerComponent { Timer = authoring.waveTimer });
 
                 AddComponent(entity , new EnemySpawnerTag());
 
                 uint validSeed = math.max(1 , authoring.randomSeed);
-                AddComponent(entity , new RandomComponent { RandomValue = new Unity.Mathematics.Random(validSeed) });
+                AddComponent(entity , new RandomComponent { Random = new Unity.Mathematics.Random(validSeed) });
             }
         }
     }

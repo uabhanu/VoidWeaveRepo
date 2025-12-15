@@ -1,6 +1,7 @@
+using Components;
+
 namespace Systems
 {
-    using Gameplay;
     using Unity.Burst;
     using Unity.Collections;
     using Unity.Entities;
@@ -73,7 +74,7 @@ namespace Systems
             for(int i = 0 ; i < pickupCount ; i++)
             {
                 EntityCommandBuffer.DestroyEntity(entityInQueryIndex , entity);
-                ResourceQueueWriter.Enqueue(lootAmount.LootAmount);
+                ResourceQueueWriter.Enqueue(lootAmount.Amount);
             }
         }
     }

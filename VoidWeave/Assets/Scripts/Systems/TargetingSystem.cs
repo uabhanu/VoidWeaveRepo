@@ -1,6 +1,7 @@
+using Components;
+
 namespace Systems
 {
-    using Gameplay;
     using Unity.Burst;
     using Unity.Collections;
     using Unity.Entities;
@@ -49,7 +50,7 @@ namespace Systems
     {
         public float3 TargetPosition;
 
-        private void Execute(ref TargetPositionComponent targetPositionComponent) { targetPositionComponent.TargetPosition = TargetPosition; }
+        private void Execute(ref TargetPositionComponent targetPositionComponent) { targetPositionComponent.Position = TargetPosition; }
     }
     
     [BurstCompile]
@@ -58,6 +59,6 @@ namespace Systems
     {
         public float3 TargetPosition;
 
-        private void Execute(ref TargetPositionComponent targetPositionComponent) { targetPositionComponent.TargetPosition = TargetPosition; }
+        private void Execute(ref TargetPositionComponent targetPositionComponent) { targetPositionComponent.Position = TargetPosition; }
     }
 }

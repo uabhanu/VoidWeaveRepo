@@ -3,7 +3,7 @@
 
 namespace Systems
 {
-    using Gameplay;
+    using Components;
     using Unity.Entities;
     using Unity.Mathematics;
     using UnityEngine;
@@ -12,15 +12,12 @@ namespace Systems
     public partial class InputSystem : SystemBase
     {
         private InputSystem_Actions _inputSystemActions;
-        private EntityQuery _playerQuery;
 
         protected override void OnCreate()
         {
             _inputSystemActions = new InputSystem_Actions();
             _inputSystemActions.Player.Enable();
-
-            _playerQuery = GetEntityQuery(ComponentType.ReadWrite<MovementInputComponent>() , ComponentType.ReadOnly<PlayerTag>() , ComponentType.ReadWrite<TurretDeploymentInputComponent>());
-
+            
             RequireForUpdate<PlayerTag>();
             RequireForUpdate<TurretDeploymentInputComponent>();
         }
@@ -34,14 +31,18 @@ namespace Systems
         {
             float dashInput = _inputSystemActions.Player.Dash.ReadValue<float>();
             float deployInput = math.select(0f , 1f , _inputSystemActions.Player.Deploy.WasPressedThisFrame());
+            float scatterTurretInput = _inputSystemActions.Player.ScatterTurret.ReadValue<float>();
+            float strikerTurretInput = _inputSystemActions.Player.StrikerTurret.ReadValue<float>();
+            
             float2 moveInput = _inputSystemActions.Player.Move.ReadValue<Vector2>();
-
             float2 normalizedMoveInput = math.normalizesafe(moveInput);
 
-            foreach((RefRW<DashInputComponent> dashInputComponent , RefRW<MovementInputComponent> movementInputComponent , RefRW<TurretDeploymentInputComponent> turretDeploymentInputComponent) in SystemAPI.Query<RefRW<DashInputComponent> , RefRW<MovementInputComponent> , RefRW<TurretDeploymentInputComponent>>().WithAll<PlayerTag>())
+            foreach((RefRW<DashInputComponent> dashInputComponent , RefRW<MovementInputComponent> movementInputComponent , RefRW<ScatterTurretInputComponent> scatterTurretInputComponent , RefRW<StrikerTurretInputComponent> strikerTurretInputComponent , RefRW<TurretDeploymentInputComponent> turretDeploymentInputComponent) in SystemAPI.Query<RefRW<DashInputComponent> , RefRW<MovementInputComponent> , RefRW<ScatterTurretInputComponent> , RefRW<StrikerTurretInputComponent> , RefRW<TurretDeploymentInputComponent>>().WithAll<PlayerTag>())
             {
-                movementInputComponent.ValueRW.MoveInput = normalizedMoveInput;
+                movementInputComponent.ValueRW.Input = normalizedMoveInput;
                 dashInputComponent.ValueRW.IsPressed = dashInput;
+                scatterTurretInputComponent.ValueRW.Input = scatterTurretInput;
+                strikerTurretInputComponent.ValueRW.Input = strikerTurretInput;
                 turretDeploymentInputComponent.ValueRW.IsPressed = deployInput;
             }
         }
