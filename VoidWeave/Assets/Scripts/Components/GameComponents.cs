@@ -27,12 +27,17 @@ namespace Components
 
     public struct DashDurationComponent : IComponentData
     {
-        public float Timer;
+        public float Duration;
     }
 
     public struct DashInputComponent : IComponentData
     {
         public float IsPressed;
+    }
+    
+    public struct DashMultiplierComponent : IComponentData
+    {
+        public float Multiplier;
     }
 
     public struct EnemyEntityComponent : IComponentData

@@ -6,6 +6,9 @@ namespace Entities
 
     public class PlayerEntity : MonoBehaviour
     {
+        [SerializeField] private float dashCooldownTimer; // Time before next dash   
+        [SerializeField] private float dashDuration; // Length of dash   
+        [SerializeField] private float dashMultiplier; // Speed boost (5 * 5 = 25 units/sec)   
         [SerializeField] private float moveSpeed;
         [SerializeField] private int scatterTurretCost;
         [SerializeField] private GameObject scatterTurretPrefab;
@@ -21,11 +24,12 @@ namespace Entities
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
                 AddComponent(entity , new BaseMoveSpeedComponent { Speed = authoring.moveSpeed });
-                AddComponent(entity, new CurrentEnergyComponent { Energy = authoring.startingResources });
-                AddComponent(entity, new TurretDeploymentInputComponent());
-                AddComponent(entity , new DashCooldownComponent());
-                AddComponent(entity , new DashDurationComponent());
+                AddComponent(entity , new CurrentEnergyComponent { Energy = authoring.startingResources });
+                AddComponent(entity , new TurretDeploymentInputComponent());
+                AddComponent(entity , new DashCooldownComponent { Timer = authoring.dashCooldownTimer });
+                AddComponent(entity , new DashDurationComponent { Duration = authoring.dashDuration });
                 AddComponent(entity , new DashInputComponent());
+                AddComponent(entity , new DashMultiplierComponent { Multiplier = authoring.dashMultiplier });
                 AddComponent(entity , new MoveSpeedComponent { Speed = authoring.moveSpeed });
                 AddComponent(entity , new MovementInputComponent());
                 AddComponent(entity , new ScatterTurretEntityComponent { Entity = GetEntity(authoring.scatterTurretPrefab , TransformUsageFlags.Dynamic) });
@@ -37,7 +41,7 @@ namespace Entities
                 AddComponent(entity , new StrikerTurretEntityComponent { Entity = GetEntity(authoring.strikerTurretPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new StrikerTurretInputComponent());
                 AddComponent(entity , new TeamComponent { ID = authoring.teamID });
-                
+
                 AddComponent(entity , new PlayerTag());
             }
         }
