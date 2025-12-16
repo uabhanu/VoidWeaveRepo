@@ -48,6 +48,7 @@ MonoBehaviour:
   lootAmount: 25
   lootPrefab: {fileID: 6983080911018168034, guid: 29b5c2b76e555c84c9ae88bcb6766676, type: 3}
   moveSpeed: 2.25
+  teamID: 1
 --- !u!212 &2416083693835027147
 SpriteRenderer:
   m_ObjectHideFlags: 0

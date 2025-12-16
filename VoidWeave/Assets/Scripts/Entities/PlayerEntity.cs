@@ -12,6 +12,7 @@ namespace Entities
         [SerializeField] private int startingResources;
         [SerializeField] private int strikerTurretCost;
         [SerializeField] private GameObject strikerTurretPrefab;
+        [SerializeField] private int teamID;
 
         class PlayerBaker : Baker<PlayerEntity>
         {
@@ -35,7 +36,7 @@ namespace Entities
                 AddComponent(entity , new StrikerTurretCostComponent { Cost = authoring.strikerTurretCost });
                 AddComponent(entity , new StrikerTurretEntityComponent { Entity = GetEntity(authoring.strikerTurretPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new StrikerTurretInputComponent());
-                AddComponent(entity , new TeamComponent { ID = 0 });
+                AddComponent(entity , new TeamComponent { ID = authoring.teamID });
                 
                 AddComponent(entity , new PlayerTag());
                 AddComponent(entity , new TargetTag());
