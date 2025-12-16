@@ -6,8 +6,8 @@ namespace Entities
 
     public class ProjectileEntity : MonoBehaviour
     {
-        [SerializeField] private float speed;
         [SerializeField] private float lifetime;
+        [SerializeField] private float speed;
         [SerializeField] private int teamID;
 
         class ProjectileBaker : Baker<ProjectileEntity>

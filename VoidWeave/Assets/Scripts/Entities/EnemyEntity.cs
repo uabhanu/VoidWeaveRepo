@@ -24,9 +24,8 @@ namespace Entities
                 AddComponent(entity , new TargetPositionComponent());
                 AddComponent(entity , new TeamComponent { ID = authoring.teamID });
                 
+                AddComponent(entity , new EnemyTag());
                 AddComponent(entity , new SeekerTag());
-                AddComponent(entity , new TargetTag());
-                AddComponent(entity , new TurretTargetTag());
             }
         }
     }

@@ -209,6 +209,10 @@ namespace Components
 
     #region Tags
 
+    public struct DeathTag : IComponentData {}
+    
+    public struct EnemyTag : IComponentData {}
+    
     public struct EnemySpawnerTag : IComponentData {}
 
     public struct LootPickupTag : IComponentData {}
@@ -223,14 +227,10 @@ namespace Components
 
     public struct StrikerTurretTag : IComponentData {}
 
-    public struct TargetTag : IComponentData {}
-
     public struct TeamComponent : IComponentData
     {
         public int ID;
     } // 0 = Player , 1 = Enemy and so on
-
-    public struct TurretTargetTag : IComponentData {}
 
     #endregion
 }

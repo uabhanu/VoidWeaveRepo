@@ -39,7 +39,6 @@ namespace Entities
                 AddComponent(entity , new TeamComponent { ID = authoring.teamID });
                 
                 AddComponent(entity , new PlayerTag());
-                AddComponent(entity , new TargetTag());
             }
         }
     }

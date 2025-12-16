@@ -1,7 +1,6 @@
-using Components;
-
 namespace Systems
 {
+    using Components;
     using Unity.Burst;
     using Unity.Collections;
     using Unity.Entities;
@@ -18,13 +17,12 @@ namespace Systems
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<EnemyTag>();
             state.RequireForUpdate<PlayerTag>();
             state.RequireForUpdate<SeekerTag>();
-            state.RequireForUpdate<TargetTag>();
-            state.RequireForUpdate<TurretTargetTag>();
             
-            _enemyTargetQuery = SystemAPI.QueryBuilder().WithAll<LocalToWorld , TargetTag , TurretTargetTag>().Build();
-            _playerTargetQuery = SystemAPI.QueryBuilder().WithAll<LocalToWorld , PlayerTag , TargetTag>().Build();
+            _enemyTargetQuery = SystemAPI.QueryBuilder().WithAll<EnemyTag , LocalToWorld>().Build();
+            _playerTargetQuery = SystemAPI.QueryBuilder().WithAll<LocalToWorld , PlayerTag>().Build();
             
             state.RequireForUpdate(_enemyTargetQuery);
             state.RequireForUpdate(_playerTargetQuery);
@@ -45,7 +43,7 @@ namespace Systems
     
     [BurstCompile]
     [WithAll(typeof(ProjectileTag) , typeof(SeekerTag))]
-    [WithNone(typeof(TurretTargetTag))]
+    [WithNone(typeof(EnemyTag))]
     public partial struct EnemyTheTargetJob : IJobEntity
     {
         public float3 TargetPosition;
@@ -54,7 +52,7 @@ namespace Systems
     }
     
     [BurstCompile]
-    [WithAll(typeof(SeekerTag) , typeof(TurretTargetTag))]
+    [WithAll(typeof(EnemyTag) , typeof(SeekerTag))]
     public partial struct PlayerTheTargetJob : IJobEntity
     {
         public float3 TargetPosition;
