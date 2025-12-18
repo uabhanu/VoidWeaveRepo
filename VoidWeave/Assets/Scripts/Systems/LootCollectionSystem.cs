@@ -4,7 +4,6 @@ namespace Systems
     using Unity.Burst;
     using Unity.Collections;
     using Unity.Entities;
-    using Unity.Jobs;
     using Unity.Mathematics;
     using Unity.Transforms;
 
@@ -12,9 +11,13 @@ namespace Systems
     [UpdateAfter(typeof(MovementSystem))]
     public partial struct LootCollectionSystem : ISystem
     {
+        private NativeQueue<int> _resourceQueue;
+
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
+            _resourceQueue = new NativeQueue<int>(Allocator.Persistent);
+            
             state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
             state.RequireForUpdate<CurrentEnergyComponent>();
             state.RequireForUpdate<LocalTransform>();
@@ -22,17 +25,14 @@ namespace Systems
         }
 
         [BurstCompile]
+        public void OnDestroy(ref SystemState state) { _resourceQueue.Dispose(); }
+
+        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            NativeQueue<int> resourceNativeQueue = new NativeQueue<int>(Allocator.TempJob);
-            
-            JobHandle jobHandle = new PickupJob { EntityCommandBufferParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter() , PlayerPos = SystemAPI.GetComponent<LocalTransform>(SystemAPI.GetSingletonEntity<PlayerTag>()).Position , PickupRadiusSq = 0.5f * 0.5f , ResourceNativeQueueParallelWriter = resourceNativeQueue.AsParallelWriter() }.ScheduleParallel(state.Dependency);
+            new PickupJob { EntityCommandBufferParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter() , PlayerPos = SystemAPI.GetComponent<LocalTransform>(SystemAPI.GetSingletonEntity<PlayerTag>()).Position , PickupRadiusSq = 0.5f * 0.5f , ResourceNativeQueueParallelWriter = _resourceQueue.AsParallelWriter() }.ScheduleParallel(state.Dependency).Complete();
 
-            jobHandle.Complete();
-            
-            while(resourceNativeQueue.TryDequeue(out int value)) { SystemAPI.GetSingletonRW<CurrentEnergyComponent>().ValueRW.Energy += value; }
-
-            resourceNativeQueue.Dispose();
+            while(_resourceQueue.TryDequeue(out int value)) { SystemAPI.GetSingletonRW<CurrentEnergyComponent>().ValueRW.Energy += value; }
         }
     }
 

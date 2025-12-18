@@ -17,20 +17,21 @@ namespace Systems
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
-
             _targetQuery = SystemAPI.QueryBuilder().WithAll<LocalToWorld , TeamComponent>().WithAny<EnemyTag , PlayerTag>().Build();
         }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var collisionJob = new CollisionJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter() , HitRadiusSq = 0.5f * 0.5f , TargetEntitiesNativeArray = _targetQuery.ToEntityArray(Allocator.TempJob) , TargetPositionsNativeArray = _targetQuery.ToComponentDataArray<LocalToWorld>(Allocator.TempJob) , TargetTeamsNativeArray = _targetQuery.ToComponentDataArray<TeamComponent>(Allocator.TempJob)};
+            NativeArray<Entity> targetEntitiesNativeArray = _targetQuery.ToEntityArray(Allocator.TempJob);
+            NativeArray<LocalToWorld> targetPositionsNativeArray = _targetQuery.ToComponentDataArray<LocalToWorld>(Allocator.TempJob);
+            NativeArray<TeamComponent> targetTeamComponentsNativeArray = _targetQuery.ToComponentDataArray<TeamComponent>(Allocator.TempJob);
+            
+            state.Dependency = new CollisionJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter() , HitRadiusSq = 0.5f * 0.5f , TargetEntitiesNativeArray = targetEntitiesNativeArray , TargetPositionsNativeArray = targetPositionsNativeArray , TargetTeamComponentsNativeArray = targetTeamComponentsNativeArray }.ScheduleParallel(state.Dependency);
 
-            state.Dependency = collisionJob.ScheduleParallel(state.Dependency);
-
-            collisionJob.TargetEntitiesNativeArray.Dispose(state.Dependency);
-            collisionJob.TargetPositionsNativeArray.Dispose(state.Dependency);
-            collisionJob.TargetTeamsNativeArray.Dispose(state.Dependency);
+            targetEntitiesNativeArray.Dispose(state.Dependency);
+            targetPositionsNativeArray.Dispose(state.Dependency);
+            targetTeamComponentsNativeArray.Dispose(state.Dependency);
         }
     }
 
@@ -40,16 +41,16 @@ namespace Systems
     {
         [ReadOnly] public NativeArray<Entity> TargetEntitiesNativeArray;
         [ReadOnly] public NativeArray<LocalToWorld> TargetPositionsNativeArray;
-        [ReadOnly] public NativeArray<TeamComponent> TargetTeamsNativeArray;
+        [ReadOnly] public NativeArray<TeamComponent> TargetTeamComponentsNativeArray;
 
         public EntityCommandBuffer.ParallelWriter ECB;
         public float HitRadiusSq;
-
-        private void Execute([EntityIndexInQuery] int entityIndexInQuery , Entity projectileEntity , in LocalToWorld localToWorld , in TeamComponent projectileTeam)
+        
+        private void Execute(Entity projectileEntity , [EntityIndexInQuery] int entityIndexInQuery , in LocalToWorld localToWorld , in TeamComponent projectileTeam)
         {
             for(int i = 0 ; i < TargetPositionsNativeArray.Length ; i++)
             {
-                for(int k = 0; k < math.select(0 , 1 , math.step(math.distancesq(localToWorld.Position , TargetPositionsNativeArray[i].Position) , HitRadiusSq) > 0.5f && projectileTeam.ID != TargetTeamsNativeArray[i].ID); k++)
+                for(int k = 0 ; k < math.select(0 , 1 , math.step(math.distancesq(localToWorld.Position , TargetPositionsNativeArray[i].Position) , HitRadiusSq) > 0.5f && projectileTeam.ID != TargetTeamComponentsNativeArray[i].ID) ; k++)
                 {
                     ECB.AddComponent<DeathTag>(entityIndexInQuery , projectileEntity);
                     ECB.AddComponent<DeathTag>(entityIndexInQuery , TargetEntitiesNativeArray[i]);

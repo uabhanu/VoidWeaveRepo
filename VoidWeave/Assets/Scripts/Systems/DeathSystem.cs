@@ -5,7 +5,7 @@ namespace Systems
     using Unity.Entities;
 
     [UpdateInGroup(typeof(SimulationSystemGroup))]
-    [UpdateAfter(typeof(CollisionSystem))] // Run AFTER collision marks things for death
+    [UpdateAfter(typeof(CollisionSystem))]
     public partial struct DeathSystem : ISystem
     {
         [BurstCompile]
@@ -18,10 +18,7 @@ namespace Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
-            var ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter();
-            
-            state.Dependency = new DeathJob { ECB = ecb }.ScheduleParallel(state.Dependency);
+            state.Dependency = new DeathJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter() }.ScheduleParallel(state.Dependency);
         }
     }
 
@@ -30,7 +27,7 @@ namespace Systems
     public partial struct DeathJob : IJobEntity
     {
         public EntityCommandBuffer.ParallelWriter ECB;
-
-        private void Execute([EntityIndexInQuery] int index , Entity entity) { ECB.DestroyEntity(index , entity); }
+        
+        private void Execute(Entity entity , [EntityIndexInQuery] int index) { ECB.DestroyEntity(index , entity); }
     }
 }
