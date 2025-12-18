@@ -14,10 +14,7 @@ namespace Systems
         public void OnCreate(ref SystemState state) { state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>(); }
 
         [BurstCompile]
-        public void OnUpdate(ref SystemState state)
-        {
-            new SpawnLootJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter() }.ScheduleParallel();
-        }
+        public void OnUpdate(ref SystemState state) { new SpawnLootJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter() }.ScheduleParallel(); }
     }
 
     [BurstCompile]
@@ -25,13 +22,13 @@ namespace Systems
     public partial struct SpawnLootJob : IJobEntity
     {
         public EntityCommandBuffer.ParallelWriter ECB;
-        
+
         private void Execute([EntityIndexInQuery] int entityIndexInQuery , in LocalTransform localToWorld , in LootAmountComponent lootAmountComponent , in LootEntityComponent lootEntityComponent)
         {
-            ECB.Instantiate(entityIndexInQuery , lootEntityComponent.Entity);
+            Entity newLoot = ECB.Instantiate(entityIndexInQuery , lootEntityComponent.Entity);
             
-            ECB.SetComponent(entityIndexInQuery , lootEntityComponent.Entity , LocalTransform.FromPosition(localToWorld.Position));
-            ECB.SetComponent(entityIndexInQuery , lootEntityComponent.Entity , new LootAmountComponent { Amount = lootAmountComponent.Amount });
+            ECB.SetComponent(entityIndexInQuery , newLoot , LocalTransform.FromPosition(localToWorld.Position));
+            ECB.SetComponent(entityIndexInQuery , newLoot , new LootAmountComponent { Amount = lootAmountComponent.Amount });
         }
     }
 }
