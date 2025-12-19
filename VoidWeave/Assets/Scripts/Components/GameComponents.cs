@@ -226,8 +226,6 @@ namespace Components
 
     public struct ProjectileTag : IComponentData {}
 
-    public struct SeekerTag : IComponentData {}
-
     public struct ScatterTurretTag : IComponentData {}
 
     public struct StrikerTurretTag : IComponentData {}

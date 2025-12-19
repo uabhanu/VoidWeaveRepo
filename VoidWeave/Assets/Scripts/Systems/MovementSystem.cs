@@ -18,7 +18,7 @@ namespace Systems
     }
     
     [BurstCompile]
-    [WithAll(typeof(SeekerTag))]
+    [WithAll(typeof(EnemyTag))]
     public partial struct AIMovementJob : IJobEntity
     {
         public float DeltaTime;
@@ -30,7 +30,7 @@ namespace Systems
     }
     
     [BurstCompile]
-    [WithNone(typeof(SeekerTag))]
+    [WithNone(typeof(EnemyTag))]
     public partial struct InputMovementJob : IJobEntity
     {
         public float DeltaTime;

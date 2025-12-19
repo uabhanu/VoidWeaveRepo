@@ -19,7 +19,6 @@ namespace Systems
         {
             state.RequireForUpdate<EnemyTag>();
             state.RequireForUpdate<PlayerTag>();
-            state.RequireForUpdate<SeekerTag>();
             
             _enemyTargetQuery = SystemAPI.QueryBuilder().WithAll<EnemyTag , LocalToWorld>().Build();
             _playerTargetQuery = SystemAPI.QueryBuilder().WithAll<LocalToWorld , PlayerTag>().Build();
@@ -42,7 +41,7 @@ namespace Systems
     }
     
     [BurstCompile]
-    [WithAll(typeof(ProjectileTag) , typeof(SeekerTag))]
+    [WithAll(typeof(ProjectileTag))]
     [WithNone(typeof(EnemyTag))]
     public partial struct EnemyTheTargetJob : IJobEntity
     {
@@ -52,7 +51,7 @@ namespace Systems
     }
     
     [BurstCompile]
-    [WithAll(typeof(EnemyTag) , typeof(SeekerTag))]
+    [WithAll(typeof(EnemyTag))]
     public partial struct PlayerTheTargetJob : IJobEntity
     {
         public float3 TargetPosition;

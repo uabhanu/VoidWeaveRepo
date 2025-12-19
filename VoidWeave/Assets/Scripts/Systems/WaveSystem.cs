@@ -23,7 +23,7 @@ namespace Systems
 
             // Query to count how many enemies are currently alive (Team 1)
             // We use SeekerTag to identify active enemy units
-            _enemyQuery = SystemAPI.QueryBuilder().WithAll<SeekerTag , TeamComponent>().Build();
+            _enemyQuery = SystemAPI.QueryBuilder().WithAll<EnemyTag , TeamComponent>().Build();
         }
 
         [BurstCompile]
