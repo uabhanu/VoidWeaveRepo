@@ -1,7 +1,6 @@
-using Components;
-
 namespace Systems
 {
+    using Components;
     using Unity.Burst;
     using Unity.Entities;
     using Unity.Mathematics;
@@ -17,16 +16,7 @@ namespace Systems
         }
 
         [BurstCompile]
-        public void OnUpdate(ref SystemState state)
-        {
-            float deltaTime = SystemAPI.Time.DeltaTime;
-
-            BeginSimulationEntityCommandBufferSystem.Singleton entityCommandBufferSystemSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
-
-            EntityCommandBuffer.ParallelWriter entityCommandBufferParallel = entityCommandBufferSystemSingleton.CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter();
-
-            new ProjectileLifetimeJob { DeltaTime = deltaTime , EntityCommandBuffer = entityCommandBufferParallel }.ScheduleParallel();
-        }
+        public void OnUpdate(ref SystemState state) { new ProjectileLifetimeJob { DeltaTime = SystemAPI.Time.DeltaTime , EntityCommandBuffer = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter() }.ScheduleParallel(); }
     }
 
     [BurstCompile]
@@ -34,16 +24,12 @@ namespace Systems
     {
         public float DeltaTime;
         public EntityCommandBuffer.ParallelWriter EntityCommandBuffer;
-
-        private void Execute([EntityIndexInQuery] int entityInQueryIndex , Entity entity , ref ProjectileLifetimeComponent projectileLifetimeComponent)
+        
+        private void Execute(Entity entity , [EntityIndexInQuery] int entityInQueryIndex , ref ProjectileLifetimeComponent projectileLifetimeComponent)
         {
             projectileLifetimeComponent.Timer -= DeltaTime;
-            
-            float isExpired = math.step(projectileLifetimeComponent.Timer , 0f);
-            
-            int destroyCount = (int)isExpired;
 
-            for(int i = 0 ; i < destroyCount ; i++) { EntityCommandBuffer.DestroyEntity(entityInQueryIndex , entity); }
+            for(int i = 0 ; i < math.select(0 , 1 , projectileLifetimeComponent.Timer <= 0f) ; i++) { EntityCommandBuffer.DestroyEntity(entityInQueryIndex , entity); }
         }
     }
 }

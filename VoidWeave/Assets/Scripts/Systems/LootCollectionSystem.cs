@@ -1,11 +1,9 @@
-using Components;
-
 namespace Systems
 {
+    using Components;
     using Unity.Burst;
     using Unity.Collections;
     using Unity.Entities;
-    using Unity.Jobs;
     using Unity.Mathematics;
     using Unity.Transforms;
 
@@ -13,11 +11,13 @@ namespace Systems
     [UpdateAfter(typeof(MovementSystem))]
     public partial struct LootCollectionSystem : ISystem
     {
-        private const float PICKUP_RADIUS = 0.5f;
+        private NativeQueue<int> _resourceQueue;
 
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
+            _resourceQueue = new NativeQueue<int>(Allocator.Persistent);
+            
             state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
             state.RequireForUpdate<CurrentEnergyComponent>();
             state.RequireForUpdate<LocalTransform>();
@@ -25,32 +25,14 @@ namespace Systems
         }
 
         [BurstCompile]
+        public void OnDestroy(ref SystemState state) { _resourceQueue.Dispose(); }
+
+        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            // Get the specific Player entity
-            Entity playerEntity = SystemAPI.GetSingletonEntity<PlayerTag>();
-            float3 playerPos = SystemAPI.GetComponent<LocalTransform>(playerEntity).Position;
+            new PickupJob { EntityCommandBufferParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter() , PlayerPos = SystemAPI.GetComponent<LocalTransform>(SystemAPI.GetSingletonEntity<PlayerTag>()).Position , PickupRadiusSq = 0.5f * 0.5f , ResourceNativeQueueParallelWriter = _resourceQueue.AsParallelWriter() }.ScheduleParallel(state.Dependency).Complete();
 
-            BeginSimulationEntityCommandBufferSystem.Singleton ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
-            EntityCommandBuffer.ParallelWriter ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter();
-
-            NativeQueue<int> resourceQueue = new NativeQueue<int>(Allocator.TempJob);
-            NativeQueue<int>.ParallelWriter resourceQueueWriter = resourceQueue.AsParallelWriter();
-
-            // Schedule the job
-            JobHandle jobHandle = new PickupJob { EntityCommandBuffer = ecb , PlayerPos = playerPos , PickupRadiusSq = PICKUP_RADIUS * PICKUP_RADIUS , ResourceQueueWriter = resourceQueueWriter }.ScheduleParallel(state.Dependency);
-
-            // Complete immediately to process queue
-            jobHandle.Complete();
-
-            int totalGained = 0;
-            while(resourceQueue.TryDequeue(out int value)) { totalGained += value; }
-
-            RefRW<CurrentEnergyComponent> energy = SystemAPI.GetSingletonRW<CurrentEnergyComponent>();
-            energy.ValueRW.Energy += totalGained;
-
-            resourceQueue.Dispose();
-            state.Dependency = default;
+            while(_resourceQueue.TryDequeue(out int value)) { SystemAPI.GetSingletonRW<CurrentEnergyComponent>().ValueRW.Energy += value; }
         }
     }
 
@@ -58,23 +40,17 @@ namespace Systems
     [WithAll(typeof(LootPickupTag))]
     public partial struct PickupJob : IJobEntity
     {
-        public EntityCommandBuffer.ParallelWriter EntityCommandBuffer;
+        public EntityCommandBuffer.ParallelWriter EntityCommandBufferParallelWriter;
         public float3 PlayerPos;
         public float PickupRadiusSq;
-        public NativeQueue<int>.ParallelWriter ResourceQueueWriter;
-
-        private void Execute([EntityIndexInQuery] int entityInQueryIndex , Entity entity , in LocalTransform localTransform , in LootAmountComponent lootAmount)
+        public NativeQueue<int>.ParallelWriter ResourceNativeQueueParallelWriter;
+        
+        private void Execute(Entity entity , [EntityIndexInQuery] int entityInQueryIndex , in LocalTransform localTransform , in LootAmountComponent lootAmountComponent)
         {
-            float distSq = math.distancesq(localTransform.Position , PlayerPos);
-
-            float isPickedUp = math.step(distSq , PickupRadiusSq);
-
-            int pickupCount = (int)isPickedUp;
-
-            for(int i = 0 ; i < pickupCount ; i++)
+            for(int i = 0 ; i < math.select(0 , 1 , math.distancesq(localTransform.Position , PlayerPos) <= PickupRadiusSq) ; i++)
             {
-                EntityCommandBuffer.DestroyEntity(entityInQueryIndex , entity);
-                ResourceQueueWriter.Enqueue(lootAmount.Amount);
+                EntityCommandBufferParallelWriter.DestroyEntity(entityInQueryIndex , entity);
+                ResourceNativeQueueParallelWriter.Enqueue(lootAmountComponent.Amount);
             }
         }
     }

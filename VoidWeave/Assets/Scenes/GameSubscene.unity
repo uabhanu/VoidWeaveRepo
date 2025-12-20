@@ -152,7 +152,9 @@ MonoBehaviour:
   enemySpawnRadius: 7.2
   enemySpawnRate: 2.1
   randomSeed: 1
-  waveTimer: 30
+  baseEnemies: 10
+  enemyIncrement: 5
+  wavePrepDuration: 30
 --- !u!4 &587164563
 Transform:
   m_ObjectHideFlags: 0

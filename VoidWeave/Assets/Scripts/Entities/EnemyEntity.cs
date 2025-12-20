@@ -1,7 +1,6 @@
-using Components;
-
 namespace Entities
 {
+    using Components;
     using Unity.Entities;
     using UnityEngine;
 
@@ -10,6 +9,7 @@ namespace Entities
         [SerializeField] private int lootAmount;
         [SerializeField] private GameObject lootPrefab; 
         [SerializeField] private float moveSpeed;
+        [SerializeField] private int teamID;
         
         private class EnemyBaker : Baker<EnemyEntity>
         {
@@ -22,11 +22,9 @@ namespace Entities
                 AddComponent(entity , new MovementInputComponent());
                 AddComponent(entity , new MoveSpeedComponent { Speed = authoring.moveSpeed });
                 AddComponent(entity , new TargetPositionComponent());
-                AddComponent(entity , new TeamComponent { ID = 1 });
+                AddComponent(entity , new TeamComponent { ID = authoring.teamID });
                 
-                AddComponent(entity , new SeekerTag());
-                AddComponent(entity , new TargetTag());
-                AddComponent(entity , new TurretTargetTag());
+                AddComponent(entity , new EnemyTag());
             }
         }
     }

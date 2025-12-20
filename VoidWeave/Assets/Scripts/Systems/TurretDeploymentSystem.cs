@@ -15,9 +15,7 @@ namespace Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
-            var ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter();
-
+            var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter();
             new TurretDeploymentJob { EntityCommandBuffer = ecb }.ScheduleParallel();
         }
     }
@@ -29,26 +27,13 @@ namespace Systems
 
         private void Execute(ref CurrentEnergyComponent currentEnergyComponent , [EntityIndexInQuery] int entityInQueryIndex , in LocalTransform localTransform , in SelectedTurretCostComponent selectedTurretCostComponent , in SelectedTurretEntityComponent selectedTurretEntityComponent , in TurretDeploymentInputComponent turretDeploymentInputComponent)
         {
-            float isPressed = turretDeploymentInputComponent.IsPressed;
-            int cost = selectedTurretCostComponent.Cost;
-            Entity prefabToSpawn = selectedTurretEntityComponent.Entity;
-
-            // Calculate Conditions
-            bool hasEnoughEnergy = currentEnergyComponent.Energy >= cost;
-            bool isValidPrefab = prefabToSpawn != Entity.Null;
-            bool conditionsMet = (isPressed > 0.5f) && hasEnoughEnergy && isValidPrefab;
-
-            // Determine Count (1 if valid, 0 if not)
-            int deployCount = (int)math.select(0f , 1f , conditionsMet);
-            
-            // If count is 0, we subtract 0. If count is 1, we subtract cost.
-            currentEnergyComponent.Energy -= cost * deployCount;
-            
-            for(int i = 0 ; i < deployCount ; i++)
+            for(int i = 0 ; i < math.select(0 , 1 , (turretDeploymentInputComponent.IsPressed > 0.5f) && (currentEnergyComponent.Energy >= selectedTurretCostComponent.Cost) && (selectedTurretEntityComponent.Entity != Entity.Null)) ; i++)
             {
-                Entity newTurret = EntityCommandBuffer.Instantiate(entityInQueryIndex , prefabToSpawn);
+                Entity newTurret = EntityCommandBuffer.Instantiate(entityInQueryIndex , selectedTurretEntityComponent.Entity);
                 EntityCommandBuffer.SetComponent(entityInQueryIndex , newTurret , LocalTransform.FromPosition(localTransform.Position));
             }
+            
+            currentEnergyComponent.Energy -= selectedTurretCostComponent.Cost * math.select(0 , 1 , (turretDeploymentInputComponent.IsPressed > 0.5f) && (currentEnergyComponent.Energy >= selectedTurretCostComponent.Cost) && (selectedTurretEntityComponent.Entity != Entity.Null));
         }
     }
 }

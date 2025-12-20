@@ -14,6 +14,7 @@ namespace Entities
         [SerializeField] private int projectileCount;
         [SerializeField] private float range;
         [SerializeField] private float spreadDegrees;
+        [SerializeField] private int teamID;
 
         private class ScatterTurretBaker : Baker<ScatterTurretEntity>
         {
@@ -23,7 +24,8 @@ namespace Entities
                 
                 AddComponent(entity , new BulletEntityComponent { Entity = GetEntity(authoring.bulletPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new ScatterTurretCostComponent { Cost = authoring.deploymentCost });
-                AddComponent(entity , new TeamComponent { ID = 0 });
+                AddComponent(entity , new TargetPositionComponent());
+                AddComponent(entity , new TeamComponent { ID = authoring.teamID });
                 AddComponent(entity , new TurretCooldownComponent { Timer = authoring.cooldownTime });
                 AddComponent(entity , new TurretDamageComponent { Damage = authoring.damage });
                 AddComponent(entity , new TurretFireRateComponent { Rate = authoring.fireRate });

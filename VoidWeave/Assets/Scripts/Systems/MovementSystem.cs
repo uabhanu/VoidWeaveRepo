@@ -1,7 +1,6 @@
-using Components;
-
 namespace Systems
 {
+    using Components;
     using Unity.Burst;
     using Unity.Entities;
     using Unity.Mathematics;
@@ -13,49 +12,29 @@ namespace Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            float deltaTime = SystemAPI.Time.DeltaTime;
-            
-            new GuidedMovementJob { DeltaTime = deltaTime }.ScheduleParallel();
-            new InputMovementJob { DeltaTime = deltaTime }.ScheduleParallel();
+            new AIMovementJob { DeltaTime = SystemAPI.Time.DeltaTime }.ScheduleParallel();
+            new InputMovementJob { DeltaTime = SystemAPI.Time.DeltaTime }.ScheduleParallel();
         }
     }
-
-    // Runs on Player (No SeekerTag)
+    
     [BurstCompile]
-    [WithNone(typeof(SeekerTag))]
+    [WithAll(typeof(EnemyTag))]
+    public partial struct AIMovementJob : IJobEntity
+    {
+        public float DeltaTime;
+        
+        private void Execute(ref LocalTransform localTransform , in MoveSpeedComponent moveSpeedComponent , in TargetPositionComponent targetPositionComponent)
+        {
+            localTransform.Position.xy += math.normalizesafe(targetPositionComponent.Position - localTransform.Position).xy * moveSpeedComponent.Speed * DeltaTime;
+        }
+    }
+    
+    [BurstCompile]
+    [WithNone(typeof(EnemyTag))]
     public partial struct InputMovementJob : IJobEntity
     {
         public float DeltaTime;
-
-        private void Execute(ref LocalTransform localTransform , in MovementInputComponent movementInputComponent , in MoveSpeedComponent moveSpeedComponent)
-        {
-            float2 inputVector = movementInputComponent.Input;
-            float speed = moveSpeedComponent.Speed;
-
-            localTransform.Position.xy += inputVector * speed * DeltaTime;
-        }
-    }
-
-    // Runs on AI (SeekerTag)
-    // Directly calculates direction from Position, replacing GuidanceSystem
-    [BurstCompile]
-    [WithAll(typeof(SeekerTag))]
-    public partial struct GuidedMovementJob : IJobEntity
-    {
-        public float DeltaTime;
-
-        private void Execute(ref LocalTransform localTransform , in MoveSpeedComponent moveSpeedComponent , in TargetPositionComponent targetPositionComponent)
-        {
-            float3 currentPos = localTransform.Position;
-            float3 targetPos = targetPositionComponent.Position;
-            float speed = moveSpeedComponent.Speed;
-
-            // 1. Calculate Direction
-            float3 direction = targetPos - currentPos;
-            float2 normalizedDir = math.normalizesafe(direction).xy;
-
-            // 2. Move
-            localTransform.Position.xy += normalizedDir * speed * DeltaTime;
-        }
+        
+        private void Execute(ref LocalTransform localTransform , in MoveSpeedComponent moveSpeedComponent , in MovementInputComponent movementInputComponent) { localTransform.Position.xy += movementInputComponent.Input * moveSpeedComponent.Speed * DeltaTime; }
     }
 }

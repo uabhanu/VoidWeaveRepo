@@ -1,7 +1,6 @@
-using Components;
-
 namespace Entities
 {
+    using Components;
     using Unity.Entities;
     using UnityEngine;
 
@@ -15,6 +14,7 @@ namespace Entities
         [SerializeField] private int projectileCount;
         [SerializeField] private float range;
         [SerializeField] private float spreadDegrees;
+        [SerializeField] private int teamID;
 
         class StrikerBaker : Baker<StrikerTurretEntity>
         {
@@ -24,7 +24,8 @@ namespace Entities
 
                 AddComponent(entity , new BulletEntityComponent { Entity = GetEntity(authoring.bulletPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new StrikerTurretCostComponent { Cost = authoring.deploymentCost });
-                AddComponent(entity , new TeamComponent { ID = 0 });
+                AddComponent(entity , new TargetPositionComponent());
+                AddComponent(entity , new TeamComponent { ID = authoring.teamID });
                 AddComponent(entity , new TurretCooldownComponent { Timer = authoring.cooldownTime });
                 AddComponent(entity , new TurretDamageComponent { Damage = authoring.damage });
                 AddComponent(entity , new TurretFireRateComponent { Rate = authoring.fireRate });

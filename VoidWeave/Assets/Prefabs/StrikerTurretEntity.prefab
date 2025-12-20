@@ -106,8 +106,9 @@ MonoBehaviour:
   bulletPrefab: {fileID: 4819364062000519533, guid: ed783d51270447049abb6fe2f4f0b7d8, type: 3}
   cooldownTime: 1.8
   damage: 24.4
-  deploymentCost: 0
+  deploymentCost: 100
   fireRate: 0.6
   projectileCount: 1
   range: 5.2
   spreadDegrees: 0
+  teamID: 0
