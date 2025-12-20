@@ -1,10 +1,10 @@
-using Components;
-using Unity.Burst;
-using Unity.Entities;
-using Unity.Mathematics;
-
 namespace Systems
 {
+    using Components;
+    using Unity.Burst;
+    using Unity.Entities;
+    using Unity.Mathematics;
+
     [UpdateInGroup(typeof(SimulationSystemGroup))]
     [UpdateBefore(typeof(EnemySpawningSystem))]
     public partial struct WaveSystem : ISystem
@@ -15,7 +15,7 @@ namespace Systems
         public void OnCreate(ref SystemState state)
         {
             _enemyQuery = SystemAPI.QueryBuilder().WithAll<EnemyTag , TeamComponent>().Build();
-            
+
             state.RequireForUpdate<WavePrepDurationComponent>();
             state.RequireForUpdate<WaveStateComponent>();
         }
@@ -29,14 +29,14 @@ namespace Systems
     {
         public int AliveEnemyCount;
         public float DeltaTime;
-        
+
         private void Execute(ref WaveIndexComponent waveIndexComponent , ref WaveStateComponent waveStateComponent , ref WaveStockComponent waveStockComponent , ref WaveTimerComponent waveTimerComponent , in WavePrepDurationComponent wavePrepDurationComponent , in WaveBaseEnemyCountComponent waveBaseEnemyCountComponent , in WaveEnemyIncrementComponent waveEnemyIncrementComponent)
         {
-            waveTimerComponent.Timer -= DeltaTime;
-            waveIndexComponent.Index += (int)math.select(0 , 1 , (waveStateComponent.State == 0) && (waveTimerComponent.Timer <= 0f));
-            waveStateComponent.State = math.select(math.select(waveStateComponent.State , 1 , (waveStateComponent.State == 0) && (waveTimerComponent.Timer <= 0f)) , 0 , (waveStateComponent.State == 1) && (waveStockComponent.Stock <= 0) && (AliveEnemyCount <= 0));
+            waveIndexComponent.Index += math.select(0 , 1 , (waveStateComponent.State == 0) && (waveTimerComponent.Timer <= 0f));
             waveStockComponent.Stock = math.select(math.select(waveStockComponent.Stock , waveBaseEnemyCountComponent.Count + (waveIndexComponent.Index * waveEnemyIncrementComponent.Count) , (waveStateComponent.State == 0) && (waveTimerComponent.Timer <= 0f)) , 0 , (waveStateComponent.State == 1) && (waveStockComponent.Stock <= 0) && (AliveEnemyCount <= 0));
-            waveTimerComponent.Timer = math.select(waveTimerComponent.Timer , wavePrepDurationComponent.Duration , (waveStateComponent.State == 1) && (waveStockComponent.Stock <= 0) && (AliveEnemyCount <= 0));
+            waveTimerComponent.Timer = math.select(math.select(waveTimerComponent.Timer , 0f , (waveStateComponent.State == 0) && (waveTimerComponent.Timer <= 0f)) , wavePrepDurationComponent.Duration , (waveStateComponent.State == 1) && (waveStockComponent.Stock <= 0) && (AliveEnemyCount <= 0));
+            waveStateComponent.State = math.select(math.select(waveStateComponent.State , 1 , (waveStateComponent.State == 0) && (waveTimerComponent.Timer <= 0f)) , 0 , (waveStateComponent.State == 1) && (waveStockComponent.Stock <= 0) && (AliveEnemyCount <= 0));
+            waveTimerComponent.Timer -= math.select(0f , DeltaTime , waveStateComponent.State == 0);
         }
     }
 }
