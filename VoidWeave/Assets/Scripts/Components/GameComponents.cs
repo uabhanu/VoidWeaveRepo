@@ -34,7 +34,7 @@ namespace Components
     {
         public float IsPressed;
     }
-    
+
     public struct DashMultiplierComponent : IComponentData
     {
         public float Multiplier;
@@ -131,7 +131,7 @@ namespace Components
     {
         public Entity Entity;
     }
-    
+
     public struct SelectedTurretCostComponent : IComponentData
     {
         public int Cost;
@@ -150,6 +150,11 @@ namespace Components
     public struct StrikerTurretEntityComponent : IComponentData
     {
         public Entity Entity;
+    }
+    
+    public struct TeamComponent : IComponentData
+    {
+        public int ID; // 0 = Player , 1 = Enemy and so on
     }
 
     public struct TurretDeploymentInputComponent : IComponentData
@@ -185,11 +190,29 @@ namespace Components
     {
         public float Degrees;
     }
+    
+    // The starting number of enemies for Wave 1
+    public struct WaveBaseEnemyCountComponent : IComponentData
+    {
+        public int Count;
+    }
+    
+    // How many additional enemies are added each subsequent wave
+    public struct WaveEnemyIncrementComponent : IComponentData
+    {
+        public int Count;
+    }
 
     // Tracks the current wave number (1, 2, 3...)
     public struct WaveIndexComponent : IComponentData
     {
         public int Index;
+    }
+    
+    // How long the preparation phase lasts in seconds (Reset Value)
+    public struct WavePrepDurationComponent : IComponentData
+    {
+        public float Duration;
     }
 
     // 0 = Preparation Phase, 1 = Combat Phase
@@ -204,7 +227,7 @@ namespace Components
         public int Stock;
     }
 
-    // Timer for the current phase (e.g., 30s prep time)
+    // Counts down the current phase duration
     public struct WaveTimerComponent : IComponentData
     {
         public float Timer;
@@ -215,9 +238,9 @@ namespace Components
     #region Tags
 
     public struct DeathTag : IComponentData {}
-    
+
     public struct EnemyTag : IComponentData {}
-    
+
     public struct EnemySpawnerTag : IComponentData {}
 
     public struct LootPickupTag : IComponentData {}
@@ -229,11 +252,6 @@ namespace Components
     public struct ScatterTurretTag : IComponentData {}
 
     public struct StrikerTurretTag : IComponentData {}
-
-    public struct TeamComponent : IComponentData
-    {
-        public int ID;
-    } // 0 = Player , 1 = Enemy and so on
 
     #endregion
 }

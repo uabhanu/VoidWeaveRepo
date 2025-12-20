@@ -20,18 +20,14 @@ namespace Systems
     {
         private void Execute(in ScatterTurretCostComponent scatterTurretCostComponent , in ScatterTurretEntityComponent scatterTurretEntityComponent , in ScatterTurretInputComponent scatterTurretInputComponent , ref SelectedTurretCostComponent selectedTurretCostComponent , ref SelectedTurretEntityComponent selectedTurretEntityComponent , in StrikerTurretCostComponent strikerTurretCostComponent , in StrikerTurretEntityComponent strikerTurretEntityComponent , in StrikerTurretInputComponent strikerTurretInputComponent)
         {
-            float press1 = strikerTurretInputComponent.Input;
-            float press2 = scatterTurretInputComponent.Input;
-
-            Entity currentPrefab = selectedTurretEntityComponent.Entity;
-            currentPrefab = press1 > 0.5f ? strikerTurretEntityComponent.Entity : currentPrefab;
-            currentPrefab = press2 > 0.5f ? scatterTurretEntityComponent.Entity : currentPrefab;
-            selectedTurretEntityComponent.Entity = currentPrefab;
-
-            int currentCost = selectedTurretCostComponent.Cost;
-            currentCost = math.select(currentCost , strikerTurretCostComponent.Cost , press1 > 0.5f);
-            currentCost = math.select(currentCost , scatterTurretCostComponent.Cost , press2 > 0.5f);
-            selectedTurretCostComponent.Cost = currentCost;
+            // Default to current -> If Scatter Pressed, pick Scatter -> If Striker Pressed, pick Striker (Priority to Striker)
+            // Select Entity (Ternary is required for Entity struct, but logic is branchless)
+            selectedTurretEntityComponent.Entity = scatterTurretInputComponent.Input > 0.5f ? scatterTurretEntityComponent.Entity : selectedTurretEntityComponent.Entity;
+            selectedTurretEntityComponent.Entity = strikerTurretInputComponent.Input > 0.5f ? strikerTurretEntityComponent.Entity : selectedTurretEntityComponent.Entity;
+            
+            // Select Cost (math.select is strictly branchless)
+            selectedTurretCostComponent.Cost = math.select(selectedTurretCostComponent.Cost , scatterTurretCostComponent.Cost , scatterTurretInputComponent.Input > 0.5f);
+            selectedTurretCostComponent.Cost = math.select(selectedTurretCostComponent.Cost , strikerTurretCostComponent.Cost , strikerTurretInputComponent.Input > 0.5f);
         }
     }
 }
