@@ -223,7 +223,6 @@ Level 1 (Base) → Level 2 (+50%) → Level 3 (+100%)
 ### 📅 Phase 3: Combat Depth
 - [x] All turret types are functional
 - [ ] All enemy types with behaviours
-- [ ] Turret targeting systems
 - [ ] Bullet-hell patterns
 - [ ] Health and damage systems
 
