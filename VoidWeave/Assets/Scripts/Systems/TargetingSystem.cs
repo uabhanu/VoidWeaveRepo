@@ -20,6 +20,8 @@ namespace Systems
         {
             _enemyTargetQuery = SystemAPI.QueryBuilder().WithAll<LocalToWorld , TeamComponent , EnemyTag>().Build();
             _playerTargetQuery = SystemAPI.QueryBuilder().WithAll<LocalToWorld , PlayerTag>().Build();
+
+            state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
         }
 
         [BurstCompile]
@@ -27,16 +29,17 @@ namespace Systems
         {
             NativeList<LocalToWorld> enemyPositionsNativeList = _enemyTargetQuery.ToComponentDataListAsync<LocalToWorld>(Allocator.TempJob , out var h1);
             NativeList<TeamComponent> enemyTeamComponentsNativeList = _enemyTargetQuery.ToComponentDataListAsync<TeamComponent>(Allocator.TempJob , out var h2);
-            
+
             JobHandle combinedDependencies = JobHandle.CombineDependencies(state.Dependency , h1 , h2);
-            
+
             JobHandle enemyTheTargetJobHandle = new EnemyTheTargetJob { TargetPositionsNativeList = enemyPositionsNativeList , TargetTeamComponentsNativeList = enemyTeamComponentsNativeList }.ScheduleParallel(combinedDependencies);
             JobHandle playerTheTargetJobHandle = new PlayerTheTargetJob { TargetPosition = _playerTargetQuery.GetSingleton<LocalToWorld>().Position }.ScheduleParallel(enemyTheTargetJobHandle);
-            
+
             JobHandle disposeH1 = enemyPositionsNativeList.Dispose(enemyTheTargetJobHandle);
             JobHandle disposeH2 = enemyTeamComponentsNativeList.Dispose(enemyTheTargetJobHandle);
-            
-            state.Dependency = JobHandle.CombineDependencies(playerTheTargetJobHandle , disposeH1 , disposeH2);
+
+            var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter();
+            state.Dependency = new TargetRangeJob { ECB = ecb }.ScheduleParallel(JobHandle.CombineDependencies(playerTheTargetJobHandle , disposeH1 , disposeH2));
         }
     }
 
@@ -64,5 +67,20 @@ namespace Systems
         public float3 TargetPosition;
 
         private void Execute(ref TargetPositionComponent targetPositionComponent) { targetPositionComponent.Position = TargetPosition; }
+    }
+
+    [BurstCompile]
+    public partial struct TargetRangeJob : IJobEntity
+    {
+        public EntityCommandBuffer.ParallelWriter ECB;
+        
+        private void Execute(Entity entity , in LocalToWorld localToWorld , [EntityIndexInQuery] int sortKey , in TargetPositionComponent targetPositionComponent , in TurretRangeComponent turretRangeComponent)
+        {
+            bool inRange = math.distancesq(localToWorld.Position , targetPositionComponent.Position) <= turretRangeComponent.Range * turretRangeComponent.Range && math.lengthsq(targetPositionComponent.Position) > 0.001f;
+            
+            for(int i = 0 ; i < math.select(0 , 1 , inRange) ; i++) ECB.AddComponent<HasTargetTag>(sortKey , entity);
+            
+            for(int i = 0 ; i < math.select(0 , 1 , !inRange) ; i++) ECB.RemoveComponent<HasTargetTag>(sortKey , entity);
+        }
     }
 }
