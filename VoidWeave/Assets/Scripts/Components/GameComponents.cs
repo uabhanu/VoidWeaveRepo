@@ -14,6 +14,11 @@ namespace Components
     {
         public Entity Entity;
     }
+    
+    public struct CooldownComponent : IComponentData
+    {
+        public float Timer;
+    }
 
     public struct CurrentEnergyComponent : IComponentData
     {
@@ -110,11 +115,6 @@ namespace Components
     public struct TargetPositionComponent : IComponentData
     {
         public float3 Position;
-    }
-
-    public struct TurretCooldownComponent : IComponentData
-    {
-        public float Timer;
     }
 
     public struct TurretDamageComponent : IComponentData
@@ -236,18 +236,24 @@ namespace Components
     #endregion
 
     #region Tags
-
+    
+    public struct CanShootTag : IComponentData {}
+    
     public struct DeathTag : IComponentData {}
 
     public struct EnemyTag : IComponentData {}
 
     public struct EnemySpawnerTag : IComponentData {}
+    
+    public struct HasTargetTag : IComponentData {}
 
     public struct LootPickupTag : IComponentData {}
 
     public struct PlayerTag : IComponentData {}
 
     public struct ProjectileTag : IComponentData {}
+    
+    public struct ProjectileSpawnedTag : IComponentData {}
 
     public struct ScatterTurretTag : IComponentData {}
 

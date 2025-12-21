@@ -26,7 +26,7 @@ namespace Entities
                 AddComponent(entity , new StrikerTurretCostComponent { Cost = authoring.deploymentCost });
                 AddComponent(entity , new TargetPositionComponent());
                 AddComponent(entity , new TeamComponent { ID = authoring.teamID });
-                AddComponent(entity , new TurretCooldownComponent { Timer = authoring.cooldownTime });
+                AddComponent(entity , new CooldownComponent { Timer = authoring.cooldownTime });
                 AddComponent(entity , new TurretDamageComponent { Damage = authoring.damage });
                 AddComponent(entity , new TurretFireRateComponent { Rate = authoring.fireRate });
                 AddComponent(entity, new TurretProjectileCountComponent { Count = authoring.projectileCount });
