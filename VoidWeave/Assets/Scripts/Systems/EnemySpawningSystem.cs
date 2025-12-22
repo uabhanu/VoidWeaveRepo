@@ -27,7 +27,7 @@ namespace Systems
         public EntityCommandBuffer.ParallelWriter EntityCommandBuffer;
         public int PlayerCount;
 
-        private void Execute(in BasicEnemyEntityComponent basicEnemyEntityComponent , in BulletEntityComponent bulletEntityComponent , in EnemySpawnRadiusComponent enemySpawnRadiusComponent , in EnemySpawnRateComponent enemySpawnRateComponent , ref EnemySpawnTimerComponent enemySpawnTimerComponent , [EntityIndexInQuery] int entityInQueryIndex , in FastEnemyEntityComponent fastEnemyEntityComponent , in LocalTransform localTransform , ref RandomComponent randomComponent , in SlowEnemyEntityComponent slowEnemyEntityComponent , in TurretDamageComponent turretDamageComponent , in TurretFireRateComponent turretFireRateComponent , in TurretProjectileCountComponent turretProjectileCountComponent , in TurretRangeComponent turretRangeComponent , in TurretSpreadComponent turretSpreadComponent , in WaveStateComponent waveStateComponent , ref WaveStockComponent waveStockComponent)
+        private void Execute(in BulletEntityComponent bulletEntityComponent , [EntityIndexInQuery] int entityInQueryIndex , in EnemySpawnRadiusComponent enemySpawnRadiusComponent , in EnemySpawnRateComponent enemySpawnRateComponent , ref EnemySpawnTimerComponent enemySpawnTimerComponent , in LineEnemyEntityComponent lineEnemyEntityComponent , in LocalTransform localTransform , ref RandomComponent randomComponent , in SquareEnemyEntityComponent squareEnemyEntityComponent , in TriangleEnemyEntityComponent triangleEnemyEntityComponent , in TurretDamageComponent turretDamageComponent , in TurretFireRateComponent turretFireRateComponent , in TurretProjectileCountComponent turretProjectileCountComponent , in TurretRangeComponent turretRangeComponent , in TurretSpreadComponent turretSpreadComponent , in WaveStateComponent waveStateComponent , ref WaveStockComponent waveStockComponent)
         {
             enemySpawnTimerComponent.Timer -= DeltaTime;
 
@@ -38,21 +38,21 @@ namespace Systems
 
                 // Necessary to capture the ID so we can move it
                 // Inline Ternary: 0=Basic, 1=Fast, 2=Tank
-                Entity newEnemy = EntityCommandBuffer.Instantiate(entityInQueryIndex , selection == 1 ? fastEnemyEntityComponent.Entity : (selection == 2 ? slowEnemyEntityComponent.Entity : basicEnemyEntityComponent.Entity));
+                Entity newEnemy = EntityCommandBuffer.Instantiate(entityInQueryIndex , selection == 1 ? lineEnemyEntityComponent.Entity : (selection == 2 ? squareEnemyEntityComponent.Entity : triangleEnemyEntityComponent.Entity));
 
                 EntityCommandBuffer.SetComponent(entityInQueryIndex , newEnemy , LocalTransform.FromPosition(localTransform.Position + new float3(randomComponent.Random.NextFloat2Direction() * enemySpawnRadiusComponent.Radius , 0f)));
                 EntityCommandBuffer.SetComponent(entityInQueryIndex , newEnemy , new MovementInputComponent { Input = float2.zero });
 
-                // Adds BasicTag if selection == 0
-                for(int k = 0 ; k < math.select(0 , 1 , selection == 0) ; k++) { EntityCommandBuffer.AddComponent<BasicEnemyTag>(entityInQueryIndex , newEnemy); }
+                // Triangle Logic (Selection 0)
+                for(int k = 0 ; k < math.select(0 , 1 , selection == 0) ; k++) { EntityCommandBuffer.AddComponent<TriangleEnemyTag>(entityInQueryIndex , newEnemy); }
+                
+                // Line Logic (Selection 1)
+                for(int k = 0 ; k < math.select(0 , 1 , selection == 1) ; k++) { EntityCommandBuffer.AddComponent<LineEnemyTag>(entityInQueryIndex , newEnemy); }
 
-                // Adds FastTag if selection == 1
-                for(int k = 0 ; k < math.select(0 , 1 , selection == 1) ; k++) { EntityCommandBuffer.AddComponent<FastEnemyTag>(entityInQueryIndex , newEnemy); }
-
-                // Adds SlowTag if selection == 2 and injects Turret Components for shooting
+                // Square Logic (Selection 2) - Now correctly receives Turret Components
                 for(int k = 0 ; k < math.select(0 , 1 , selection == 2) ; k++)
                 {
-                    EntityCommandBuffer.AddComponent<SlowEnemyTag>(entityInQueryIndex , newEnemy);
+                    EntityCommandBuffer.AddComponent<SquareEnemyTag>(entityInQueryIndex , newEnemy);
 
                     EntityCommandBuffer.AddComponent(entityInQueryIndex , newEnemy , bulletEntityComponent);
                     EntityCommandBuffer.AddComponent(entityInQueryIndex , newEnemy , turretDamageComponent);
