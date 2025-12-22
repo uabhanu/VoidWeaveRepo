@@ -8,17 +8,17 @@ namespace Entities
     public class EnemySpawnerEntity : MonoBehaviour
     {
         [SerializeField] private float attackRange;
+        [SerializeField] private int baseEnemies;
         [SerializeField] private float damage;
+        [SerializeField] private int enemyIncrement;
         [SerializeField] private float enemySpawnRadius;
         [SerializeField] private float enemySpawnRate;
         [SerializeField] private float fireRate;
-        [SerializeField] private uint randomSeed;
-        [SerializeField] private int baseEnemies;
-        [SerializeField] private GameObject basicEnemyPrefab;
-        [SerializeField] private int enemyIncrement;
-        [SerializeField] private GameObject fastEnemyPrefab;
+        [SerializeField] private GameObject lineEnemyPrefab;
         [SerializeField] private GameObject projectilePrefab;
-        [SerializeField] private GameObject slowEnemyPrefab;
+        [SerializeField] private uint randomSeed;
+        [SerializeField] private GameObject squareEnemyPrefab;
+        [SerializeField] private GameObject triangleEnemyPrefab;
         [SerializeField] private float wavePrepDuration;
 
         private class EnemySpawnerBaker : Baker<EnemySpawnerEntity>
@@ -32,13 +32,13 @@ namespace Entities
                 // RATE (Config): Stores the "Reset Value" (e.g., 2.1s). This NEVER changes.
                 // TIMER (State): Stores the "Countdown". It changes every frame (2.1 -> 2.0 -> ... -> 0).
                 // When Timer hits 0, we need the Rate component to know what to reset it back to.
-                AddComponent(entity , new BasicEnemyEntityComponent { Entity = GetEntity(authoring.basicEnemyPrefab , TransformUsageFlags.Dynamic) });
+                AddComponent(entity , new LineEnemyEntityComponent() { Entity = GetEntity(authoring.lineEnemyPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new BulletEntityComponent { Entity = GetEntity(authoring.projectilePrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new EnemySpawnRadiusComponent { Radius = authoring.enemySpawnRadius });
                 AddComponent(entity , new EnemySpawnRateComponent { Rate = authoring.enemySpawnRate });
                 AddComponent(entity , new EnemySpawnTimerComponent { Timer = authoring.enemySpawnRate });
-                AddComponent(entity , new FastEnemyEntityComponent { Entity = GetEntity(authoring.fastEnemyPrefab , TransformUsageFlags.Dynamic) });
-                AddComponent(entity , new SlowEnemyEntityComponent { Entity = GetEntity(authoring.slowEnemyPrefab , TransformUsageFlags.Dynamic) });
+                AddComponent(entity , new SquareEnemyEntityComponent { Entity = GetEntity(authoring.squareEnemyPrefab , TransformUsageFlags.Dynamic) });
+                AddComponent(entity , new TriangleEnemyEntityComponent { Entity = GetEntity(authoring.triangleEnemyPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new TurretDamageComponent { Damage = authoring.damage });
                 AddComponent(entity , new TurretFireRateComponent { Rate = authoring.fireRate });
                 AddComponent(entity , new TurretProjectileCountComponent { Count = 1 });

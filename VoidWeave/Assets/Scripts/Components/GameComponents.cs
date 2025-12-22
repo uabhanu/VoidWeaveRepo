@@ -9,11 +9,6 @@ namespace Components
     {
         public float Speed;
     }
-    
-    public struct BasicEnemyEntityComponent : IComponentData
-    {
-        public Entity Entity;
-    }
 
     public struct BulletEntityComponent : IComponentData
     {
@@ -90,26 +85,9 @@ namespace Components
         public float Timer;
     }
     
-    public struct FastEnemyEntityComponent : IComponentData
+    public struct LineEnemyEntityComponent : IComponentData
     {
         public Entity Entity;
-    }
-
-    public struct SlowEnemyEntityComponent : IComponentData
-    {
-        public Entity Entity;
-    }
-
-    // 1.0 if pressed
-    public struct StrikerTurretInputComponent : IComponentData
-    {
-        public float Input;
-    }
-
-    // 1.0 if pressed
-    public struct ScatterTurretInputComponent : IComponentData
-    {
-        public float Input;
     }
 
     public struct LootAmountComponent : IComponentData
@@ -146,17 +124,7 @@ namespace Components
     {
         public Random Random;
     }
-
-    public struct TargetPositionComponent : IComponentData
-    {
-        public float3 Position;
-    }
-
-    public struct TurretDamageComponent : IComponentData
-    {
-        public float Damage;
-    }
-
+    
     public struct ScatterTurretCostComponent : IComponentData
     {
         public int Cost;
@@ -166,7 +134,13 @@ namespace Components
     {
         public Entity Entity;
     }
-
+    
+    // 1.0 if pressed
+    public struct ScatterTurretInputComponent : IComponentData
+    {
+        public float Input;
+    }
+    
     public struct SelectedTurretCostComponent : IComponentData
     {
         public int Cost;
@@ -176,7 +150,12 @@ namespace Components
     {
         public Entity Entity;
     }
-
+    
+    public struct SquareEnemyEntityComponent : IComponentData
+    {
+        public Entity Entity;
+    }
+    
     public struct StrikerTurretCostComponent : IComponentData
     {
         public int Cost;
@@ -185,6 +164,27 @@ namespace Components
     public struct StrikerTurretEntityComponent : IComponentData
     {
         public Entity Entity;
+    }
+    
+    // 1.0 if pressed
+    public struct StrikerTurretInputComponent : IComponentData
+    {
+        public float Input;
+    }
+
+    public struct TargetPositionComponent : IComponentData
+    {
+        public float3 Position;
+    }
+    
+    public struct TriangleEnemyEntityComponent : IComponentData
+    {
+        public Entity Entity;
+    }
+
+    public struct TurretDamageComponent : IComponentData
+    {
+        public float Damage;
     }
     
     public struct TeamComponent : IComponentData
@@ -272,7 +272,7 @@ namespace Components
 
     #region Tags
     
-    public struct BasicEnemyTag : IComponentData {}
+    public struct LineEnemyTag : IComponentData {}
     
     public struct CanShootTag : IComponentData {}
     
@@ -282,7 +282,7 @@ namespace Components
 
     public struct EnemySpawnerTag : IComponentData {}
     
-    public struct FastEnemyTag : IComponentData {}
+    public struct TriangleEnemyTag : IComponentData {}
     
     public struct HasTargetTag : IComponentData {}
 
@@ -296,7 +296,7 @@ namespace Components
 
     public struct ScatterTurretTag : IComponentData {}
     
-    public struct SlowEnemyTag : IComponentData {}
+    public struct SquareEnemyTag : IComponentData {}
 
     public struct StrikerTurretTag : IComponentData {}
 

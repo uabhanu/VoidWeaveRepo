@@ -35,7 +35,7 @@ namespace Systems
 
     // --- BASIC ENEMY (Standard Chase) ---
     [BurstCompile]
-    [WithAll(typeof(BasicEnemyTag))]
+    [WithAll(typeof(LineEnemyTag))]
     public partial struct BasicEnemyMovementJob : IJobEntity
     {
         public float DeltaTime;
@@ -49,7 +49,7 @@ namespace Systems
 
     // --- FAST ENEMY (Zig-Zag / Evasive) ---
     [BurstCompile]
-    [WithAll(typeof(FastEnemyTag))]
+    [WithAll(typeof(TriangleEnemyTag))]
     public partial struct FastEnemyMovementJob : IJobEntity
     {
         public float DeltaTime;
@@ -75,7 +75,7 @@ namespace Systems
 
     // --- SLOW ENEMY
     [BurstCompile]
-    [WithAll(typeof(SlowEnemyTag))]
+    [WithAll(typeof(SquareEnemyTag))]
     public partial struct SlowEnemyMovementJob : IJobEntity
     {
         public float DeltaTime;
