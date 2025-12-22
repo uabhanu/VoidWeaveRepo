@@ -17,6 +17,7 @@ namespace Entities
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
                 
+                AddComponent(entity , new EnemyReloadTimerComponent { Timer = 0f });
                 AddComponent(entity , new LootAmountComponent { Amount = authoring.lootAmount });
                 AddComponent(entity , new LootEntityComponent { Entity = GetEntity(authoring.lootPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new MovementInputComponent());

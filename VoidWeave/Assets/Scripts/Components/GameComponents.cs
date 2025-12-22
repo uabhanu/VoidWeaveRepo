@@ -9,6 +9,11 @@ namespace Components
     {
         public float Speed;
     }
+    
+    public struct BasicEnemyEntityComponent : IComponentData
+    {
+        public Entity Entity;
+    }
 
     public struct BulletEntityComponent : IComponentData
     {
@@ -44,10 +49,30 @@ namespace Components
     {
         public float Multiplier;
     }
+    
+    public struct EnemyAttackRangeComponent : IComponentData
+    {
+        public float Range;
+    }
 
     public struct EnemyEntityComponent : IComponentData
     {
         public Entity Entity;
+    }
+    
+    public struct EnemyFireRateComponent : IComponentData
+    {
+        public float Rate;
+    }
+
+    public struct EnemyProjectilePrefabComponent : IComponentData
+    {
+        public Entity Prefab;
+    }
+
+    public struct EnemyReloadTimerComponent : IComponentData
+    {
+        public float Timer;
     }
 
     public struct EnemySpawnRadiusComponent : IComponentData
@@ -63,6 +88,16 @@ namespace Components
     public struct EnemySpawnTimerComponent : IComponentData
     {
         public float Timer;
+    }
+    
+    public struct FastEnemyEntityComponent : IComponentData
+    {
+        public Entity Entity;
+    }
+
+    public struct SlowEnemyEntityComponent : IComponentData
+    {
+        public Entity Entity;
     }
 
     // 1.0 if pressed
@@ -237,6 +272,8 @@ namespace Components
 
     #region Tags
     
+    public struct BasicEnemyTag : IComponentData {}
+    
     public struct CanShootTag : IComponentData {}
     
     public struct DeathTag : IComponentData {}
@@ -244,6 +281,8 @@ namespace Components
     public struct EnemyTag : IComponentData {}
 
     public struct EnemySpawnerTag : IComponentData {}
+    
+    public struct FastEnemyTag : IComponentData {}
     
     public struct HasTargetTag : IComponentData {}
 
@@ -256,6 +295,8 @@ namespace Components
     public struct ProjectileSpawnedTag : IComponentData {}
 
     public struct ScatterTurretTag : IComponentData {}
+    
+    public struct SlowEnemyTag : IComponentData {}
 
     public struct StrikerTurretTag : IComponentData {}
 

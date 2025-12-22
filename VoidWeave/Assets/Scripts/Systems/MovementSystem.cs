@@ -12,29 +12,79 @@ namespace Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            new AIMovementJob { DeltaTime = SystemAPI.Time.DeltaTime }.ScheduleParallel();
-            new InputMovementJob { DeltaTime = SystemAPI.Time.DeltaTime }.ScheduleParallel();
+            float deltaTime = SystemAPI.Time.DeltaTime;
+            float elapsedTime = (float)SystemAPI.Time.ElapsedTime;
+            
+            new InputMovementJob { DeltaTime = deltaTime }.ScheduleParallel();
+            
+            new BasicEnemyMovementJob { DeltaTime = deltaTime }.ScheduleParallel();
+            new FastEnemyMovementJob { DeltaTime = deltaTime , ElapsedTime = elapsedTime }.ScheduleParallel();
+            new SlowEnemyMovementJob { DeltaTime = deltaTime }.ScheduleParallel();
         }
     }
-    
-    [BurstCompile]
-    [WithAll(typeof(EnemyTag))]
-    public partial struct AIMovementJob : IJobEntity
-    {
-        public float DeltaTime;
-        
-        private void Execute(ref LocalTransform localTransform , in MoveSpeedComponent moveSpeedComponent , in TargetPositionComponent targetPositionComponent)
-        {
-            localTransform.Position.xy += math.normalizesafe(targetPositionComponent.Position - localTransform.Position).xy * moveSpeedComponent.Speed * DeltaTime;
-        }
-    }
-    
+
+    // --- PLAYER MOVEMENT ---
     [BurstCompile]
     [WithNone(typeof(EnemyTag))]
     public partial struct InputMovementJob : IJobEntity
     {
         public float DeltaTime;
-        
+
         private void Execute(ref LocalTransform localTransform , in MoveSpeedComponent moveSpeedComponent , in MovementInputComponent movementInputComponent) { localTransform.Position.xy += movementInputComponent.Input * moveSpeedComponent.Speed * DeltaTime; }
+    }
+
+    // --- BASIC ENEMY (Standard Chase) ---
+    [BurstCompile]
+    [WithAll(typeof(BasicEnemyTag))]
+    public partial struct BasicEnemyMovementJob : IJobEntity
+    {
+        public float DeltaTime;
+
+        private void Execute(ref LocalTransform localTransform , in MoveSpeedComponent moveSpeedComponent , in TargetPositionComponent targetPositionComponent)
+        {
+            float3 direction = math.normalizesafe(targetPositionComponent.Position - localTransform.Position);
+            localTransform.Position.xy += direction.xy * moveSpeedComponent.Speed * DeltaTime;
+        }
+    }
+
+    // --- FAST ENEMY (Zig-Zag / Evasive) ---
+    [BurstCompile]
+    [WithAll(typeof(FastEnemyTag))]
+    public partial struct FastEnemyMovementJob : IJobEntity
+    {
+        public float DeltaTime;
+        public float ElapsedTime;
+
+        private void Execute(ref LocalTransform localTransform , in MoveSpeedComponent moveSpeedComponent , in TargetPositionComponent targetPositionComponent)
+        {
+            // Calculate base direction
+            float3 direction = math.normalizesafe(targetPositionComponent.Position - localTransform.Position);
+
+            // Calculate perpendicular vector (Tangent) for the Zig-Zag offset
+            // Rotates direction by 90 degrees in 2D: (x, y) -> (-y, x)
+            float3 tangent = new float3(-direction.y , direction.x , 0f);
+
+            // Apply Sine Wave to Tangent
+            // Frequency = 10f (Speed of wiggle), Amplitude = 2.0f (Width of wiggle)
+            float sineOffset = math.sin(ElapsedTime * 10f) * 2.0f;
+
+            // Combine Forward + Sideways Movement
+            localTransform.Position.xy += (direction.xy + (tangent.xy * sineOffset)) * moveSpeedComponent.Speed * DeltaTime;
+        }
+    }
+
+    // --- SLOW ENEMY
+    [BurstCompile]
+    [WithAll(typeof(SlowEnemyTag))]
+    public partial struct SlowEnemyMovementJob : IJobEntity
+    {
+        public float DeltaTime;
+
+        private void Execute(ref LocalTransform localTransform , in MoveSpeedComponent moveSpeedComponent , in TargetPositionComponent targetPositionComponent)
+        {
+            // This enemy moves straight
+            float3 direction = math.normalizesafe(targetPositionComponent.Position - localTransform.Position);
+            localTransform.Position.xy += direction.xy * moveSpeedComponent.Speed * DeltaTime;
+        }
     }
 }
