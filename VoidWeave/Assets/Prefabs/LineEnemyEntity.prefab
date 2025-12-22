@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f38b4e5478b0904193189668a74c539, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entities.EnemyEntity
-  lootAmount: 100
+  lootAmount: 15
   lootPrefab: {fileID: 6983080911018168034, guid: 29b5c2b76e555c84c9ae88bcb6766676, type: 3}
   moveSpeed: 1.15
   teamID: 1
