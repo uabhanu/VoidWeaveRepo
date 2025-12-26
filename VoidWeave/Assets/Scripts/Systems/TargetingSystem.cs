@@ -85,9 +85,9 @@ namespace Systems
     {
         public EntityCommandBuffer.ParallelWriter ECB;
 
-        private void Execute(Entity entity , in LocalToWorld localToWorld , [EntityIndexInQuery] int sortKey , in TargetPositionComponent targetPositionComponent , in TurretRangeComponent turretRangeComponent)
+        private void Execute(Entity entity , in LocalToWorld localToWorld , [EntityIndexInQuery] int sortKey , in TargetPositionComponent targetPositionComponent , in RangeComponent rangeComponent)
         {
-            bool inRange = math.distancesq(localToWorld.Position , targetPositionComponent.Position) <= turretRangeComponent.Range * turretRangeComponent.Range && math.lengthsq(targetPositionComponent.Position) > 0.001f;
+            bool inRange = math.distancesq(localToWorld.Position , targetPositionComponent.Position) <= rangeComponent.Range * rangeComponent.Range && math.lengthsq(targetPositionComponent.Position) > 0.001f;
 
             for(int i = 0 ; i < math.select(0 , 1 , inRange) ; i++) ECB.AddComponent<HasTargetTag>(sortKey , entity);
 

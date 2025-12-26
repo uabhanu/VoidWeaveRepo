@@ -31,9 +31,9 @@ namespace Systems
     {
         public EntityCommandBuffer.ParallelWriter ECB;
 
-        private void Execute(Entity entity , [EntityIndexInQuery] int sortKey , in TurretFireRateComponent fireRateComponent)
+        private void Execute(Entity entity , [EntityIndexInQuery] int sortKey , in FireRateComponent fireRateComponent)
         {
-            ECB.AddComponent(sortKey , entity , new CooldownComponent { Timer = fireRateComponent.Rate });
+            ECB.AddComponent(sortKey , entity , new CooldownComponent { Timer = fireRateComponent.FireRate });
             ECB.RemoveComponent<ProjectileSpawnedTag>(sortKey , entity);
         }
     }

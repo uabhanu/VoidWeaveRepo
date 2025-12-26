@@ -31,19 +31,19 @@ namespace Entities
                 // NOTE: This might look redundant, but it is the ECS "State vs Config" pattern.
                 // RATE (Config): Stores the "Reset Value" (e.g., 2.1s). This NEVER changes.
                 // TIMER (State): Stores the "Countdown". It changes every frame (2.1 -> 2.0 -> ... -> 0).
-                // When Timer hits 0, we need the Rate component to know what to reset it back to.
-                AddComponent(entity , new LineEnemyEntityComponent() { Entity = GetEntity(authoring.lineEnemyPrefab , TransformUsageFlags.Dynamic) });
+                // When Timer hits 0, we need the FireRate component to know what to reset it back to.
                 AddComponent(entity , new BulletEntityComponent { Entity = GetEntity(authoring.projectilePrefab , TransformUsageFlags.Dynamic) });
+                AddComponent(entity , new DamageComponent { Damage = authoring.damage });
                 AddComponent(entity , new EnemySpawnRadiusComponent { Radius = authoring.enemySpawnRadius });
                 AddComponent(entity , new EnemySpawnRateComponent { Rate = authoring.enemySpawnRate });
                 AddComponent(entity , new EnemySpawnTimerComponent { Timer = authoring.enemySpawnRate });
+                AddComponent(entity , new FireRateComponent { FireRate = authoring.fireRate });
+                AddComponent(entity , new LineEnemyEntityComponent { Entity = GetEntity(authoring.lineEnemyPrefab , TransformUsageFlags.Dynamic) });
+                AddComponent(entity , new ProjectileCountComponent { Count = 1 });
+                AddComponent(entity , new RangeComponent { Range = authoring.attackRange });
+                AddComponent(entity , new SpreadComponent { Degrees = 0 });
                 AddComponent(entity , new SquareEnemyEntityComponent { Entity = GetEntity(authoring.squareEnemyPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new TriangleEnemyEntityComponent { Entity = GetEntity(authoring.triangleEnemyPrefab , TransformUsageFlags.Dynamic) });
-                AddComponent(entity , new TurretDamageComponent { Damage = authoring.damage });
-                AddComponent(entity , new TurretFireRateComponent { Rate = authoring.fireRate });
-                AddComponent(entity , new TurretProjectileCountComponent { Count = 1 });
-                AddComponent(entity , new TurretRangeComponent { Range = authoring.attackRange });
-                AddComponent(entity , new TurretSpreadComponent { Degrees = 0 });
                 AddComponent(entity , new WaveBaseEnemyCountComponent { Count = authoring.baseEnemies });
                 AddComponent(entity , new WaveEnemyIncrementComponent { Count = authoring.enemyIncrement });
                 AddComponent(entity , new WaveIndexComponent { Index = 0 });

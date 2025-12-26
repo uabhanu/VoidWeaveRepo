@@ -23,15 +23,15 @@ namespace Entities
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
                 
                 AddComponent(entity , new BulletEntityComponent { Entity = GetEntity(authoring.bulletPrefab , TransformUsageFlags.Dynamic) });
+                AddComponent(entity , new DamageComponent { Damage = authoring.damage });
+                AddComponent(entity , new CooldownComponent { Timer = authoring.cooldownTime });
+                AddComponent(entity , new FireRateComponent { FireRate = authoring.fireRate });
+                AddComponent(entity , new ProjectileCountComponent { Count = authoring.projectileCount });
+                AddComponent(entity , new RangeComponent { Range = authoring.range });
                 AddComponent(entity , new ScatterTurretCostComponent { Cost = authoring.deploymentCost });
+                AddComponent(entity , new SpreadComponent { Degrees = authoring.spreadDegrees });
                 AddComponent(entity , new TargetPositionComponent());
                 AddComponent(entity , new TeamComponent { ID = authoring.teamID });
-                AddComponent(entity , new CooldownComponent { Timer = authoring.cooldownTime });
-                AddComponent(entity , new TurretDamageComponent { Damage = authoring.damage });
-                AddComponent(entity , new TurretFireRateComponent { Rate = authoring.fireRate });
-                AddComponent(entity , new TurretProjectileCountComponent { Count = authoring.projectileCount });
-                AddComponent(entity , new TurretRangeComponent { Range = authoring.range });
-                AddComponent(entity , new TurretSpreadComponent { Degrees = authoring.spreadDegrees });
                 
                 AddComponent(entity , new ScatterTurretTag());
             }

@@ -27,7 +27,7 @@ namespace Systems
         public EntityCommandBuffer.ParallelWriter EntityCommandBuffer;
         public int PlayerCount;
 
-        private void Execute(in BulletEntityComponent bulletEntityComponent , [EntityIndexInQuery] int entityInQueryIndex , in EnemySpawnRadiusComponent enemySpawnRadiusComponent , in EnemySpawnRateComponent enemySpawnRateComponent , ref EnemySpawnTimerComponent enemySpawnTimerComponent , in LineEnemyEntityComponent lineEnemyEntityComponent , in LocalTransform localTransform , ref RandomComponent randomComponent , in SquareEnemyEntityComponent squareEnemyEntityComponent , in TriangleEnemyEntityComponent triangleEnemyEntityComponent , in TurretDamageComponent turretDamageComponent , in TurretFireRateComponent turretFireRateComponent , in TurretProjectileCountComponent turretProjectileCountComponent , in TurretRangeComponent turretRangeComponent , in TurretSpreadComponent turretSpreadComponent , in WaveStateComponent waveStateComponent , ref WaveStockComponent waveStockComponent)
+        private void Execute(in BulletEntityComponent bulletEntityComponent , in DamageComponent damageComponent , [EntityIndexInQuery] int entityInQueryIndex , in EnemySpawnRadiusComponent enemySpawnRadiusComponent , in EnemySpawnRateComponent enemySpawnRateComponent , ref EnemySpawnTimerComponent enemySpawnTimerComponent , in FireRateComponent fireRateComponent , in LineEnemyEntityComponent lineEnemyEntityComponent , in LocalTransform localTransform , in ProjectileCountComponent projectileCountComponent , ref RandomComponent randomComponent , in RangeComponent rangeComponent , in SpreadComponent spreadComponent , in SquareEnemyEntityComponent squareEnemyEntityComponent , in TriangleEnemyEntityComponent triangleEnemyEntityComponent , in WaveStateComponent waveStateComponent , ref WaveStockComponent waveStockComponent)
         {
             enemySpawnTimerComponent.Timer -= DeltaTime;
 
@@ -55,11 +55,11 @@ namespace Systems
                     EntityCommandBuffer.AddComponent<SquareEnemyTag>(entityInQueryIndex , newEnemy);
 
                     EntityCommandBuffer.AddComponent(entityInQueryIndex , newEnemy , bulletEntityComponent);
-                    EntityCommandBuffer.AddComponent(entityInQueryIndex , newEnemy , turretDamageComponent);
-                    EntityCommandBuffer.AddComponent(entityInQueryIndex , newEnemy , turretFireRateComponent);
-                    EntityCommandBuffer.AddComponent(entityInQueryIndex , newEnemy , turretProjectileCountComponent);
-                    EntityCommandBuffer.AddComponent(entityInQueryIndex , newEnemy , turretRangeComponent);
-                    EntityCommandBuffer.AddComponent(entityInQueryIndex , newEnemy , turretSpreadComponent);
+                    EntityCommandBuffer.AddComponent(entityInQueryIndex , newEnemy , damageComponent);
+                    EntityCommandBuffer.AddComponent(entityInQueryIndex , newEnemy , fireRateComponent);
+                    EntityCommandBuffer.AddComponent(entityInQueryIndex , newEnemy , projectileCountComponent);
+                    EntityCommandBuffer.AddComponent(entityInQueryIndex , newEnemy , rangeComponent);
+                    EntityCommandBuffer.AddComponent(entityInQueryIndex , newEnemy , spreadComponent);
                 }
             }
 
