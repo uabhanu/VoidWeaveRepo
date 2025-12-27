@@ -18,6 +18,8 @@ namespace Systems
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
+            
+            // Targets: Valid victims (Players & Enemies)
             _targetQuery = SystemAPI.QueryBuilder().WithAll<LocalToWorld , TeamComponent>().WithAny<EnemyTag , PlayerTag>().WithNone<DeathTag>().Build();
         }
 
@@ -28,11 +30,14 @@ namespace Systems
             NativeArray<LocalToWorld> targetPositionsNativeArray = _targetQuery.ToComponentDataArray<LocalToWorld>(Allocator.TempJob);
             NativeArray<TeamComponent> targetTeamComponentsNativeArray = _targetQuery.ToComponentDataArray<TeamComponent>(Allocator.TempJob);
 
-            // 1. Projectiles: Kill Self + Kill Target (KillTarget = 1)
-            JobHandle projectileJobHandle = new CollisionJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter() , HitRadiusSq = 0.5f * 0.5f , TargetEntitiesNativeArray = targetEntitiesNativeArray , TargetPositionsNativeArray = targetPositionsNativeArray , TargetTeamComponentsNativeArray = targetTeamComponentsNativeArray , KillTarget = 1 }.ScheduleParallel(SystemAPI.QueryBuilder().WithAll<LocalToWorld , TeamComponent , ProjectileTag>().WithNone<DeathTag>().Build() , state.Dependency);
+            var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter();
 
-            // 2. Players: Kill Self + Spare Target (KillTarget = 0)
-            state.Dependency = new CollisionJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter() , HitRadiusSq = 0.5f * 0.5f , TargetEntitiesNativeArray = targetEntitiesNativeArray , TargetPositionsNativeArray = targetPositionsNativeArray , TargetTeamComponentsNativeArray = targetTeamComponentsNativeArray , KillTarget = 0 }.ScheduleParallel(SystemAPI.QueryBuilder().WithAll<LocalToWorld , TeamComponent , PlayerTag>().WithNone<DeathTag>().Build() , projectileJobHandle);
+            // PROJECTILES (Bullet -> Player/Enemy)
+            // Kills Self (1) + Deals Damage
+            JobHandle projectileJobHandle = new CollisionJob { ECB = ecb , HitRadiusSq = 0.5f * 0.5f , KillSelf = 1 , TargetEntitiesNativeArray = targetEntitiesNativeArray , TargetPositionsNativeArray = targetPositionsNativeArray , TargetTeamComponentsNativeArray = targetTeamComponentsNativeArray }.ScheduleParallel(SystemAPI.QueryBuilder().WithAll<DamageComponent , LocalToWorld , ProjectileTag , TeamComponent>().WithNone<DeathTag>().Build() , state.Dependency);
+            
+            // Kills Self (0) + Deals Damage
+            state.Dependency = new CollisionJob { ECB = ecb , HitRadiusSq = 0.5f * 0.5f , KillSelf = 0 , TargetEntitiesNativeArray = targetEntitiesNativeArray , TargetPositionsNativeArray = targetPositionsNativeArray , TargetTeamComponentsNativeArray = targetTeamComponentsNativeArray }.ScheduleParallel(SystemAPI.QueryBuilder().WithAll<CanMeleeAttackTag , DamageComponent , EnemyTag , LocalToWorld , TeamComponent>().WithNone<DeathTag>().Build() , projectileJobHandle);
 
             targetEntitiesNativeArray.Dispose(state.Dependency);
             targetPositionsNativeArray.Dispose(state.Dependency);
@@ -41,28 +46,33 @@ namespace Systems
     }
 
     [BurstCompile]
-    [WithAny(typeof(PlayerTag) , typeof(ProjectileTag))]
+    [WithAll(typeof(DamageComponent) , typeof(LocalToWorld) , typeof(TeamComponent))]
     [WithNone(typeof(DeathTag))]
     public partial struct CollisionJob : IJobEntity
     {
+        public EntityCommandBuffer.ParallelWriter ECB;
+        public float HitRadiusSq;
+        public int KillSelf;
+
         [ReadOnly] public NativeArray<Entity> TargetEntitiesNativeArray;
         [ReadOnly] public NativeArray<LocalToWorld> TargetPositionsNativeArray;
         [ReadOnly] public NativeArray<TeamComponent> TargetTeamComponentsNativeArray;
 
-        public EntityCommandBuffer.ParallelWriter ECB;
-        public float HitRadiusSq;
-        public int KillTarget;
-
-        private void Execute(Entity projectileEntity , [EntityIndexInQuery] int entityIndexInQuery , in LocalToWorld localToWorld , in TeamComponent projectileTeam)
+        private void Execute(in DamageComponent damageComponent , Entity entity , in LocalToWorld localToWorld , [EntityIndexInQuery] int sortKey , in TeamComponent teamComponent)
         {
             for(int i = 0 ; i < TargetPositionsNativeArray.Length ; i++)
             {
-                for(int k = 0 ; k < math.select(0 , 1 , math.step(math.distancesq(localToWorld.Position , TargetPositionsNativeArray[i].Position) , HitRadiusSq) > 0.5f && projectileTeam.ID != TargetTeamComponentsNativeArray[i].ID) ; k++)
-                {
-                    ECB.AddComponent<DeathTag>(entityIndexInQuery , projectileEntity);
-                    
-                    for(int m = 0 ; m < math.select(0 , 1 , KillTarget == 1) ; m++) { ECB.AddComponent<DeathTag>(entityIndexInQuery , TargetEntitiesNativeArray[i]); }
-                }
+                bool isHit = math.distancesq(localToWorld.Position , TargetPositionsNativeArray[i].Position) <= HitRadiusSq && teamComponent.ID != TargetTeamComponentsNativeArray[i].ID;
+
+                // ADD DAMAGE EVENT
+                for(int k = 0 ; k < math.select(0 , 1 , isHit) ; k++) { ECB.AddComponent(sortKey , TargetEntitiesNativeArray[i] , new DamageEventComponent { Damage = (int)damageComponent.Damage }); }
+
+                // KILL SELF (Only if KillSelf is 1)
+                for(int k = 0 ; k < math.select(0 , 1 , isHit && KillSelf == 1) ; k++) { ECB.AddComponent<DeathTag>(sortKey , entity); }
+                
+                // MELEE HIT TRIGGER (Enemies)
+                // If we hit and we are an Enemy (KillSelf=0), add Tag to Self to trigger cooldown
+                for(int k = 0 ; k < math.select(0 , 1 , isHit && KillSelf == 0) ; k++) { ECB.AddComponent<MeleeAttackEventTag>(sortKey , entity); }
             }
         }
     }

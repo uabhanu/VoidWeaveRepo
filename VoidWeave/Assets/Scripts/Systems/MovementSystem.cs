@@ -14,9 +14,9 @@ namespace Systems
         {
             float deltaTime = SystemAPI.Time.DeltaTime;
             float elapsedTime = (float)SystemAPI.Time.ElapsedTime;
-            
+
             new InputMovementJob { DeltaTime = deltaTime }.ScheduleParallel();
-            
+
             new BasicEnemyMovementJob { DeltaTime = deltaTime }.ScheduleParallel();
             new FastEnemyMovementJob { DeltaTime = deltaTime , ElapsedTime = elapsedTime }.ScheduleParallel();
             new SlowEnemyMovementJob { DeltaTime = deltaTime }.ScheduleParallel();
@@ -80,11 +80,17 @@ namespace Systems
     {
         public float DeltaTime;
 
-        private void Execute(ref LocalTransform localTransform , in MoveSpeedComponent moveSpeedComponent , in TargetPositionComponent targetPositionComponent)
+        private void Execute(ref LocalTransform localTransform , in MoveSpeedComponent moveSpeedComponent , in RangeComponent rangeComponent , in TargetPositionComponent targetPositionComponent)
         {
-            // This enemy moves straight
+            float distanceSq = math.distancesq(localTransform.Position , targetPositionComponent.Position);
+            float rangeSq = rangeComponent.Range * rangeComponent.Range;
+
+            // Logic: If DistanceSq > RangeSq, we move (1). If DistanceSq <= RangeSq, we stop (0).
+            // This prevents moving while reloading.
+            float shouldMove = math.select(1f , 0f , distanceSq <= rangeSq);
+
             float3 direction = math.normalizesafe(targetPositionComponent.Position - localTransform.Position);
-            localTransform.Position.xy += direction.xy * moveSpeedComponent.Speed * DeltaTime;
+            localTransform.Position.xy += direction.xy * moveSpeedComponent.Speed * DeltaTime * shouldMove;
         }
     }
 }

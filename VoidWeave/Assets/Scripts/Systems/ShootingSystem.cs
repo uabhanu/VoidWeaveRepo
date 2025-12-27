@@ -27,18 +27,18 @@ namespace Systems
     {
         public EntityCommandBuffer.ParallelWriter ECB;
 
-        private void Execute(Entity entity , [EntityIndexInQuery] int sortKey , in LocalToWorld localToWorld , in TargetPositionComponent targetPositionComponent , in TurretDamageComponent turretDamageComponent , in TurretFireRateComponent turretFireRateComponent , in TurretProjectileCountComponent turretProjectileCountComponent , in TurretSpreadComponent turretSpreadComponent , in BulletEntityComponent bulletEntityComponent)
+        private void Execute(in BulletEntityComponent bulletEntityComponent , in DamageComponent damageComponent , Entity entity , [EntityIndexInQuery] int sortKey , in FireRateComponent fireRateComponent , in LocalToWorld localToWorld , in ProjectileCountComponent projectileCountComponent , in TargetPositionComponent targetPositionComponent , in SpreadComponent spreadComponent)
         {
-            for(int i = 0 ; i < turretProjectileCountComponent.Count ; i++)
+            for(int i = 0 ; i < projectileCountComponent.Count ; i++)
             {
                 Entity newBullet = ECB.Instantiate(sortKey , bulletEntityComponent.Entity);
 
-                ECB.SetComponent(sortKey , newBullet , LocalTransform.FromPositionRotation(localToWorld.Position , quaternion.RotateZ((math.atan2(targetPositionComponent.Position.y - localToWorld.Position.y , targetPositionComponent.Position.x - localToWorld.Position.x) - (math.radians(turretSpreadComponent.Degrees) * 0.5f) + (math.select(0 , math.radians(turretSpreadComponent.Degrees) / math.max(1 , turretProjectileCountComponent.Count - 1) , turretProjectileCountComponent.Count > 1) * i)) - math.PI / 2f)));
-                ECB.SetComponent(sortKey , newBullet , new MovementInputComponent { Input = new float2(math.cos(math.atan2(targetPositionComponent.Position.y - localToWorld.Position.y , targetPositionComponent.Position.x - localToWorld.Position.x) - math.radians(turretSpreadComponent.Degrees) * 0.5f + math.select(0 , math.radians(turretSpreadComponent.Degrees) / math.max(1 , turretProjectileCountComponent.Count - 1) , turretProjectileCountComponent.Count > 1) * i) , math.sin(math.atan2(targetPositionComponent.Position.y - localToWorld.Position.y , targetPositionComponent.Position.x - localToWorld.Position.x) - math.radians(turretSpreadComponent.Degrees) * 0.5f + math.select(0 , math.radians(turretSpreadComponent.Degrees) / math.max(1 , turretProjectileCountComponent.Count - 1) , turretProjectileCountComponent.Count > 1) * i)) });
-                ECB.SetComponent(sortKey , newBullet , new ProjectileDamageComponent { Damage = turretDamageComponent.Damage });
+                ECB.SetComponent(sortKey , newBullet , new DamageComponent { Damage = damageComponent.Damage });
+                ECB.SetComponent(sortKey , newBullet , LocalTransform.FromPositionRotation(localToWorld.Position , quaternion.RotateZ((math.atan2(targetPositionComponent.Position.y - localToWorld.Position.y , targetPositionComponent.Position.x - localToWorld.Position.x) - (math.radians(spreadComponent.Degrees) * 0.5f) + (math.select(0 , math.radians(spreadComponent.Degrees) / math.max(1 , projectileCountComponent.Count - 1) , projectileCountComponent.Count > 1) * i)) - math.PI / 2f)));
+                ECB.SetComponent(sortKey , newBullet , new MovementInputComponent { Input = new float2(math.cos(math.atan2(targetPositionComponent.Position.y - localToWorld.Position.y , targetPositionComponent.Position.x - localToWorld.Position.x) - math.radians(spreadComponent.Degrees) * 0.5f + math.select(0 , math.radians(spreadComponent.Degrees) / math.max(1 , projectileCountComponent.Count - 1) , projectileCountComponent.Count > 1) * i) , math.sin(math.atan2(targetPositionComponent.Position.y - localToWorld.Position.y , targetPositionComponent.Position.x - localToWorld.Position.x) - math.radians(spreadComponent.Degrees) * 0.5f + math.select(0 , math.radians(spreadComponent.Degrees) / math.max(1 , projectileCountComponent.Count - 1) , projectileCountComponent.Count > 1) * i)) });
             }
 
-            ECB.AddComponent<ProjectileSpawnedTag>(sortKey , entity);
+            ECB.AddComponent<ProjectileSpawnedEventTag>(sortKey , entity);
         }
     }
 }

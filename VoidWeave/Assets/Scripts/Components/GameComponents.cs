@@ -24,6 +24,16 @@ namespace Components
     {
         public int Energy;
     }
+    
+    public struct DamageComponent : IComponentData
+    {
+        public float Damage;
+    }
+    
+    public struct DamageEventComponent : IComponentData
+    {
+        public float Damage;
+    }
 
     public struct DashCooldownComponent : IComponentData
     {
@@ -85,6 +95,16 @@ namespace Components
         public float Timer;
     }
     
+    public struct FireRateComponent : IComponentData
+    {
+        public float FireRate;
+    }
+    
+    public struct HealthComponent : IComponentData
+    {
+        public float Health;
+    }
+    
     public struct LineEnemyEntityComponent : IComponentData
     {
         public Entity Entity;
@@ -99,6 +119,11 @@ namespace Components
     {
         public Entity Entity;
     }
+    
+    public struct MeleeAttackRateComponent : IComponentData
+    {
+        public float MeleeAttackRate;
+    }
 
     public struct MoveSpeedComponent : IComponentData
     {
@@ -109,10 +134,12 @@ namespace Components
     {
         public float2 Input;
     }
-
-    public struct ProjectileDamageComponent : IComponentData
+    
+    // How many projectiles spawn per shot
+    // Striker = 1, Scatter = 5
+    public struct ProjectileCountComponent : IComponentData
     {
-        public float Damage;
+        public int Count;
     }
 
     public struct ProjectileLifetimeComponent : IComponentData
@@ -123,6 +150,11 @@ namespace Components
     public struct RandomComponent : IComponentData
     {
         public Random Random;
+    }
+    
+    public struct RangeComponent : IComponentData
+    {
+        public float Range;
     }
     
     public struct ScatterTurretCostComponent : IComponentData
@@ -151,6 +183,13 @@ namespace Components
         public Entity Entity;
     }
     
+    // The total angle of the spread in degrees
+    // Striker = 0, Scatter = 30
+    public struct SpreadComponent : IComponentData
+    {
+        public float Degrees;
+    }
+    
     public struct SquareEnemyEntityComponent : IComponentData
     {
         public Entity Entity;
@@ -177,19 +216,14 @@ namespace Components
         public float3 Position;
     }
     
-    public struct TriangleEnemyEntityComponent : IComponentData
-    {
-        public Entity Entity;
-    }
-
-    public struct TurretDamageComponent : IComponentData
-    {
-        public float Damage;
-    }
-    
     public struct TeamComponent : IComponentData
     {
         public int ID; // 0 = Player , 1 = Enemy and so on
+    }
+    
+    public struct TriangleEnemyEntityComponent : IComponentData
+    {
+        public Entity Entity;
     }
 
     public struct TurretDeploymentInputComponent : IComponentData
@@ -197,33 +231,9 @@ namespace Components
         public float IsPressed;
     }
 
-    public struct TurretFireRateComponent : IComponentData
-    {
-        public float Rate;
-    }
-
     public struct TurretEntityComponent : IComponentData
     {
         public Entity Entity;
-    }
-
-    // How many projectiles spawn per shot
-    // Striker = 1, Scatter = 5
-    public struct TurretProjectileCountComponent : IComponentData
-    {
-        public int Count;
-    }
-
-    public struct TurretRangeComponent : IComponentData
-    {
-        public float Range;
-    }
-
-    // The total angle of the spread in degrees
-    // Striker = 0, Scatter = 30
-    public struct TurretSpreadComponent : IComponentData
-    {
-        public float Degrees;
     }
     
     // The starting number of enemies for Wave 1
@@ -272,9 +282,9 @@ namespace Components
 
     #region Tags
     
-    public struct LineEnemyTag : IComponentData {}
-    
     public struct CanShootTag : IComponentData {}
+    
+    public struct CanMeleeAttackTag : IComponentData {}
     
     public struct DeathTag : IComponentData {}
 
@@ -282,17 +292,21 @@ namespace Components
 
     public struct EnemySpawnerTag : IComponentData {}
     
+    public struct LineEnemyTag : IComponentData {}
+    
     public struct TriangleEnemyTag : IComponentData {}
     
     public struct HasTargetTag : IComponentData {}
 
     public struct LootPickupTag : IComponentData {}
+    
+    public struct MeleeAttackEventTag : IComponentData {}
 
     public struct PlayerTag : IComponentData {}
 
     public struct ProjectileTag : IComponentData {}
     
-    public struct ProjectileSpawnedTag : IComponentData {}
+    public struct ProjectileSpawnedEventTag : IComponentData {}
 
     public struct ScatterTurretTag : IComponentData {}
     

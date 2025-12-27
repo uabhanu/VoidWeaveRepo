@@ -18,7 +18,7 @@ namespace Entities
                 
                 AddComponent(entity , new MovementInputComponent());
                 AddComponent(entity , new MoveSpeedComponent { Speed = authoring.speed });
-                AddComponent(entity , new ProjectileDamageComponent { Damage = 0 });
+                AddComponent(entity , new DamageComponent { Damage = 0 });
                 AddComponent(entity , new ProjectileLifetimeComponent { Timer = authoring.lifetime });
                 AddComponent(entity , new TeamComponent { ID = authoring.teamID });
                 

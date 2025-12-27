@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 269585659285042699}
-  - component: {fileID: 635587438272930116}
+  - component: {fileID: -4739515386786183574}
   - component: {fileID: 2416083693835027147}
   m_Layer: 0
   m_Name: SquareEnemyEntity
@@ -33,7 +33,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &635587438272930116
+--- !u!114 &-4739515386786183574
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -42,15 +42,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 5566403319572895637}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f38b4e5478b0904193189668a74c539, type: 3}
+  m_Script: {fileID: 11500000, guid: 832818a5a8bf8c747a7e4c3b2623053e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Entities.EnemyEntity
+  m_EditorClassIdentifier: Assembly-CSharp::Entities.RangedEnemyEntity
+  damage: 15
+  fireRate: 2.5
+  health: 200
   lootAmount: 25
   lootPrefab: {fileID: 6983080911018168034, guid: 29b5c2b76e555c84c9ae88bcb6766676, type: 3}
-  moveSpeed: 2.25
+  moveSpeed: 0.9
+  projectileCount: 1
+  projectilePrefab: {fileID: 2547401122998454103, guid: d15cb9f62da5b1c4f8a5e85226bb4df7, type: 3}
+  range: 3.2
+  spreadDegrees: 0
   teamID: 1
 --- !u!212 &2416083693835027147
 SpriteRenderer:
+  serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -96,6 +104,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_FlipX: 0
@@ -105,5 +114,4 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
   m_SpriteSortPoint: 0
