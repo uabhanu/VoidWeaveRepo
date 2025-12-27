@@ -8,7 +8,8 @@ namespace Entities
     {
         [SerializeField] private float dashCooldownTimer; // Time before next dash   
         [SerializeField] private float dashDuration; // Length of dash   
-        [SerializeField] private float dashMultiplier; // Speed boost (5 * 5 = 25 units/sec)   
+        [SerializeField] private float dashMultiplier; // Speed boost (5 * 5 = 25 units/sec)
+        [SerializeField] private int health;
         [SerializeField] private float moveSpeed;
         [SerializeField] private int scatterTurretCost;
         [SerializeField] private GameObject scatterTurretPrefab;
@@ -30,6 +31,7 @@ namespace Entities
                 AddComponent(entity , new DashDurationComponent { Duration = authoring.dashDuration });
                 AddComponent(entity , new DashInputComponent());
                 AddComponent(entity , new DashMultiplierComponent { Multiplier = authoring.dashMultiplier });
+                AddComponent(entity , new HealthComponent { Health = authoring.health });
                 AddComponent(entity , new MoveSpeedComponent { Speed = authoring.moveSpeed });
                 AddComponent(entity , new MovementInputComponent());
                 AddComponent(entity , new ScatterTurretEntityComponent { Entity = GetEntity(authoring.scatterTurretPrefab , TransformUsageFlags.Dynamic) });

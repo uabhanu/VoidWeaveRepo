@@ -38,7 +38,7 @@ namespace Systems
                 ECB.SetComponent(sortKey , newBullet , new MovementInputComponent { Input = new float2(math.cos(math.atan2(targetPositionComponent.Position.y - localToWorld.Position.y , targetPositionComponent.Position.x - localToWorld.Position.x) - math.radians(spreadComponent.Degrees) * 0.5f + math.select(0 , math.radians(spreadComponent.Degrees) / math.max(1 , projectileCountComponent.Count - 1) , projectileCountComponent.Count > 1) * i) , math.sin(math.atan2(targetPositionComponent.Position.y - localToWorld.Position.y , targetPositionComponent.Position.x - localToWorld.Position.x) - math.radians(spreadComponent.Degrees) * 0.5f + math.select(0 , math.radians(spreadComponent.Degrees) / math.max(1 , projectileCountComponent.Count - 1) , projectileCountComponent.Count > 1) * i)) });
             }
 
-            ECB.AddComponent<ProjectileSpawnedTag>(sortKey , entity);
+            ECB.AddComponent<ProjectileSpawnedEventTag>(sortKey , entity);
         }
     }
 }

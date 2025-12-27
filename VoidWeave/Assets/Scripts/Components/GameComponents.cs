@@ -29,6 +29,11 @@ namespace Components
     {
         public float Damage;
     }
+    
+    public struct DamageEventComponent : IComponentData
+    {
+        public float Damage;
+    }
 
     public struct DashCooldownComponent : IComponentData
     {
@@ -95,6 +100,11 @@ namespace Components
         public float FireRate;
     }
     
+    public struct HealthComponent : IComponentData
+    {
+        public float Health;
+    }
+    
     public struct LineEnemyEntityComponent : IComponentData
     {
         public Entity Entity;
@@ -108,6 +118,11 @@ namespace Components
     public struct LootEntityComponent : IComponentData
     {
         public Entity Entity;
+    }
+    
+    public struct MeleeAttackRateComponent : IComponentData
+    {
+        public float MeleeAttackRate;
     }
 
     public struct MoveSpeedComponent : IComponentData
@@ -267,9 +282,9 @@ namespace Components
 
     #region Tags
     
-    public struct LineEnemyTag : IComponentData {}
-    
     public struct CanShootTag : IComponentData {}
+    
+    public struct CanMeleeAttackTag : IComponentData {}
     
     public struct DeathTag : IComponentData {}
 
@@ -277,17 +292,21 @@ namespace Components
 
     public struct EnemySpawnerTag : IComponentData {}
     
+    public struct LineEnemyTag : IComponentData {}
+    
     public struct TriangleEnemyTag : IComponentData {}
     
     public struct HasTargetTag : IComponentData {}
 
     public struct LootPickupTag : IComponentData {}
+    
+    public struct MeleeAttackEventTag : IComponentData {}
 
     public struct PlayerTag : IComponentData {}
 
     public struct ProjectileTag : IComponentData {}
     
-    public struct ProjectileSpawnedTag : IComponentData {}
+    public struct ProjectileSpawnedEventTag : IComponentData {}
 
     public struct ScatterTurretTag : IComponentData {}
     

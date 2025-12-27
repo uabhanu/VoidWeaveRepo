@@ -4,22 +4,27 @@ namespace Entities
     using Unity.Entities;
     using UnityEngine;
 
-    public class EnemyEntity : MonoBehaviour
+    public class MeleeEnemyEntity : MonoBehaviour
     {
+        [SerializeField] private float meleeAttackRate;
+        [SerializeField] private int damage;
+        [SerializeField] private int health;
         [SerializeField] private int lootAmount;
-        [SerializeField] private GameObject lootPrefab; 
+        [SerializeField] private GameObject lootPrefab;
         [SerializeField] private float moveSpeed;
         [SerializeField] private int teamID;
-        
-        private class EnemyBaker : Baker<EnemyEntity>
+
+        private class MeleeEnemyBaker : Baker<MeleeEnemyEntity>
         {
-            public override void Bake(EnemyEntity authoring)
+            public override void Bake(MeleeEnemyEntity authoring)
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-                
-                AddComponent(entity , new EnemyReloadTimerComponent { Timer = 0f });
+
+                AddComponent(entity , new DamageComponent { Damage = authoring.damage });
+                AddComponent(entity , new HealthComponent { Health = authoring.health });
                 AddComponent(entity , new LootAmountComponent { Amount = authoring.lootAmount });
                 AddComponent(entity , new LootEntityComponent { Entity = GetEntity(authoring.lootPrefab , TransformUsageFlags.Dynamic) });
+                AddComponent(entity , new MeleeAttackRateComponent { MeleeAttackRate = authoring.meleeAttackRate });
                 AddComponent(entity , new MovementInputComponent());
                 AddComponent(entity , new MoveSpeedComponent { Speed = authoring.moveSpeed });
                 AddComponent(entity , new TargetPositionComponent());
