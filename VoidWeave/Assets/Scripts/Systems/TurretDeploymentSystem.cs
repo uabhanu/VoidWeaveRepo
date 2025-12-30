@@ -25,15 +25,16 @@ namespace Systems
     {
         public EntityCommandBuffer.ParallelWriter EntityCommandBuffer;
 
-        private void Execute(ref CurrentEnergyComponent currentEnergyComponent , [EntityIndexInQuery] int entityInQueryIndex , in LocalTransform localTransform , in SelectedTurretCostComponent selectedTurretCostComponent , in SelectedTurretEntityComponent selectedTurretEntityComponent , in TurretDeploymentInputComponent turretDeploymentInputComponent)
+        private void Execute(ref CurrentEnergyComponent currentEnergyComponent , [EntityIndexInQuery] int entityInQueryIndex , in LocalTransform localTransform , in PlayerInputComponent playerInputComponent , in SelectedTurretCostComponent selectedTurretCostComponent , in SelectedTurretEntityComponent selectedTurretEntityComponent)
         {
-            for(int i = 0 ; i < math.select(0 , 1 , (turretDeploymentInputComponent.IsPressed > 0.5f) && (currentEnergyComponent.Energy >= selectedTurretCostComponent.Cost) && (selectedTurretEntityComponent.Entity != Entity.Null)) ; i++)
+            // SelectedInput & 32 corresponds to the Deploy input bit defined in InputSystem
+            for(int i = 0 ; i < math.select(0 , 1 , ((playerInputComponent.SelectedInput & 32) != 0) && (currentEnergyComponent.Energy >= selectedTurretCostComponent.Cost) && (selectedTurretEntityComponent.Entity != Entity.Null)) ; i++)
             {
                 Entity newTurret = EntityCommandBuffer.Instantiate(entityInQueryIndex , selectedTurretEntityComponent.Entity);
                 EntityCommandBuffer.SetComponent(entityInQueryIndex , newTurret , LocalTransform.FromPosition(localTransform.Position));
             }
-            
-            currentEnergyComponent.Energy -= selectedTurretCostComponent.Cost * math.select(0 , 1 , (turretDeploymentInputComponent.IsPressed > 0.5f) && (currentEnergyComponent.Energy >= selectedTurretCostComponent.Cost) && (selectedTurretEntityComponent.Entity != Entity.Null));
+
+            currentEnergyComponent.Energy -= selectedTurretCostComponent.Cost * math.select(0 , 1 , ((playerInputComponent.SelectedInput & 32) != 0) && (currentEnergyComponent.Energy >= selectedTurretCostComponent.Cost) && (selectedTurretEntityComponent.Entity != Entity.Null));
         }
     }
 }

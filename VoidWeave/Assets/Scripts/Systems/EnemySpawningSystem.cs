@@ -34,16 +34,13 @@ namespace Systems
             for(int i = 0 ; i < math.select(0 , 1 , enemySpawnTimerComponent.Timer <= 0f && PlayerCount > 0 && waveStateComponent.State == 1 && waveStockComponent.Stock > 0) ; i++)
             {
                 int selection = randomComponent.Random.NextInt(0 , 3);
-                
+
                 Entity newEnemy = EntityCommandBuffer.Instantiate(entityInQueryIndex , selection == 1 ? lineEnemyEntityComponent.Entity : (selection == 2 ? squareEnemyEntityComponent.Entity : triangleEnemyEntityComponent.Entity));
 
                 EntityCommandBuffer.SetComponent(entityInQueryIndex , newEnemy , LocalTransform.FromPosition(localTransform.Position + new float3(randomComponent.Random.NextFloat2Direction() * enemySpawnRadiusComponent.Radius , 0f)));
-                EntityCommandBuffer.SetComponent(entityInQueryIndex , newEnemy , new MovementInputComponent { Input = float2.zero });
-                
+
                 for(int k = 0 ; k < math.select(0 , 1 , selection == 0) ; k++) { EntityCommandBuffer.AddComponent<TriangleEnemyTag>(entityInQueryIndex , newEnemy); }
-
                 for(int k = 0 ; k < math.select(0 , 1 , selection == 1) ; k++) { EntityCommandBuffer.AddComponent<LineEnemyTag>(entityInQueryIndex , newEnemy); }
-
                 for(int k = 0 ; k < math.select(0 , 1 , selection == 2) ; k++) { EntityCommandBuffer.AddComponent<SquareEnemyTag>(entityInQueryIndex , newEnemy); }
             }
 

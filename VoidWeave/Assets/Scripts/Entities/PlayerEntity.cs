@@ -26,22 +26,18 @@ namespace Entities
 
                 AddComponent(entity , new BaseMoveSpeedComponent { Speed = authoring.moveSpeed });
                 AddComponent(entity , new CurrentEnergyComponent { Energy = authoring.startingResources });
-                AddComponent(entity , new TurretDeploymentInputComponent());
                 AddComponent(entity , new DashCooldownComponent { Timer = authoring.dashCooldownTimer });
                 AddComponent(entity , new DashDurationComponent { Duration = authoring.dashDuration });
-                AddComponent(entity , new DashInputComponent());
                 AddComponent(entity , new DashMultiplierComponent { Multiplier = authoring.dashMultiplier });
                 AddComponent(entity , new HealthComponent { Health = authoring.health });
                 AddComponent(entity , new MoveSpeedComponent { Speed = authoring.moveSpeed });
-                AddComponent(entity , new MovementInputComponent());
+                AddComponent(entity , new PlayerInputComponent());
                 AddComponent(entity , new ScatterTurretEntityComponent { Entity = GetEntity(authoring.scatterTurretPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new ScatterTurretCostComponent { Cost = authoring.scatterTurretCost });
-                AddComponent(entity , new ScatterTurretInputComponent());
                 AddComponent(entity , new SelectedTurretCostComponent { Cost = authoring.strikerTurretCost });
                 AddComponent(entity , new SelectedTurretEntityComponent { Entity = GetEntity(authoring.strikerTurretPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new StrikerTurretCostComponent { Cost = authoring.strikerTurretCost });
                 AddComponent(entity , new StrikerTurretEntityComponent { Entity = GetEntity(authoring.strikerTurretPrefab , TransformUsageFlags.Dynamic) });
-                AddComponent(entity , new StrikerTurretInputComponent());
                 AddComponent(entity , new TeamComponent { ID = authoring.teamID });
 
                 AddComponent(entity , new PlayerTag());

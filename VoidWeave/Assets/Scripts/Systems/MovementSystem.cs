@@ -12,14 +12,11 @@ namespace Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            float deltaTime = SystemAPI.Time.DeltaTime;
-            float elapsedTime = (float)SystemAPI.Time.ElapsedTime;
-
-            new InputMovementJob { DeltaTime = deltaTime }.ScheduleParallel();
-
-            new BasicEnemyMovementJob { DeltaTime = deltaTime }.ScheduleParallel();
-            new FastEnemyMovementJob { DeltaTime = deltaTime , ElapsedTime = elapsedTime }.ScheduleParallel();
-            new SlowEnemyMovementJob { DeltaTime = deltaTime }.ScheduleParallel();
+            new InputMovementJob { DeltaTime = SystemAPI.Time.DeltaTime }.ScheduleParallel();
+            new BasicEnemyMovementJob { DeltaTime = SystemAPI.Time.DeltaTime }.ScheduleParallel();
+            new FastEnemyMovementJob { DeltaTime = SystemAPI.Time.DeltaTime , ElapsedTime = (float)SystemAPI.Time.ElapsedTime }.ScheduleParallel();
+            new ProjectileMovementJob { DeltaTime = SystemAPI.Time.DeltaTime }.ScheduleParallel();
+            new SlowEnemyMovementJob { DeltaTime = SystemAPI.Time.DeltaTime }.ScheduleParallel();
         }
     }
 
@@ -30,7 +27,23 @@ namespace Systems
     {
         public float DeltaTime;
 
-        private void Execute(ref LocalTransform localTransform , in MoveSpeedComponent moveSpeedComponent , in MovementInputComponent movementInputComponent) { localTransform.Position.xy += movementInputComponent.Input * moveSpeedComponent.Speed * DeltaTime; }
+        private void Execute(ref LocalTransform localTransform , in MoveSpeedComponent moveSpeedComponent , in PlayerInputComponent playerInputComponent)
+        {
+            uint selectedInput = playerInputComponent.SelectedInput;
+
+            // Decode Bits to Directions (No Ifs)
+            // 1=Up, 2=Down, 4=Left, 8=Right
+            float up = math.select(0f , 1f , (selectedInput & 1) != 0);
+            float down = math.select(0f , 1f , (selectedInput & 2) != 0);
+            float left = math.select(0f , 1f , (selectedInput & 4) != 0);
+            float right = math.select(0f , 1f , (selectedInput & 8) != 0);
+
+            // Construct Vector
+            float2 input = new float2(right - left , up - down);
+
+            // Apply Movement
+            localTransform.Position.xy += input * moveSpeedComponent.Speed * DeltaTime;
+        }
     }
 
     // --- BASIC ENEMY (Standard Chase) ---
@@ -70,6 +83,18 @@ namespace Systems
 
             // Combine Forward + Sideways Movement
             localTransform.Position.xy += (direction.xy + (tangent.xy * sineOffset)) * moveSpeedComponent.Speed * DeltaTime;
+        }
+    }
+
+    [BurstCompile]
+    [WithAll(typeof(ProjectileTag))]
+    public partial struct ProjectileMovementJob : IJobEntity
+    {
+        public float DeltaTime;
+
+        private void Execute(ref LocalTransform localTransform , in MoveSpeedComponent moveSpeedComponent , in VelocityComponent velocityComponent)
+        {
+            localTransform.Position.xy += velocityComponent.Velocity * moveSpeedComponent.Speed * DeltaTime;
         }
     }
 
