@@ -16,11 +16,11 @@ namespace Entities
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
                 
-                AddComponent(entity , new MovementInputComponent());
                 AddComponent(entity , new MoveSpeedComponent { Speed = authoring.speed });
                 AddComponent(entity , new DamageComponent { Damage = 0 });
                 AddComponent(entity , new ProjectileLifetimeComponent { Timer = authoring.lifetime });
                 AddComponent(entity , new TeamComponent { ID = authoring.teamID });
+                AddComponent(entity , new VelocityComponent());
                 
                 AddComponent(entity , new ProjectileTag());
             }

@@ -31,7 +31,6 @@ namespace Entities
                 AddComponent(entity , new HealthComponent { Health = authoring.health });
                 AddComponent(entity , new LootAmountComponent { Amount = authoring.lootAmount });
                 AddComponent(entity , new LootEntityComponent { Entity = GetEntity(authoring.lootPrefab , TransformUsageFlags.Dynamic) });
-                AddComponent(entity , new MovementInputComponent());
                 AddComponent(entity , new MoveSpeedComponent { Speed = authoring.moveSpeed });
                 AddComponent(entity , new ProjectileCountComponent { Count = authoring.projectileCount });
                 AddComponent(entity , new RangeComponent { Range = authoring.range });

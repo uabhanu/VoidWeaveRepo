@@ -1,36 +1,36 @@
 namespace Systems
 {
     using Components;
+    using Unity.Burst;
     using Unity.Entities;
     using Unity.Mathematics;
-    using UnityEngine;
+    using UnityEngine.InputSystem;
 
     [UpdateInGroup(typeof(InitializationSystemGroup))]
-    public partial class InputSystem : SystemBase
+    public partial struct InputSystem : ISystem
     {
-        private InputSystem_Actions _inputSystemActions;
+        [BurstCompile]
+        public void OnCreate(ref SystemState state) { state.RequireForUpdate<PlayerTag>(); }
 
-        protected override void OnCreate()
+        public void OnUpdate(ref SystemState state)
         {
-            _inputSystemActions = new InputSystem_Actions();
-            _inputSystemActions.Player.Enable();
+            var keyboard = Keyboard.current;
 
-            RequireForUpdate<PlayerTag>();
-            RequireForUpdate<TurretDeploymentInputComponent>();
-        }
+            uint selectedInput = 0;
 
-        protected override void OnDestroy() { _inputSystemActions.Player.Disable(); }
+            // Directions
+            selectedInput |= (uint)math.select(0 , 1 , keyboard.wKey.isPressed || keyboard.upArrowKey.isPressed); // Up
+            selectedInput |= (uint)math.select(0 , 2 , keyboard.sKey.isPressed || keyboard.downArrowKey.isPressed); // Down
+            selectedInput |= (uint)math.select(0 , 4 , keyboard.aKey.isPressed || keyboard.leftArrowKey.isPressed); // Left
+            selectedInput |= (uint)math.select(0 , 8 , keyboard.dKey.isPressed || keyboard.rightArrowKey.isPressed); // Right
 
-        protected override void OnUpdate()
-        {
-            foreach((RefRW<DashInputComponent> dashInputComponent , RefRW<MovementInputComponent> movementInputComponent , RefRW<ScatterTurretInputComponent> scatterTurretInputComponent , RefRW<StrikerTurretInputComponent> strikerTurretInputComponent , RefRW<TurretDeploymentInputComponent> turretDeploymentInputComponent) in SystemAPI.Query<RefRW<DashInputComponent> , RefRW<MovementInputComponent> , RefRW<ScatterTurretInputComponent> , RefRW<StrikerTurretInputComponent> , RefRW<TurretDeploymentInputComponent>>().WithAll<PlayerTag>())
-            {
-                dashInputComponent.ValueRW.IsPressed = _inputSystemActions.Player.Dash.ReadValue<float>();
-                movementInputComponent.ValueRW.Input = math.normalizesafe(_inputSystemActions.Player.Move.ReadValue<Vector2>());
-                scatterTurretInputComponent.ValueRW.Input = _inputSystemActions.Player.ScatterTurret.ReadValue<float>();
-                strikerTurretInputComponent.ValueRW.Input = _inputSystemActions.Player.StrikerTurret.ReadValue<float>();
-                turretDeploymentInputComponent.ValueRW.IsPressed = math.select(0f , 1f , _inputSystemActions.Player.Deploy.WasPressedThisFrame());
-            }
+            // Actions
+            selectedInput |= (uint)math.select(0 , 16 , keyboard.leftShiftKey.wasPressedThisFrame); // Dash
+            selectedInput |= (uint)math.select(0 , 32 , keyboard.spaceKey.wasPressedThisFrame); // Deploy
+            selectedInput |= (uint)math.select(0 , 64 , keyboard.digit1Key.wasPressedThisFrame); // Striker
+            selectedInput |= (uint)math.select(0 , 128 , keyboard.digit2Key.wasPressedThisFrame); // Scatter
+
+            foreach(var input in SystemAPI.Query<RefRW<PlayerInputComponent>>().WithAll<PlayerTag>()) { input.ValueRW.SelectedInput = selectedInput; }
         }
     }
 }

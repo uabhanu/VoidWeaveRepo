@@ -45,11 +45,6 @@ namespace Components
         public float Duration;
     }
 
-    public struct DashInputComponent : IComponentData
-    {
-        public float IsPressed;
-    }
-
     public struct DashMultiplierComponent : IComponentData
     {
         public float Multiplier;
@@ -129,10 +124,10 @@ namespace Components
     {
         public float Speed;
     }
-
-    public struct MovementInputComponent : IComponentData
+    
+    public struct PlayerInputComponent : IComponentData
     {
-        public float2 Input;
+        public uint SelectedInput; 
     }
     
     // How many projectiles spawn per shot
@@ -167,12 +162,6 @@ namespace Components
         public Entity Entity;
     }
     
-    // 1.0 if pressed
-    public struct ScatterTurretInputComponent : IComponentData
-    {
-        public float Input;
-    }
-    
     public struct SelectedTurretCostComponent : IComponentData
     {
         public int Cost;
@@ -204,12 +193,6 @@ namespace Components
     {
         public Entity Entity;
     }
-    
-    // 1.0 if pressed
-    public struct StrikerTurretInputComponent : IComponentData
-    {
-        public float Input;
-    }
 
     public struct TargetPositionComponent : IComponentData
     {
@@ -226,14 +209,14 @@ namespace Components
         public Entity Entity;
     }
 
-    public struct TurretDeploymentInputComponent : IComponentData
-    {
-        public float IsPressed;
-    }
-
     public struct TurretEntityComponent : IComponentData
     {
         public Entity Entity;
+    }
+    
+    public struct VelocityComponent : IComponentData
+    {
+        public float2 Velocity;
     }
     
     // The starting number of enemies for Wave 1

@@ -18,16 +18,17 @@ namespace Systems
     [BurstCompile]
     public partial struct TurretSelectionJob : IJobEntity
     {
-        private void Execute(in ScatterTurretCostComponent scatterTurretCostComponent , in ScatterTurretEntityComponent scatterTurretEntityComponent , in ScatterTurretInputComponent scatterTurretInputComponent , ref SelectedTurretCostComponent selectedTurretCostComponent , ref SelectedTurretEntityComponent selectedTurretEntityComponent , in StrikerTurretCostComponent strikerTurretCostComponent , in StrikerTurretEntityComponent strikerTurretEntityComponent , in StrikerTurretInputComponent strikerTurretInputComponent)
+        private void Execute(in PlayerInputComponent playerInputComponent , in ScatterTurretCostComponent scatterTurretCostComponent , in ScatterTurretEntityComponent scatterTurretEntityComponent , ref SelectedTurretCostComponent selectedTurretCostComponent , ref SelectedTurretEntityComponent selectedTurretEntityComponent , in StrikerTurretCostComponent strikerTurretCostComponent , in StrikerTurretEntityComponent strikerTurretEntityComponent)
         {
-            // Default to current -> If Scatter Pressed, pick Scatter -> If Striker Pressed, pick Striker (Priority to Striker)
-            // Select Entity (Ternary is required for Entity struct, but logic is branchless)
-            selectedTurretEntityComponent.Entity = scatterTurretInputComponent.Input > 0.5f ? scatterTurretEntityComponent.Entity : selectedTurretEntityComponent.Entity;
-            selectedTurretEntityComponent.Entity = strikerTurretInputComponent.Input > 0.5f ? strikerTurretEntityComponent.Entity : selectedTurretEntityComponent.Entity;
-            
-            // Select Cost (math.select is strictly branchless)
-            selectedTurretCostComponent.Cost = math.select(selectedTurretCostComponent.Cost , scatterTurretCostComponent.Cost , scatterTurretInputComponent.Input > 0.5f);
-            selectedTurretCostComponent.Cost = math.select(selectedTurretCostComponent.Cost , strikerTurretCostComponent.Cost , strikerTurretInputComponent.Input > 0.5f);
+            // SelectedInput & 128 = Scatter (Key 2) , SelectedInput & 64 = Striker (Key 1)
+
+            // Select Entity
+            selectedTurretEntityComponent.Entity = (playerInputComponent.SelectedInput & 128) != 0 ? scatterTurretEntityComponent.Entity : selectedTurretEntityComponent.Entity;
+            selectedTurretEntityComponent.Entity = (playerInputComponent.SelectedInput & 64) != 0 ? strikerTurretEntityComponent.Entity : selectedTurretEntityComponent.Entity;
+
+            // Select Cost
+            selectedTurretCostComponent.Cost = math.select(selectedTurretCostComponent.Cost , scatterTurretCostComponent.Cost , (playerInputComponent.SelectedInput & 128) != 0);
+            selectedTurretCostComponent.Cost = math.select(selectedTurretCostComponent.Cost , strikerTurretCostComponent.Cost , (playerInputComponent.SelectedInput & 64) != 0);
         }
     }
 }
