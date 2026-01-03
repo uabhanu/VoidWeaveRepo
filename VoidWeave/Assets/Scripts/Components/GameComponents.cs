@@ -49,11 +49,6 @@ namespace Components
     {
         public float Multiplier;
     }
-    
-    public struct EnemyAttackRangeComponent : IComponentData
-    {
-        public float Range;
-    }
 
     public struct EnemyEntityComponent : IComponentData
     {

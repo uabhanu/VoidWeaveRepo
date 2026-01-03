@@ -26,6 +26,7 @@ namespace Entities
                 AddComponent(entity , new LootEntityComponent { Entity = GetEntity(authoring.lootPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new MeleeAttackRateComponent { MeleeAttackRate = authoring.meleeAttackRate });
                 AddComponent(entity , new MoveSpeedComponent { Speed = authoring.moveSpeed });
+                AddComponent(entity , new RangeComponent());
                 AddComponent(entity , new TargetPositionComponent());
                 AddComponent(entity , new TeamComponent { ID = authoring.teamID });
                 
