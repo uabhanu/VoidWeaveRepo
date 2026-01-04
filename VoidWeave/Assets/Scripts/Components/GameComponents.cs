@@ -4,6 +4,11 @@ namespace Components
     using Unity.Mathematics;
 
     #region Components
+    
+    public struct AttackRateComponent : IComponentData
+    {
+        public float AttackRate;
+    }
 
     public struct BaseMoveSpeedComponent : IComponentData
     {
@@ -49,11 +54,6 @@ namespace Components
     {
         public float Multiplier;
     }
-    
-    public struct EnemyAttackRangeComponent : IComponentData
-    {
-        public float Range;
-    }
 
     public struct EnemyEntityComponent : IComponentData
     {
@@ -90,11 +90,6 @@ namespace Components
         public float Timer;
     }
     
-    public struct FireRateComponent : IComponentData
-    {
-        public float FireRate;
-    }
-    
     public struct HealthComponent : IComponentData
     {
         public float Health;
@@ -113,11 +108,6 @@ namespace Components
     public struct LootEntityComponent : IComponentData
     {
         public Entity Entity;
-    }
-    
-    public struct MeleeAttackRateComponent : IComponentData
-    {
-        public float MeleeAttackRate;
     }
 
     public struct MoveSpeedComponent : IComponentData
@@ -282,14 +272,10 @@ namespace Components
     public struct HasTargetTag : IComponentData {}
 
     public struct LootPickupTag : IComponentData {}
-    
-    public struct MeleeAttackEventTag : IComponentData {}
 
     public struct PlayerTag : IComponentData {}
 
     public struct ProjectileTag : IComponentData {}
-    
-    public struct ProjectileSpawnedEventTag : IComponentData {}
 
     public struct ScatterTurretTag : IComponentData {}
     

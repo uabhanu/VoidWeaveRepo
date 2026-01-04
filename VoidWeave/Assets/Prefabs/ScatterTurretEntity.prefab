@@ -45,16 +45,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d0f14928652cc04d95f6b771dbef7ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entities.ScatterTurretEntity
+  attackRate: 0.5
   bulletPrefab: {fileID: 7884734006532612169, guid: a34abe5c560aeac4b861daec3f6f2095, type: 3}
   cooldownTime: 2.5
   damage: 12.2
   deploymentCost: 150
-  fireRate: 0.5
   projectileCount: 3
   range: 5.5
   spreadDegrees: 30
+  teamID: 0
 --- !u!212 &4566786177806168792
 SpriteRenderer:
+  serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -100,6 +102,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
   m_Color: {r: 0, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -109,5 +112,4 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
   m_SpriteSortPoint: 0
