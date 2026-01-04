@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f38b4e5478b0904193189668a74c539, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entities.EnemyEntity
-  meleeAttackRate: 4.5
+  attackRate: 2.5
   damage: 10
   health: 100
   lootAmount: 15

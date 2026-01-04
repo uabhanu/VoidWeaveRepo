@@ -6,7 +6,7 @@ namespace Entities
 
     public class MeleeEnemyEntity : MonoBehaviour
     {
-        [SerializeField] private float meleeAttackRate;
+        [SerializeField] private float attackRate;
         [SerializeField] private int damage;
         [SerializeField] private int health;
         [SerializeField] private int lootAmount;
@@ -19,12 +19,13 @@ namespace Entities
             public override void Bake(MeleeEnemyEntity authoring)
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-
+                
+                AddComponent(entity , new AttackRateComponent { AttackRate = authoring.attackRate });
+                AddComponent(entity , new CooldownComponent());
                 AddComponent(entity , new DamageComponent { Damage = authoring.damage });
                 AddComponent(entity , new HealthComponent { Health = authoring.health });
                 AddComponent(entity , new LootAmountComponent { Amount = authoring.lootAmount });
                 AddComponent(entity , new LootEntityComponent { Entity = GetEntity(authoring.lootPrefab , TransformUsageFlags.Dynamic) });
-                AddComponent(entity , new MeleeAttackRateComponent { MeleeAttackRate = authoring.meleeAttackRate });
                 AddComponent(entity , new MoveSpeedComponent { Speed = authoring.moveSpeed });
                 AddComponent(entity , new RangeComponent());
                 AddComponent(entity , new TargetPositionComponent());

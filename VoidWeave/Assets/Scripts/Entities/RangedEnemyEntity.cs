@@ -6,8 +6,8 @@ namespace Entities
 
     public class RangedEnemyEntity : MonoBehaviour
     {
+        [SerializeField] private float attackRate;
         [SerializeField] private int damage;
-        [SerializeField] private float fireRate;
         [SerializeField] private int health;
         [SerializeField] private int lootAmount;
         [SerializeField] private GameObject lootPrefab;
@@ -24,10 +24,11 @@ namespace Entities
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
                 
+                AddComponent(entity , new AttackRateComponent { AttackRate = authoring.attackRate });
                 AddComponent(entity , new BulletEntityComponent { Entity = GetEntity(authoring.projectilePrefab , TransformUsageFlags.Dynamic) });
+                AddComponent(entity , new CooldownComponent());
                 AddComponent(entity , new DamageComponent { Damage = authoring.damage });
                 AddComponent(entity , new EnemyReloadTimerComponent { Timer = 0f });
-                AddComponent(entity , new FireRateComponent { FireRate = authoring.fireRate });
                 AddComponent(entity , new HealthComponent { Health = authoring.health });
                 AddComponent(entity , new LootAmountComponent { Amount = authoring.lootAmount });
                 AddComponent(entity , new LootEntityComponent { Entity = GetEntity(authoring.lootPrefab , TransformUsageFlags.Dynamic) });

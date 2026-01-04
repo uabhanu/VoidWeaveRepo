@@ -45,8 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 832818a5a8bf8c747a7e4c3b2623053e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entities.RangedEnemyEntity
+  attackRate: 3.1
   damage: 15
-  fireRate: 2.5
   health: 200
   lootAmount: 25
   lootPrefab: {fileID: 6983080911018168034, guid: 29b5c2b76e555c84c9ae88bcb6766676, type: 3}

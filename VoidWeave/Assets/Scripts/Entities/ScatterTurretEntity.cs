@@ -6,11 +6,11 @@ namespace Entities
 
     public class ScatterTurretEntity : MonoBehaviour
     {
+        [SerializeField] private float attackRate;
         [SerializeField] private GameObject bulletPrefab;
         [SerializeField] private float cooldownTime;
         [SerializeField] private float damage;
         [SerializeField] private int deploymentCost;
-        [SerializeField] private float fireRate;
         [SerializeField] private int projectileCount;
         [SerializeField] private float range;
         [SerializeField] private float spreadDegrees;
@@ -22,10 +22,10 @@ namespace Entities
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
                 
+                AddComponent(entity , new AttackRateComponent { AttackRate = authoring.attackRate });
                 AddComponent(entity , new BulletEntityComponent { Entity = GetEntity(authoring.bulletPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new DamageComponent { Damage = authoring.damage });
                 AddComponent(entity , new CooldownComponent { Timer = authoring.cooldownTime });
-                AddComponent(entity , new FireRateComponent { FireRate = authoring.fireRate });
                 AddComponent(entity , new ProjectileCountComponent { Count = authoring.projectileCount });
                 AddComponent(entity , new RangeComponent { Range = authoring.range });
                 AddComponent(entity , new ScatterTurretCostComponent { Cost = authoring.deploymentCost });

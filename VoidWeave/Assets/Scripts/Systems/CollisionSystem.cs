@@ -58,21 +58,21 @@ namespace Systems
         [ReadOnly] public NativeArray<LocalToWorld> TargetPositionsNativeArray;
         [ReadOnly] public NativeArray<TeamComponent> TargetTeamComponentsNativeArray;
 
-        private void Execute(in DamageComponent damageComponent , Entity entity , in LocalToWorld localToWorld , [EntityIndexInQuery] int sortKey , in TeamComponent teamComponent)
+        private void Execute(in DamageComponent damageComponent , Entity entity , [EntityIndexInQuery] int entityIndexInQuery , in LocalToWorld localToWorld , in TeamComponent teamComponent)
         {
             for(int i = 0 ; i < TargetPositionsNativeArray.Length ; i++)
             {
                 bool isHit = math.distancesq(localToWorld.Position , TargetPositionsNativeArray[i].Position) <= HitRadiusSq && teamComponent.ID != TargetTeamComponentsNativeArray[i].ID;
 
                 // ADD DAMAGE EVENT
-                for(int k = 0 ; k < math.select(0 , 1 , isHit) ; k++) { ECB.AddComponent(sortKey , TargetEntitiesNativeArray[i] , new DamageEventComponent { Damage = (int)damageComponent.Damage }); }
+                for(int k = 0 ; k < math.select(0 , 1 , isHit) ; k++) { ECB.AddComponent(entityIndexInQuery , TargetEntitiesNativeArray[i] , new DamageEventComponent { Damage = (int)damageComponent.Damage }); }
 
                 // KILL SELF (Only if KillSelf is 1)
-                for(int k = 0 ; k < math.select(0 , 1 , isHit && KillSelf == 1) ; k++) { ECB.AddComponent<DeathTag>(sortKey , entity); }
+                for(int k = 0 ; k < math.select(0 , 1 , isHit && KillSelf == 1) ; k++) { ECB.AddComponent<DeathTag>(entityIndexInQuery , entity); }
                 
                 // MELEE HIT TRIGGER (Enemies)
                 // If we hit and we are an Enemy (KillSelf=0), add Tag to Self to trigger cooldown
-                for(int k = 0 ; k < math.select(0 , 1 , isHit && KillSelf == 0) ; k++) { ECB.AddComponent<MeleeAttackEventTag>(sortKey , entity); }
+                for(int k = 0 ; k < math.select(0 , 1 , isHit && KillSelf == 0) ; k++) { ECB.AddComponent<CanMeleeAttackTag>(entityIndexInQuery , entity); }
             }
         }
     }
