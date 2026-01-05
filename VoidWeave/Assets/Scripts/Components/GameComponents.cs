@@ -14,6 +14,21 @@ namespace Components
     {
         public float Speed;
     }
+    
+    public struct BeamTurretCostComponent : IComponentData
+    {
+        public int Cost;
+    }
+
+    public struct BeamTurretEntityComponent : IComponentData
+    {
+        public Entity Entity;
+    }
+    
+    public struct BeamTurretLevelComponent : IComponentData
+    {
+        public int Level;
+    }
 
     public struct BulletEntityComponent : IComponentData
     {
@@ -64,12 +79,12 @@ namespace Components
     {
         public float Rate;
     }
-
+    
     public struct EnemyProjectilePrefabComponent : IComponentData
     {
         public Entity Prefab;
     }
-
+    
     public struct EnemyReloadTimerComponent : IComponentData
     {
         public float Timer;
@@ -108,6 +123,11 @@ namespace Components
     public struct LootEntityComponent : IComponentData
     {
         public Entity Entity;
+    }
+    
+    public struct MaxTurretsComponent : IComponentData
+    {
+        public int MaxTurrets;
     }
 
     public struct MoveSpeedComponent : IComponentData
@@ -152,6 +172,11 @@ namespace Components
         public Entity Entity;
     }
     
+    public struct ScatterTurretLevelComponent : IComponentData
+    {
+        public int Level;
+    }
+    
     public struct SelectedTurretCostComponent : IComponentData
     {
         public int Cost;
@@ -183,6 +208,11 @@ namespace Components
     {
         public Entity Entity;
     }
+    
+    public struct StrikerTurretLevelComponent : IComponentData
+    {
+        public int Level;
+    }
 
     public struct TargetPositionComponent : IComponentData
     {
@@ -198,10 +228,10 @@ namespace Components
     {
         public Entity Entity;
     }
-
-    public struct TurretEntityComponent : IComponentData
+    
+    public struct UnlockedTurretsComponent : IComponentData
     {
-        public Entity Entity;
+        public uint UnlockedTurretsBitmask; 
     }
     
     public struct VelocityComponent : IComponentData
@@ -255,6 +285,8 @@ namespace Components
 
     #region Tags
     
+    public struct BeamTurretTag : IComponentData {}
+    
     public struct CanShootTag : IComponentData {}
     
     public struct CanMeleeAttackTag : IComponentData {}
@@ -284,6 +316,14 @@ namespace Components
     public struct SquareEnemyTag : IComponentData {}
 
     public struct StrikerTurretTag : IComponentData {}
+    
+    public struct UpgradeBeamTurretTag : IComponentData {}
+    
+    public struct UpgradeMaxTurretsTag : IComponentData {}
+    
+    public struct UpgradeScatterTurretTag : IComponentData {}
+    
+    public struct UpgradeStrikerTurretTag : IComponentData {}
 
     #endregion
 }

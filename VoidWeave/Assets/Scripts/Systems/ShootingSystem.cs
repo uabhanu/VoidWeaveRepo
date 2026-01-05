@@ -27,7 +27,7 @@ namespace Systems
     {
         public EntityCommandBuffer.ParallelWriter ECB;
         
-        private void Execute(in BulletEntityComponent bulletEntityComponent , RefRW<CooldownComponent> cooldownComponent , in DamageComponent damageComponent , Entity entity , [EntityIndexInQuery] int entityIndexInQuery , in AttackRateComponent attackRateComponent , in LocalToWorld localToWorld , in ProjectileCountComponent projectileCountComponent , in SpreadComponent spreadComponent , in TargetPositionComponent targetPositionComponent)
+        private void Execute(in BulletEntityComponent bulletEntityComponent , RefRW<CooldownComponent> cooldownComponent , in DamageComponent damageComponent , [EntityIndexInQuery] int entityIndexInQuery , in AttackRateComponent attackRateComponent , in LocalToWorld localToWorld , in ProjectileCountComponent projectileCountComponent , in SpreadComponent spreadComponent , in TargetPositionComponent targetPositionComponent)
         {
             // Check Condition
             bool isReady = cooldownComponent.ValueRO.Timer <= 0;

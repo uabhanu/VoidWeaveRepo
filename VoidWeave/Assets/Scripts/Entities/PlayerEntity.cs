@@ -6,6 +6,8 @@ namespace Entities
 
     public class PlayerEntity : MonoBehaviour
     {
+        [SerializeField] private int beamTurretCost;
+        [SerializeField] private GameObject beamTurretPrefab;
         [SerializeField] private float dashCooldownTimer; // Time before next dash   
         [SerializeField] private float dashDuration; // Length of dash   
         [SerializeField] private float dashMultiplier; // Speed boost (5 * 5 = 25 units/sec)
@@ -25,6 +27,8 @@ namespace Entities
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
                 AddComponent(entity , new BaseMoveSpeedComponent { Speed = authoring.moveSpeed });
+                AddComponent(entity , new BeamTurretCostComponent { Cost = authoring.beamTurretCost });
+                AddComponent(entity , new BeamTurretEntityComponent { Entity = GetEntity(authoring.beamTurretPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new CurrentEnergyComponent { Energy = authoring.startingResources });
                 AddComponent(entity , new DashCooldownComponent { Timer = authoring.dashCooldownTimer });
                 AddComponent(entity , new DashDurationComponent { Duration = authoring.dashDuration });
@@ -32,8 +36,8 @@ namespace Entities
                 AddComponent(entity , new HealthComponent { Health = authoring.health });
                 AddComponent(entity , new MoveSpeedComponent { Speed = authoring.moveSpeed });
                 AddComponent(entity , new PlayerInputComponent());
-                AddComponent(entity , new ScatterTurretEntityComponent { Entity = GetEntity(authoring.scatterTurretPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new ScatterTurretCostComponent { Cost = authoring.scatterTurretCost });
+                AddComponent(entity , new ScatterTurretEntityComponent { Entity = GetEntity(authoring.scatterTurretPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new SelectedTurretCostComponent { Cost = authoring.strikerTurretCost });
                 AddComponent(entity , new SelectedTurretEntityComponent { Entity = GetEntity(authoring.strikerTurretPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new StrikerTurretCostComponent { Cost = authoring.strikerTurretCost });
