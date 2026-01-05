@@ -276,6 +276,8 @@ namespace Components
     public struct PlayerTag : IComponentData {}
 
     public struct ProjectileTag : IComponentData {}
+    
+    public struct RestartTag : IComponentData {}
 
     public struct ScatterTurretTag : IComponentData {}
     
