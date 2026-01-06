@@ -7,6 +7,8 @@ namespace Systems
     using Unity.Transforms;
 
     [UpdateInGroup(typeof(SimulationSystemGroup))]
+    [UpdateAfter(typeof(WaveSystem))]
+    [UpdateAfter(typeof(LevelProgressionSystem))]
     public partial struct EnemySpawningSystem : ISystem
     {
         [BurstCompile]
@@ -18,7 +20,7 @@ namespace Systems
         }
 
         [BurstCompile]
-        public void OnUpdate(ref SystemState systemState) { systemState.Dependency = new EnemySpawnJob { DeltaTime = SystemAPI.Time.DeltaTime , EntityCommandBufferParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , PlayerCount = SystemAPI.QueryBuilder().WithAll<PlayerTag>().WithNone<DeathTag>().Build().CalculateEntityCount() , UnlockedEnemiesBitmask = SystemAPI.GetSingleton<UnlockedEnemiesComponent>().UnlockedEnemiesBitmask }.ScheduleParallel(systemState.Dependency); }
+        public void OnUpdate(ref SystemState systemState) { systemState.Dependency = new EnemySpawnJob { DeltaTime = SystemAPI.Time.DeltaTime , EntityCommandBufferParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , PlayerCount = SystemAPI.QueryBuilder().WithAll<PlayerTag>().WithNone<DeathTag>().Build().CalculateEntityCount() , }.ScheduleParallel(systemState.Dependency); }
     }
 
     [BurstCompile]
@@ -27,33 +29,34 @@ namespace Systems
         public float DeltaTime;
         public EntityCommandBuffer.ParallelWriter EntityCommandBufferParallelWriter;
         public int PlayerCount;
-        public uint UnlockedEnemiesBitmask;
 
-        private void Execute([EntityIndexInQuery] int entityInQueryIndex , in EnemySpawnRadiusComponent enemySpawnRadiusComponent , in EnemySpawnRateComponent enemySpawnRateComponent , ref EnemySpawnTimerComponent enemySpawnTimerComponent , in LineEnemyEntityComponent lineEnemyEntityComponent , in LocalTransform localTransform , ref RandomComponent randomComponent , in SquareEnemyEntityComponent squareEnemyEntityComponent , in TriangleEnemyEntityComponent triangleEnemyEntityComponent , in WaveStateComponent waveStateComponent , ref WaveStockComponent waveStockComponent)
+        private void Execute([EntityIndexInQuery] int entityInQueryIndex , in EnemySpawnRadiusComponent enemySpawnRadiusComponent , in EnemySpawnRateComponent enemySpawnRateComponent , ref EnemySpawnTimerComponent enemySpawnTimerComponent , in LineEnemyEntityComponent lineEnemyEntityComponent , in LocalTransform localTransform , ref RandomComponent randomComponent , in SquareEnemyEntityComponent squareEnemyEntityComponent , in TriangleEnemyEntityComponent triangleEnemyEntityComponent , in UnlockedEnemiesComponent unlockedEnemiesComponent , in WaveStateComponent waveStateComponent , ref WaveStockComponent waveStockComponent)
         {
             enemySpawnTimerComponent.Timer -= DeltaTime;
 
-            for(int i = 0 ; i < math.select(0 , 1 , enemySpawnTimerComponent.Timer <= 0f && PlayerCount > 0 && waveStateComponent.State == 1 && waveStockComponent.Stock > 0) ; i++)
+            bool canSpawn = enemySpawnTimerComponent.Timer <= 0f && PlayerCount > 0 && waveStateComponent.State == 1 && waveStockComponent.Stock > 0;
+
+            for(int i = 0 ; i < math.select(0 , 1 , canSpawn) ; i++)
             {
                 int selection = randomComponent.Random.NextInt(0 , 3);
 
-                // Check if the selected enemy is unlocked in the mask (Triangle=1, Line=2, Square=4)
-                bool isUnlocked = (UnlockedEnemiesBitmask & (1u << selection)) != 0;
+                // Check if the selected enemy is unlocked
+                bool isUnlocked = (unlockedEnemiesComponent.UnlockedEnemiesBitmask & (1u << selection)) != 0;
 
-                // If the selected enemy is NOT unlocked, force selection to 0 (Triangle)
+                // If NOT unlocked, force selection to 0 (Triangle)
                 selection = math.select(0 , selection , isUnlocked);
 
                 Entity newEnemy = EntityCommandBufferParallelWriter.Instantiate(entityInQueryIndex , selection == 1 ? lineEnemyEntityComponent.Entity : (selection == 2 ? squareEnemyEntityComponent.Entity : triangleEnemyEntityComponent.Entity));
 
                 EntityCommandBufferParallelWriter.SetComponent(entityInQueryIndex , newEnemy , LocalTransform.FromPosition(localTransform.Position + new float3(randomComponent.Random.NextFloat2Direction() * enemySpawnRadiusComponent.Radius , 0f)));
-
+                
                 for(int k = 0 ; k < math.select(0 , 1 , selection == 0) ; k++) { EntityCommandBufferParallelWriter.AddComponent<TriangleEnemyTag>(entityInQueryIndex , newEnemy); }
                 for(int k = 0 ; k < math.select(0 , 1 , selection == 1) ; k++) { EntityCommandBufferParallelWriter.AddComponent<LineEnemyTag>(entityInQueryIndex , newEnemy); }
                 for(int k = 0 ; k < math.select(0 , 1 , selection == 2) ; k++) { EntityCommandBufferParallelWriter.AddComponent<SquareEnemyTag>(entityInQueryIndex , newEnemy); }
             }
 
-            waveStockComponent.Stock -= math.select(0 , 1 , enemySpawnTimerComponent.Timer <= 0f && waveStateComponent.State == 1 && waveStockComponent.Stock > 0);
-            enemySpawnTimerComponent.Timer = math.select(enemySpawnTimerComponent.Timer , enemySpawnRateComponent.Rate , enemySpawnTimerComponent.Timer <= 0f && waveStateComponent.State == 1 && waveStockComponent.Stock > 0);
+            enemySpawnTimerComponent.Timer = math.select(enemySpawnTimerComponent.Timer , enemySpawnRateComponent.Rate , canSpawn);
+            waveStockComponent.Stock -= math.select(0 , 1 , canSpawn);
         }
     }
 }

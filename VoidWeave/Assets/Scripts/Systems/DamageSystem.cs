@@ -10,10 +10,10 @@ namespace Systems
     public partial struct DamageSystem : ISystem
     {
         [BurstCompile]
-        public void OnCreate(ref SystemState state) { state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>(); }
+        public void OnCreate(ref SystemState systemState) { systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>(); }
 
         [BurstCompile]
-        public void OnUpdate(ref SystemState state) { state.Dependency = new DamageJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter() }.ScheduleParallel(state.Dependency); }
+        public void OnUpdate(ref SystemState systemState) { systemState.Dependency = new DamageJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() }.ScheduleParallel(systemState.Dependency); }
     }
 
     [BurstCompile]
@@ -23,14 +23,13 @@ namespace Systems
     {
         public EntityCommandBuffer.ParallelWriter ECB;
 
-        private void Execute(in DamageEventComponent damageEventComponent , Entity entity , ref HealthComponent healthComponent , [EntityIndexInQuery] int sortKey)
+        private void Execute(in DamageEventComponent damageEventComponent , Entity entity , [EntityIndexInQuery] int entityIndexInQuery , ref CurrentHealthComponent currentHealthComponent)
         {
-            healthComponent.Health -= damageEventComponent.Damage;
+            currentHealthComponent.CurrentHealth -= damageEventComponent.Damage;
             
-            // If Health <= 0, we Add DeathTag
-            for(int i = 0 ; i < math.select(0 , 1 , healthComponent.Health <= 0) ; i++) { ECB.AddComponent<DeathTag>(sortKey , entity); }
+            for(int i = 0 ; i < math.select(0 , 1 , currentHealthComponent.CurrentHealth <= 0) ; i++) { ECB.AddComponent<DeathTag>(entityIndexInQuery , entity); }
             
-            ECB.RemoveComponent<DamageEventComponent>(sortKey , entity);
+            ECB.RemoveComponent<DamageEventComponent>(entityIndexInQuery , entity);
         }
     }
 }

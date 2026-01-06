@@ -47,9 +47,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Entities.EnemyEntity
   attackRate: 1.8
   damage: 5
-  health: 50
   lootAmount: 5
   lootPrefab: {fileID: 6983080911018168034, guid: 29b5c2b76e555c84c9ae88bcb6766676, type: 3}
+  maxHealth: 50
   moveSpeed: 3.8
   teamID: 1
 --- !u!212 &3166609023252933345

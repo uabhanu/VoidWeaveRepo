@@ -45,6 +45,11 @@ namespace Components
         public int Energy;
     }
     
+    public struct CurrentHealthComponent : IComponentData
+    {
+        public float CurrentHealth;
+    }
+    
     public struct DamageComponent : IComponentData
     {
         public float Damage;
@@ -120,11 +125,6 @@ namespace Components
         public float Timer;
     }
     
-    public struct HealthComponent : IComponentData
-    {
-        public float Health;
-    }
-    
     public struct LevelComponent : IComponentData
     {
         public int Level;
@@ -143,6 +143,11 @@ namespace Components
     public struct LootEntityComponent : IComponentData
     {
         public Entity Entity;
+    }
+    
+    public struct MaxHealthComponent : IComponentData
+    {
+        public float MaxHealth;
     }
     
     public struct MaxTurretsComponent : IComponentData

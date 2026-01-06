@@ -148,17 +148,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd6dc88fc89b2bf42bd4816a77933097, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entities.EnemySpawnerEntity
-  attackRange: 4.5
   baseEnemies: 10
-  damage: 12.5
+  enemiesToKill: 20
+  enemiesToKillIncrement: 5
   enemyIncrement: 5
   enemySpawnRadius: 7.2
   enemySpawnRate: 2.1
-  fireRate: 3.5
   lineEnemyPrefab: {fileID: 2768343762146773365, guid: c5a66dd71980323478ef27cdd55a4a59, type: 3}
-  projectilePrefab: {fileID: 2547401122998454103, guid: d15cb9f62da5b1c4f8a5e85226bb4df7, type: 3}
   randomSeed: 1
   squareEnemyPrefab: {fileID: 5566403319572895637, guid: 3a11e4bdcdb3b4b40a107b434e2cb590, type: 3}
+  startingLevel: 1
   triangleEnemyPrefab: {fileID: 4429918964874133129, guid: fa278bf6dc9f86f4ca9633468be8bffb, type: 3}
   wavePrepDuration: 30
 --- !u!4 &587164563
