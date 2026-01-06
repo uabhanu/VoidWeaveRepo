@@ -141,6 +141,14 @@ Level 1 (Base) → Level 2 (+50%) → Level 3 (+100%)
 - **Behaviour:** Erratic movement, spawns in groups of 10-20
 - **Counter:** Scatter turrets + dash through gaps
 
+### ▬ Line - The Formation
+- **Health:** 100 HP
+- **Speed:** 2.5 units/sec (Medium)
+- **Damage:** Collision only
+- **Reward:** 15 resources
+- **Behaviour:** Moves in straight formations, spawns in groups of 5-10
+- **Counter:** Beam turrets + perpendicular dodging
+
 ### 🟥 Square - The Tank
 - **Health:** 200 HP
 - **Speed:** 1.5 units/sec (Slow)
@@ -149,14 +157,6 @@ Level 1 (Base) → Level 2 (+50%) → Level 3 (+100%)
 - **Reward:** 25 resources
 - **Behaviour:** Slow movement, shoots projectiles, high health
 - **Counter:** Striker turrets + kiting
-
-### ▬ Line - The Formation
-- **Health:** 100 HP
-- **Speed:** 2.5 units/sec (Medium)
-- **Damage:** Collision only
-- **Reward:** 15 resources
-- **Behaviour:** Moves in straight formations, spawns in groups of 5-10
-- **Counter:** Beam turrets + perpendicular dodging
 
 ---
 
