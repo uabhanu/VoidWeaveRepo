@@ -8,17 +8,26 @@ namespace Systems
     [UpdateAfter(typeof(CollisionSystem))]
     public partial struct DeathSystem : ISystem
     {
+        private EntityQuery _dyingEnemyEntityQuery;
+        
         [BurstCompile]
-        public void OnCreate(ref SystemState state)
+        public void OnCreate(ref SystemState systemState)
         {
-            state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
-            state.RequireForUpdate<DeathTag>();
+            _dyingEnemyEntityQuery = SystemAPI.QueryBuilder().WithAll<DeathTag , EnemyTag>().Build();
+            
+            systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
+            systemState.RequireForUpdate<DeathTag>();
+            systemState.RequireForUpdate<EnemiesKilledComponent>();
         }
 
         [BurstCompile]
-        public void OnUpdate(ref SystemState state)
+        public void OnUpdate(ref SystemState systemState)
         {
-            state.Dependency = new DeathJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter() }.ScheduleParallel(state.Dependency);
+            int killedCount = _dyingEnemyEntityQuery.CalculateEntityCount();
+
+            SystemAPI.GetSingletonRW<EnemiesKilledComponent>().ValueRW.KillsCount += killedCount;
+
+            systemState.Dependency = new DeathJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() }.ScheduleParallel(systemState.Dependency);
         }
     }
 

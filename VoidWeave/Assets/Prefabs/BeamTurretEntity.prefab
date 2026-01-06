@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Entities.BeamTurretEntity
   attackRate: 0
   bulletPrefab: {fileID: 5278438526807469363, guid: 8973a6bc2c34da34da2e944e8cfcef38, type: 3}
-  cooldownTime: 0.15
+  cooldownTime: 1.5
   damage: 5.5
   deploymentCost: 200
   projectileCount: 1

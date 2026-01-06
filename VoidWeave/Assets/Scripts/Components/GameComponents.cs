@@ -69,6 +69,21 @@ namespace Components
     {
         public float Multiplier;
     }
+    
+    public struct EnemiesKilledComponent : IComponentData
+    {
+        public int KillsCount;
+    }
+    
+    public struct EnemiesToKillComponent : IComponentData
+    {
+        public int EnemiesToKill;
+    }
+    
+    public struct EnemiesToKillIncrementComponent : IComponentData
+    {
+        public int EnemiesToKillIncrement;
+    }
 
     public struct EnemyEntityComponent : IComponentData
     {
@@ -108,6 +123,11 @@ namespace Components
     public struct HealthComponent : IComponentData
     {
         public float Health;
+    }
+    
+    public struct LevelComponent : IComponentData
+    {
+        public int Level;
     }
     
     public struct LineEnemyEntityComponent : IComponentData
@@ -229,6 +249,11 @@ namespace Components
         public Entity Entity;
     }
     
+    public struct UnlockedEnemiesComponent : IComponentData
+    {
+        public uint UnlockedEnemiesBitmask; 
+    }
+    
     public struct UnlockedTurretsComponent : IComponentData
     {
         public uint UnlockedTurretsBitmask; 
@@ -261,6 +286,11 @@ namespace Components
     public struct WavePrepDurationComponent : IComponentData
     {
         public float Duration;
+    }
+    
+    public struct WavesPerLevelComponent : IComponentData
+    {
+        public int WavesPerLevel;
     }
 
     // 0 = Preparation Phase, 1 = Combat Phase
