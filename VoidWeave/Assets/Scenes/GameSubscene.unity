@@ -149,12 +149,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entities.EnemySpawnerEntity
   baseEnemies: 10
+  damageMultiplierPerLevel: 0.2
   enemiesToKill: 20
   enemiesToKillIncrement: 5
   enemyIncrement: 5
   enemySpawnRadius: 7.2
   enemySpawnRate: 2.1
+  healthMultiplierPerLevel: 0.3
   lineEnemyPrefab: {fileID: 2768343762146773365, guid: c5a66dd71980323478ef27cdd55a4a59, type: 3}
+  lootMultiplierPerLevel: 0.25
   randomSeed: 1
   squareEnemyPrefab: {fileID: 5566403319572895637, guid: 3a11e4bdcdb3b4b40a107b434e2cb590, type: 3}
   startingLevel: 1

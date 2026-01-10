@@ -59,6 +59,11 @@ namespace Components
     {
         public float Damage;
     }
+    
+    public struct DamageMultiplierComponent : IComponentData
+    {
+        public float DamageMultiplier;
+    }
 
     public struct DashCooldownComponent : IComponentData
     {
@@ -125,6 +130,11 @@ namespace Components
         public float Timer;
     }
     
+    public struct HealthMultiplierComponent : IComponentData
+    {
+        public float HealthMultiplier;
+    }
+    
     public struct LevelComponent : IComponentData
     {
         public int Level;
@@ -143,6 +153,11 @@ namespace Components
     public struct LootEntityComponent : IComponentData
     {
         public Entity Entity;
+    }
+    
+    public struct LootMultiplierComponent : IComponentData
+    {
+        public float LootMultiplier;
     }
     
     public struct MaxHealthComponent : IComponentData
