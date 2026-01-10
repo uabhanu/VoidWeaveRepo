@@ -10,13 +10,13 @@ namespace Systems
     public partial struct TurretDeploymentSystem : ISystem
     {
         [BurstCompile]
-        public void OnCreate(ref SystemState state) { state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>(); }
+        public void OnCreate(ref SystemState systemState) { systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>(); }
 
         [BurstCompile]
-        public void OnUpdate(ref SystemState state)
+        public void OnUpdate(ref SystemState systemState)
         {
-            var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter();
-            new TurretDeploymentJob { EntityCommandBuffer = ecb }.ScheduleParallel();
+            var ecbParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
+            new TurretDeploymentJob { EntityCommandBuffer = ecbParallelWriter }.ScheduleParallel();
         }
     }
 
@@ -27,8 +27,7 @@ namespace Systems
 
         private void Execute(ref CurrentEnergyComponent currentEnergyComponent , [EntityIndexInQuery] int entityInQueryIndex , in LocalTransform localTransform , in PlayerInputComponent playerInputComponent , in SelectedTurretCostComponent selectedTurretCostComponent , in SelectedTurretEntityComponent selectedTurretEntityComponent)
         {
-            // SelectedInput & 32 corresponds to the Deploy input bit defined in InputSystem
-            for(int i = 0 ; i < math.select(0 , 1 , ((playerInputComponent.SelectedInput & 32) != 0) && (currentEnergyComponent.Energy >= selectedTurretCostComponent.Cost) && (selectedTurretEntityComponent.Entity != Entity.Null)) ; i++)
+            for(int i = 0 ; i < math.select(0 , 1 , (playerInputComponent.SelectedInput & 32) != 0 && currentEnergyComponent.Energy >= selectedTurretCostComponent.Cost && selectedTurretEntityComponent.Entity != Entity.Null) ; i++)
             {
                 Entity newTurret = EntityCommandBuffer.Instantiate(entityInQueryIndex , selectedTurretEntityComponent.Entity);
                 EntityCommandBuffer.SetComponent(entityInQueryIndex , newTurret , LocalTransform.FromPosition(localTransform.Position));

@@ -7,45 +7,124 @@ namespace Systems
     using Unity.Transforms;
 
     [UpdateInGroup(typeof(SimulationSystemGroup))]
+    [UpdateAfter(typeof(WaveSystem))]
+    [UpdateAfter(typeof(LevelProgressionSystem))]
     public partial struct EnemySpawningSystem : ISystem
     {
         [BurstCompile]
-        public void OnCreate(ref SystemState state)
+        public void OnCreate(ref SystemState systemState)
         {
-            state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
-            state.RequireForUpdate<EnemySpawnerTag>();
+            systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
+            systemState.RequireForUpdate(SystemAPI.QueryBuilder().WithAll<EnemySpawnerTag>().Build());
+            systemState.RequireForUpdate<LevelComponent>();
         }
 
         [BurstCompile]
-        public void OnUpdate(ref SystemState state) { state.Dependency = new EnemySpawnJob { DeltaTime = SystemAPI.Time.DeltaTime , EntityCommandBuffer = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter() , PlayerCount = SystemAPI.QueryBuilder().WithAll<PlayerTag>().WithNone<DeathTag>().Build().CalculateEntityCount() }.ScheduleParallel(state.Dependency); }
+        public void OnUpdate(ref SystemState systemState)
+        {
+            Entity spawnerEntity = SystemAPI.GetSingletonEntity<EnemySpawnerTag>();
+
+            Entity lineEnemyEntity = SystemAPI.GetComponent<LineEnemyEntityComponent>(spawnerEntity).Entity;
+            Entity squareEnemyEntity = SystemAPI.GetComponent<SquareEnemyEntityComponent>(spawnerEntity).Entity;
+            Entity triangleEnemyEntity = SystemAPI.GetComponent<TriangleEnemyEntityComponent>(spawnerEntity).Entity;
+
+            float lineEnemyBaseDamage = SystemAPI.GetComponent<DamageComponent>(lineEnemyEntity).Damage;
+            float lineEnemyBaseHealth = SystemAPI.GetComponent<MaxHealthComponent>(lineEnemyEntity).MaxHealth;
+            int lineEnemyBaseLoot = SystemAPI.GetComponent<LootAmountComponent>(lineEnemyEntity).Amount;
+
+            float squareEnemyBaseDamage = SystemAPI.GetComponent<DamageComponent>(squareEnemyEntity).Damage;
+            float squareEnemyBaseHealth = SystemAPI.GetComponent<MaxHealthComponent>(squareEnemyEntity).MaxHealth;
+            int squareEnemyBaseLoot = SystemAPI.GetComponent<LootAmountComponent>(squareEnemyEntity).Amount;
+
+            float triangleEnemyBaseDamage = SystemAPI.GetComponent<DamageComponent>(triangleEnemyEntity).Damage;
+            float triangleEnemyBaseHealth = SystemAPI.GetComponent<MaxHealthComponent>(triangleEnemyEntity).MaxHealth;
+            int triangleEnemyBaseLoot = SystemAPI.GetComponent<LootAmountComponent>(triangleEnemyEntity).Amount;
+
+            systemState.Dependency = new EnemySpawnJob
+            {
+                CurrentLevel = SystemAPI.GetSingleton<LevelComponent>().Level ,
+                DamageMultiplier = SystemAPI.GetComponent<DamageMultiplierComponent>(spawnerEntity).DamageMultiplier ,
+                DeltaTime = SystemAPI.Time.DeltaTime ,
+                EntityCommandBufferParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() ,
+                HealthMultiplier = SystemAPI.GetComponent<HealthMultiplierComponent>(spawnerEntity).HealthMultiplier ,
+                LineBaseDamage = lineEnemyBaseDamage ,
+                LineBaseHealth = lineEnemyBaseHealth ,
+                LineBaseLoot = lineEnemyBaseLoot ,
+                LootMultiplier = SystemAPI.GetComponent<LootMultiplierComponent>(spawnerEntity).LootMultiplier ,
+                PlayerCount = SystemAPI.QueryBuilder().WithAll<PlayerTag>().WithNone<DeathTag>().Build().CalculateEntityCount() ,
+                SquareBaseDamage = squareEnemyBaseDamage ,
+                SquareBaseHealth = squareEnemyBaseHealth ,
+                SquareBaseLoot = squareEnemyBaseLoot ,
+                TriangleBaseDamage = triangleEnemyBaseDamage ,
+                TriangleBaseHealth = triangleEnemyBaseHealth ,
+                TriangleBaseLoot = triangleEnemyBaseLoot ,
+            }.ScheduleParallel(systemState.Dependency);
+        }
     }
 
     [BurstCompile]
     public partial struct EnemySpawnJob : IJobEntity
     {
+        public int CurrentLevel;
+        public float DamageMultiplier;
         public float DeltaTime;
-        public EntityCommandBuffer.ParallelWriter EntityCommandBuffer;
+        public EntityCommandBuffer.ParallelWriter EntityCommandBufferParallelWriter;
+        public float HealthMultiplier;
+        public float LineBaseDamage;
+        public float LineBaseHealth;
+        public int LineBaseLoot;
+        public float LootMultiplier;
         public int PlayerCount;
+        public float SquareBaseDamage;
+        public float SquareBaseHealth;
+        public int SquareBaseLoot;
+        public float TriangleBaseDamage;
+        public float TriangleBaseHealth;
+        public int TriangleBaseLoot;
 
-        private void Execute([EntityIndexInQuery] int entityInQueryIndex , in EnemySpawnRadiusComponent enemySpawnRadiusComponent , in EnemySpawnRateComponent enemySpawnRateComponent , ref EnemySpawnTimerComponent enemySpawnTimerComponent , in LineEnemyEntityComponent lineEnemyEntityComponent , in LocalTransform localTransform , ref RandomComponent randomComponent , in SquareEnemyEntityComponent squareEnemyEntityComponent , in TriangleEnemyEntityComponent triangleEnemyEntityComponent , in WaveStateComponent waveStateComponent , ref WaveStockComponent waveStockComponent)
+        private void Execute([EntityIndexInQuery] int entityInQueryIndex , in EnemySpawnRadiusComponent enemySpawnRadiusComponent , in EnemySpawnRateComponent enemySpawnRateComponent , ref EnemySpawnTimerComponent enemySpawnTimerComponent , in LineEnemyEntityComponent lineEnemyEntityComponent , in LocalTransform localTransform , ref RandomComponent randomComponent , in SquareEnemyEntityComponent squareEnemyEntityComponent , in TriangleEnemyEntityComponent triangleEnemyEntityComponent , in UnlockedEnemiesComponent unlockedEnemiesComponent , in WaveStateComponent waveStateComponent , ref WaveStockComponent waveStockComponent)
         {
             enemySpawnTimerComponent.Timer -= DeltaTime;
 
-            for(int i = 0 ; i < math.select(0 , 1 , enemySpawnTimerComponent.Timer <= 0f && PlayerCount > 0 && waveStateComponent.State == 1 && waveStockComponent.Stock > 0) ; i++)
+            bool canSpawn = enemySpawnTimerComponent.Timer <= 0f && PlayerCount > 0 && waveStateComponent.State == 1 && waveStockComponent.Stock > 0;
+
+            for(int i = 0 ; i < math.select(0 , 1 , canSpawn) ; i++)
             {
-                int selection = randomComponent.Random.NextInt(0 , 3);
+                int enemyTypeIndex = randomComponent.Random.NextInt(0 , 3);
 
-                Entity newEnemy = EntityCommandBuffer.Instantiate(entityInQueryIndex , selection == 1 ? lineEnemyEntityComponent.Entity : (selection == 2 ? squareEnemyEntityComponent.Entity : triangleEnemyEntityComponent.Entity));
+                bool isUnlocked = (unlockedEnemiesComponent.UnlockedEnemiesBitmask & (1u << enemyTypeIndex)) != 0;
 
-                EntityCommandBuffer.SetComponent(entityInQueryIndex , newEnemy , LocalTransform.FromPosition(localTransform.Position + new float3(randomComponent.Random.NextFloat2Direction() * enemySpawnRadiusComponent.Radius , 0f)));
+                enemyTypeIndex = math.select(0 , enemyTypeIndex , isUnlocked);
+                
+                Entity enemyEntityToSpawn = enemyTypeIndex == 1 ? lineEnemyEntityComponent.Entity : enemyTypeIndex == 2 ? squareEnemyEntityComponent.Entity : triangleEnemyEntityComponent.Entity;
+                Entity newEnemyEntity = EntityCommandBufferParallelWriter.Instantiate(entityInQueryIndex , enemyEntityToSpawn);
 
-                for(int k = 0 ; k < math.select(0 , 1 , selection == 0) ; k++) { EntityCommandBuffer.AddComponent<TriangleEnemyTag>(entityInQueryIndex , newEnemy); }
-                for(int k = 0 ; k < math.select(0 , 1 , selection == 1) ; k++) { EntityCommandBuffer.AddComponent<LineEnemyTag>(entityInQueryIndex , newEnemy); }
-                for(int k = 0 ; k < math.select(0 , 1 , selection == 2) ; k++) { EntityCommandBuffer.AddComponent<SquareEnemyTag>(entityInQueryIndex , newEnemy); }
+                EntityCommandBufferParallelWriter.SetComponent(entityInQueryIndex , newEnemyEntity , LocalTransform.FromPosition(localTransform.Position + new float3(randomComponent.Random.NextFloat2Direction() * enemySpawnRadiusComponent.Radius , 0f)));
+                
+                // Logic: Start scaling ONLY after Level 3 (Triangle=1, Line=2, Square=3). Level 4 is the first boost.
+                float levelMultiplier = math.max(0 , CurrentLevel - 3);
+
+                float selectedEnemyBaseDamage = math.select(TriangleBaseDamage , math.select(LineBaseDamage , SquareBaseDamage , enemyTypeIndex == 2) , enemyTypeIndex >= 1);
+                int newDamage = (int)math.ceil(selectedEnemyBaseDamage * (1f + levelMultiplier * DamageMultiplier));
+                EntityCommandBufferParallelWriter.SetComponent(entityInQueryIndex , newEnemyEntity , new DamageComponent { Damage = newDamage });
+                
+                float selectedEnemyBaseHealth = math.select(TriangleBaseHealth , math.select(LineBaseHealth , SquareBaseHealth , enemyTypeIndex == 2) , enemyTypeIndex >= 1);
+                int newHealth = (int)math.ceil(selectedEnemyBaseHealth * (1f + levelMultiplier * HealthMultiplier));
+                EntityCommandBufferParallelWriter.SetComponent(entityInQueryIndex , newEnemyEntity , new CurrentHealthComponent { CurrentHealth = newHealth });
+                EntityCommandBufferParallelWriter.SetComponent(entityInQueryIndex , newEnemyEntity , new MaxHealthComponent { MaxHealth = newHealth });
+
+                int selectedEnemyBaseLoot = math.select(TriangleBaseLoot , math.select(LineBaseLoot , SquareBaseLoot , enemyTypeIndex == 2) , enemyTypeIndex >= 1);
+                int newLoot = (int)(selectedEnemyBaseLoot * (1f + (levelMultiplier * LootMultiplier)));
+
+                EntityCommandBufferParallelWriter.SetComponent(entityInQueryIndex , newEnemyEntity , new LootAmountComponent { Amount = newLoot });
+
+                for(int k = 0 ; k < math.select(0 , 1 , enemyTypeIndex == 0) ; k++) { EntityCommandBufferParallelWriter.AddComponent<TriangleEnemyTag>(entityInQueryIndex , newEnemyEntity); }
+                for(int k = 0 ; k < math.select(0 , 1 , enemyTypeIndex == 1) ; k++) { EntityCommandBufferParallelWriter.AddComponent<LineEnemyTag>(entityInQueryIndex , newEnemyEntity); }
+                for(int k = 0 ; k < math.select(0 , 1 , enemyTypeIndex == 2) ; k++) { EntityCommandBufferParallelWriter.AddComponent<SquareEnemyTag>(entityInQueryIndex , newEnemyEntity); }
             }
 
-            waveStockComponent.Stock -= math.select(0 , 1 , enemySpawnTimerComponent.Timer <= 0f && waveStateComponent.State == 1 && waveStockComponent.Stock > 0);
-            enemySpawnTimerComponent.Timer = math.select(enemySpawnTimerComponent.Timer , enemySpawnRateComponent.Rate , enemySpawnTimerComponent.Timer <= 0f && waveStateComponent.State == 1 && waveStockComponent.Stock > 0);
+            enemySpawnTimerComponent.Timer = math.select(enemySpawnTimerComponent.Timer , enemySpawnRateComponent.Rate , canSpawn);
+            waveStockComponent.Stock -= math.select(0 , 1 , canSpawn);
         }
     }
 }

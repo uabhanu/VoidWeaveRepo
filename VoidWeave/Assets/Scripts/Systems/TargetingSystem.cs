@@ -52,7 +52,7 @@ namespace Systems
     }
 
     [BurstCompile]
-    [WithAny(typeof(ScatterTurretTag) , typeof(StrikerTurretTag))]
+    [WithAny(typeof(BeamTurretTag) , typeof(ScatterTurretTag) , typeof(StrikerTurretTag))]
     public partial struct EnemyTheTargetJob : IJobEntity
     {
         public EntityCommandBuffer.ParallelWriter ECBParallelWriter;

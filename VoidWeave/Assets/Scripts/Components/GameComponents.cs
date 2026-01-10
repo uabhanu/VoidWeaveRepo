@@ -14,6 +14,21 @@ namespace Components
     {
         public float Speed;
     }
+    
+    public struct BeamTurretCostComponent : IComponentData
+    {
+        public int Cost;
+    }
+
+    public struct BeamTurretEntityComponent : IComponentData
+    {
+        public Entity Entity;
+    }
+    
+    public struct BeamTurretLevelComponent : IComponentData
+    {
+        public int Level;
+    }
 
     public struct BulletEntityComponent : IComponentData
     {
@@ -30,6 +45,11 @@ namespace Components
         public int Energy;
     }
     
+    public struct CurrentHealthComponent : IComponentData
+    {
+        public float CurrentHealth;
+    }
+    
     public struct DamageComponent : IComponentData
     {
         public float Damage;
@@ -38,6 +58,11 @@ namespace Components
     public struct DamageEventComponent : IComponentData
     {
         public float Damage;
+    }
+    
+    public struct DamageMultiplierComponent : IComponentData
+    {
+        public float DamageMultiplier;
     }
 
     public struct DashCooldownComponent : IComponentData
@@ -54,6 +79,21 @@ namespace Components
     {
         public float Multiplier;
     }
+    
+    public struct EnemiesKilledComponent : IComponentData
+    {
+        public int KillsCount;
+    }
+    
+    public struct EnemiesToKillComponent : IComponentData
+    {
+        public int EnemiesToKill;
+    }
+    
+    public struct EnemiesToKillIncrementComponent : IComponentData
+    {
+        public int EnemiesToKillIncrement;
+    }
 
     public struct EnemyEntityComponent : IComponentData
     {
@@ -64,12 +104,12 @@ namespace Components
     {
         public float Rate;
     }
-
+    
     public struct EnemyProjectilePrefabComponent : IComponentData
     {
         public Entity Prefab;
     }
-
+    
     public struct EnemyReloadTimerComponent : IComponentData
     {
         public float Timer;
@@ -90,9 +130,14 @@ namespace Components
         public float Timer;
     }
     
-    public struct HealthComponent : IComponentData
+    public struct HealthMultiplierComponent : IComponentData
     {
-        public float Health;
+        public float HealthMultiplier;
+    }
+    
+    public struct LevelComponent : IComponentData
+    {
+        public int Level;
     }
     
     public struct LineEnemyEntityComponent : IComponentData
@@ -108,6 +153,21 @@ namespace Components
     public struct LootEntityComponent : IComponentData
     {
         public Entity Entity;
+    }
+    
+    public struct LootMultiplierComponent : IComponentData
+    {
+        public float LootMultiplier;
+    }
+    
+    public struct MaxHealthComponent : IComponentData
+    {
+        public float MaxHealth;
+    }
+    
+    public struct MaxTurretsComponent : IComponentData
+    {
+        public int MaxTurrets;
     }
 
     public struct MoveSpeedComponent : IComponentData
@@ -152,6 +212,11 @@ namespace Components
         public Entity Entity;
     }
     
+    public struct ScatterTurretLevelComponent : IComponentData
+    {
+        public int Level;
+    }
+    
     public struct SelectedTurretCostComponent : IComponentData
     {
         public int Cost;
@@ -183,6 +248,11 @@ namespace Components
     {
         public Entity Entity;
     }
+    
+    public struct StrikerTurretLevelComponent : IComponentData
+    {
+        public int Level;
+    }
 
     public struct TargetPositionComponent : IComponentData
     {
@@ -198,10 +268,15 @@ namespace Components
     {
         public Entity Entity;
     }
-
-    public struct TurretEntityComponent : IComponentData
+    
+    public struct UnlockedEnemiesComponent : IComponentData
     {
-        public Entity Entity;
+        public uint UnlockedEnemiesBitmask; 
+    }
+    
+    public struct UnlockedTurretsComponent : IComponentData
+    {
+        public uint UnlockedTurretsBitmask; 
     }
     
     public struct VelocityComponent : IComponentData
@@ -232,6 +307,11 @@ namespace Components
     {
         public float Duration;
     }
+    
+    public struct WavesPerLevelComponent : IComponentData
+    {
+        public int WavesPerLevel;
+    }
 
     // 0 = Preparation Phase, 1 = Combat Phase
     public struct WaveStateComponent : IComponentData
@@ -255,6 +335,8 @@ namespace Components
 
     #region Tags
     
+    public struct BeamTurretTag : IComponentData {}
+    
     public struct CanShootTag : IComponentData {}
     
     public struct CanMeleeAttackTag : IComponentData {}
@@ -276,12 +358,22 @@ namespace Components
     public struct PlayerTag : IComponentData {}
 
     public struct ProjectileTag : IComponentData {}
+    
+    public struct RestartTag : IComponentData {}
 
     public struct ScatterTurretTag : IComponentData {}
     
     public struct SquareEnemyTag : IComponentData {}
 
     public struct StrikerTurretTag : IComponentData {}
+    
+    public struct UpgradeBeamTurretTag : IComponentData {}
+    
+    public struct UpgradeMaxTurretsTag : IComponentData {}
+    
+    public struct UpgradeScatterTurretTag : IComponentData {}
+    
+    public struct UpgradeStrikerTurretTag : IComponentData {}
 
     #endregion
 }
