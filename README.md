@@ -228,7 +228,7 @@ Level 1 (Base) → Level 2 (+50%) → Level 3 (+100%)
 - [x] Health and damage systems
 
 ### 📅 Phase 4: Progression & Polish
-- [ ] Upgrade system
+- [x] Upgrade system
 - [ ] UI/UX implementation
 - [ ] Visual effects
 - [ ] Audio
