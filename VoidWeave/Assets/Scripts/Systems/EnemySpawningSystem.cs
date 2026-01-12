@@ -7,7 +7,7 @@ namespace Systems
     using Unity.Transforms;
 
     [UpdateInGroup(typeof(SimulationSystemGroup))]
-    [UpdateAfter(typeof(WaveSystem))]
+    [UpdateAfter(typeof(WaveStateSystem))]
     [UpdateAfter(typeof(LevelProgressionSystem))]
     public partial struct EnemySpawningSystem : ISystem
     {
@@ -84,7 +84,7 @@ namespace Systems
 
         private void Execute([EntityIndexInQuery] int entityInQueryIndex , in EnemySpawnRadiusComponent enemySpawnRadiusComponent , in EnemySpawnRateComponent enemySpawnRateComponent , ref EnemySpawnTimerComponent enemySpawnTimerComponent , in LineEnemyEntityComponent lineEnemyEntityComponent , in LocalTransform localTransform , ref RandomComponent randomComponent , in SquareEnemyEntityComponent squareEnemyEntityComponent , in TriangleEnemyEntityComponent triangleEnemyEntityComponent , in UnlockedEnemiesComponent unlockedEnemiesComponent , in WaveStateComponent waveStateComponent , ref WaveStockComponent waveStockComponent)
         {
-            enemySpawnTimerComponent.Timer -= DeltaTime;
+            enemySpawnTimerComponent.Timer -= math.select(0f , DeltaTime , waveStateComponent.State == 1);
 
             bool canSpawn = enemySpawnTimerComponent.Timer <= 0f && PlayerCount > 0 && waveStateComponent.State == 1 && waveStockComponent.Stock > 0;
 

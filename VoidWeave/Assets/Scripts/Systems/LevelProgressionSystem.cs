@@ -6,7 +6,7 @@ namespace Systems
     using Unity.Mathematics;
 
     [UpdateInGroup(typeof(SimulationSystemGroup))]
-    [UpdateAfter(typeof(WaveSystem))]
+    [UpdateAfter(typeof(WaveStateSystem))]
     [UpdateBefore(typeof(EnemySpawningSystem))]
     public partial struct LevelProgressionSystem : ISystem
     {
