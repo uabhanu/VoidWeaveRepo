@@ -7,8 +7,9 @@ namespace Systems
     using Unity.Transforms;
 
     [UpdateInGroup(typeof(SimulationSystemGroup))]
-    [UpdateAfter(typeof(WaveStateSystem))]
     [UpdateAfter(typeof(LevelProgressionSystem))]
+    [UpdateAfter(typeof(TimerSystem))]
+    [UpdateAfter(typeof(WaveStateSystem))]
     public partial struct EnemySpawningSystem : ISystem
     {
         [BurstCompile]
@@ -44,7 +45,6 @@ namespace Systems
             {
                 CurrentLevel = SystemAPI.GetSingleton<LevelComponent>().Level ,
                 DamageMultiplier = SystemAPI.GetComponent<DamageMultiplierComponent>(spawnerEntity).DamageMultiplier ,
-                DeltaTime = SystemAPI.Time.DeltaTime ,
                 EntityCommandBufferParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() ,
                 HealthMultiplier = SystemAPI.GetComponent<HealthMultiplierComponent>(spawnerEntity).HealthMultiplier ,
                 LineBaseDamage = lineEnemyBaseDamage ,
@@ -67,7 +67,6 @@ namespace Systems
     {
         public int CurrentLevel;
         public float DamageMultiplier;
-        public float DeltaTime;
         public EntityCommandBuffer.ParallelWriter EntityCommandBufferParallelWriter;
         public float HealthMultiplier;
         public float LineBaseDamage;
@@ -82,11 +81,9 @@ namespace Systems
         public float TriangleBaseHealth;
         public int TriangleBaseLoot;
 
-        private void Execute([EntityIndexInQuery] int entityInQueryIndex , in EnemySpawnRadiusComponent enemySpawnRadiusComponent , in EnemySpawnRateComponent enemySpawnRateComponent , ref EnemySpawnTimerComponent enemySpawnTimerComponent , in LineEnemyEntityComponent lineEnemyEntityComponent , in LocalTransform localTransform , ref RandomComponent randomComponent , in SquareEnemyEntityComponent squareEnemyEntityComponent , in TriangleEnemyEntityComponent triangleEnemyEntityComponent , in UnlockedEnemiesComponent unlockedEnemiesComponent , in WaveStateComponent waveStateComponent , ref WaveStockComponent waveStockComponent)
+        private void Execute([EntityIndexInQuery] int entityInQueryIndex , in EnemySpawnRadiusComponent enemySpawnRadiusComponent , in EnemySpawnRateComponent enemySpawnRateComponent , in LineEnemyEntityComponent lineEnemyEntityComponent , in LocalTransform localTransform , ref RandomComponent randomComponent , in SquareEnemyEntityComponent squareEnemyEntityComponent , ref TimerComponent timerComponent , in TriangleEnemyEntityComponent triangleEnemyEntityComponent , in UnlockedEnemiesComponent unlockedEnemiesComponent , in WaveStateComponent waveStateComponent , ref WaveStockComponent waveStockComponent)
         {
-            enemySpawnTimerComponent.Timer -= math.select(0f , DeltaTime , waveStateComponent.State == 1);
-
-            bool canSpawn = enemySpawnTimerComponent.Timer <= 0f && PlayerCount > 0 && waveStateComponent.State == 1 && waveStockComponent.Stock > 0;
+            bool canSpawn = timerComponent.Timer <= 0f && PlayerCount > 0 && waveStateComponent.State == 1 && waveStockComponent.Stock > 0;
 
             for(int i = 0 ; i < math.select(0 , 1 , canSpawn) ; i++)
             {
@@ -123,7 +120,7 @@ namespace Systems
                 for(int k = 0 ; k < math.select(0 , 1 , enemyTypeIndex == 2) ; k++) { EntityCommandBufferParallelWriter.AddComponent<SquareEnemyTag>(entityInQueryIndex , newEnemyEntity); }
             }
 
-            enemySpawnTimerComponent.Timer = math.select(enemySpawnTimerComponent.Timer , enemySpawnRateComponent.Rate , canSpawn);
+            timerComponent.Timer = math.select(timerComponent.Timer , enemySpawnRateComponent.Rate , canSpawn);
             waveStockComponent.Stock -= math.select(0 , 1 , canSpawn);
         }
     }

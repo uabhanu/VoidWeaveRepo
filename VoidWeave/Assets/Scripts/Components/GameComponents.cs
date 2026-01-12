@@ -124,11 +124,6 @@ namespace Components
     {
         public float Rate;
     }
-
-    public struct EnemySpawnTimerComponent : IComponentData
-    {
-        public float Timer;
-    }
     
     public struct HealthMultiplierComponent : IComponentData
     {
@@ -264,6 +259,11 @@ namespace Components
         public int ID; // 0 = Player , 1 = Enemy and so on
     }
     
+    public struct TimerComponent : IComponentData
+    {
+        public float Timer;
+    }
+    
     public struct TriangleEnemyEntityComponent : IComponentData
     {
         public Entity Entity;
@@ -323,12 +323,6 @@ namespace Components
     public struct WaveStockComponent : IComponentData
     {
         public int Stock;
-    }
-
-    // Counts down the current phase duration
-    public struct WaveTimerComponent : IComponentData
-    {
-        public float Timer;
     }
 
     #endregion

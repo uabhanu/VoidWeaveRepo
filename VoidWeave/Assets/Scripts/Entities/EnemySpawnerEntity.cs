@@ -44,7 +44,6 @@ namespace Entities
                 AddComponent(entity , new EnemiesToKillIncrementComponent { EnemiesToKillIncrement = authoring.enemiesToKillIncrement });
                 AddComponent(entity , new EnemySpawnRadiusComponent { Radius = authoring.enemySpawnRadius });
                 AddComponent(entity , new EnemySpawnRateComponent { Rate = authoring.enemySpawnRate });
-                AddComponent(entity , new EnemySpawnTimerComponent { Timer = authoring.enemySpawnRate });
                 AddComponent(entity , new EnemySpawnerTag());
                 AddComponent(entity , new HealthMultiplierComponent { HealthMultiplier = authoring.healthMultiplierPerLevel });
                 AddComponent(entity , new LevelComponent { Level = startingLevel });
@@ -52,6 +51,7 @@ namespace Entities
                 AddComponent(entity , new LootMultiplierComponent { LootMultiplier = authoring.lootMultiplierPerLevel });
                 AddComponent(entity , new RandomComponent { Random = new Unity.Mathematics.Random(seed) });
                 AddComponent(entity , new SquareEnemyEntityComponent { Entity = GetEntity(authoring.squareEnemyPrefab , TransformUsageFlags.Dynamic) });
+                AddComponent(entity , new TimerComponent { Timer = authoring.wavePrepDuration });
                 AddComponent(entity , new TriangleEnemyEntityComponent { Entity = GetEntity(authoring.triangleEnemyPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new UnlockedEnemiesComponent { UnlockedEnemiesBitmask = initialMask });
                 AddComponent(entity , new WaveBaseEnemyCountComponent { Count = authoring.baseEnemies });
@@ -60,7 +60,6 @@ namespace Entities
                 AddComponent(entity , new WavePrepDurationComponent { Duration = authoring.wavePrepDuration });
                 AddComponent(entity , new WaveStateComponent { State = 0 });
                 AddComponent(entity , new WaveStockComponent { Stock = 0 });
-                AddComponent(entity , new WaveTimerComponent { Timer = authoring.wavePrepDuration });
             }
         }
     }
