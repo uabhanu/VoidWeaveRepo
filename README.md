@@ -263,8 +263,7 @@ This is a learning/portfolio project. Contributions and feedback welcome!
 
 1. Clone the repository
 2. Open in Unity 6000.2+
-3. Review `/Assets/MyProjectStyle.md`
-4. Check Issues for tasks
+3. Check Issues for tasks
 
 ---
 
