@@ -20,27 +20,33 @@ namespace Systems
         {
             var entityCommandBuffer = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);
             var currentEnergyComponent = SystemAPI.GetSingletonRW<CurrentEnergyComponent>();
-            
+
             foreach(var (_ , entity) in SystemAPI.Query<RefRO<UpgradeStrikerTurretTag>>().WithEntityAccess())
             {
-                var strikerTurretCost = SystemAPI.GetSingletonRW<StrikerTurretCostComponent>();
-                var strikerTurretLevel = SystemAPI.GetSingletonRW<StrikerTurretLevelComponent>();
+                var configEntity = SystemAPI.QueryBuilder().WithAll<StrikerTurretTag , TurretCostComponent>().Build().GetSingletonEntity();
+
+                var strikerTurretCost = SystemAPI.GetComponentRW<TurretCostComponent>(configEntity);
+                var strikerTurretLevel = SystemAPI.GetComponentRW<TurretLevelComponent>(configEntity);
 
                 ProcessUpgrade(ref strikerTurretCost.ValueRW.Cost , ref currentEnergyComponent , ref strikerTurretLevel.ValueRW.Level , entityCommandBuffer , entity);
             }
             
             foreach(var (_ , entity) in SystemAPI.Query<RefRO<UpgradeScatterTurretTag>>().WithEntityAccess())
             {
-                var scatterTurretCost = SystemAPI.GetSingletonRW<ScatterTurretCostComponent>();
-                var scatterTurretLevel = SystemAPI.GetSingletonRW<ScatterTurretLevelComponent>();
+                var configEntity = SystemAPI.QueryBuilder().WithAll<ScatterTurretTag , TurretCostComponent>().Build().GetSingletonEntity();
+
+                var scatterTurretCost = SystemAPI.GetComponentRW<TurretCostComponent>(configEntity);
+                var scatterTurretLevel = SystemAPI.GetComponentRW<TurretLevelComponent>(configEntity);
 
                 ProcessUpgrade(ref scatterTurretCost.ValueRW.Cost , ref currentEnergyComponent , ref scatterTurretLevel.ValueRW.Level , entityCommandBuffer , entity);
             }
             
             foreach(var (_ , entity) in SystemAPI.Query<RefRO<UpgradeBeamTurretTag>>().WithEntityAccess())
             {
-                var beamTurretCost = SystemAPI.GetSingletonRW<BeamTurretCostComponent>();
-                var beamTurretLevel = SystemAPI.GetSingletonRW<BeamTurretLevelComponent>();
+                var configEntity = SystemAPI.QueryBuilder().WithAll<BeamTurretTag , TurretCostComponent>().Build().GetSingletonEntity();
+
+                var beamTurretCost = SystemAPI.GetComponentRW<TurretCostComponent>(configEntity);
+                var beamTurretLevel = SystemAPI.GetComponentRW<TurretLevelComponent>(configEntity);
 
                 ProcessUpgrade(ref beamTurretCost.ValueRW.Cost , ref currentEnergyComponent , ref beamTurretLevel.ValueRW.Level , entityCommandBuffer , entity);
             }

@@ -23,7 +23,6 @@ namespace Entities
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
                 AddComponent(entity , new AttackRateComponent { AttackRate = authoring.attackRate });
-                AddComponent(entity , new BeamTurretCostComponent { Cost = authoring.deploymentCost });
                 AddComponent(entity , new BulletEntityComponent { Entity = GetEntity(authoring.bulletPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new CooldownComponent { Timer = authoring.cooldownTime });
                 AddComponent(entity , new DamageComponent { Damage = authoring.damage });
@@ -32,6 +31,7 @@ namespace Entities
                 AddComponent(entity , new SpreadComponent { Degrees = authoring.spreadDegrees });
                 AddComponent(entity , new TargetPositionComponent());
                 AddComponent(entity , new TeamComponent { ID = authoring.teamID });
+                AddComponent(entity , new TurretCostComponent { Cost = authoring.deploymentCost });
 
                 AddComponent(entity , new BeamTurretTag());
             }

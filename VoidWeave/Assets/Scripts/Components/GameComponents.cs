@@ -15,21 +15,6 @@ namespace Components
         public float Speed;
     }
 
-    public struct BeamTurretCostComponent : IComponentData
-    {
-        public int Cost;
-    }
-
-    public struct BeamTurretEntityComponent : IComponentData
-    {
-        public Entity Entity;
-    }
-
-    public struct BeamTurretLevelComponent : IComponentData
-    {
-        public int Level;
-    }
-
     public struct BulletEntityComponent : IComponentData
     {
         public Entity Entity;
@@ -197,21 +182,6 @@ namespace Components
         public float Range;
     }
 
-    public struct ScatterTurretCostComponent : IComponentData
-    {
-        public int Cost;
-    }
-
-    public struct ScatterTurretEntityComponent : IComponentData
-    {
-        public Entity Entity;
-    }
-
-    public struct ScatterTurretLevelComponent : IComponentData
-    {
-        public int Level;
-    }
-
     public struct SelectedTurretCostComponent : IComponentData
     {
         public int Cost;
@@ -234,21 +204,6 @@ namespace Components
         public Entity Entity;
     }
 
-    public struct StrikerTurretCostComponent : IComponentData
-    {
-        public int Cost;
-    }
-
-    public struct StrikerTurretEntityComponent : IComponentData
-    {
-        public Entity Entity;
-    }
-
-    public struct StrikerTurretLevelComponent : IComponentData
-    {
-        public int Level;
-    }
-
     public struct TargetPositionComponent : IComponentData
     {
         public float3 Position;
@@ -267,6 +222,21 @@ namespace Components
     public struct TriangleEnemyEntityComponent : IComponentData
     {
         public Entity Entity;
+    }
+    
+    public struct TurretCostComponent : IComponentData
+    {
+        public int Cost;
+    }
+
+    public struct TurretEntityComponent : IComponentData
+    {
+        public Entity Entity;
+    }
+
+    public struct TurretLevelComponent : IComponentData
+    {
+        public int Level;
     }
 
     public struct UnlockedEnemiesComponent : IComponentData
