@@ -41,7 +41,7 @@ namespace Systems
         public Entity SquareEnemyEntity;
         public Entity TriangleEnemyEntity;
 
-        private void Execute([EntityIndexInQuery] int entityInQueryIndex , in EnemySpawnRadiusComponent enemySpawnRadiusComponent , in EnemySpawnRateComponent enemySpawnRateComponent , in LocalTransform localTransform , ref RandomComponent randomComponent , ref TimerComponent timerComponent , in UnlockedEnemiesComponent unlockedEnemiesComponent , in WaveStateComponent waveStateComponent , ref WaveStockComponent waveStockComponent)
+        private void Execute([EntityIndexInQuery] int entityInQueryIndex , in LocalTransform localTransform , ref RandomComponent randomComponent , in SpawnRadiusComponent spawnRadiusComponent , in SpawnRateComponent spawnRateComponent , ref TimerComponent timerComponent , in UnlockedEnemiesComponent unlockedEnemiesComponent , in WaveStateComponent waveStateComponent , ref WaveStockComponent waveStockComponent)
         {
             bool canSpawn = timerComponent.Timer <= 0f && PlayerCount > 0 && waveStateComponent.State == 1 && waveStockComponent.Stock > 0;
 
@@ -54,7 +54,7 @@ namespace Systems
                 Entity enemyEntityToSpawn = enemyTypeIndex == 1 ? LineEnemyEntity : enemyTypeIndex == 2 ? SquareEnemyEntity : TriangleEnemyEntity;
                 Entity newEnemyEntity = EntityCommandBufferParallelWriter.Instantiate(entityInQueryIndex , enemyEntityToSpawn);
 
-                EntityCommandBufferParallelWriter.SetComponent(entityInQueryIndex , newEnemyEntity , LocalTransform.FromPosition(localTransform.Position + new float3(randomComponent.Random.NextFloat2Direction() * enemySpawnRadiusComponent.Radius , 0f)));
+                EntityCommandBufferParallelWriter.SetComponent(entityInQueryIndex , newEnemyEntity , LocalTransform.FromPosition(localTransform.Position + new float3(randomComponent.Random.NextFloat2Direction() * spawnRadiusComponent.Radius , 0f)));
                 EntityCommandBufferParallelWriter.AddComponent<EnemyJustSpawnedTag>(entityInQueryIndex , newEnemyEntity);
 
                 for(int k = 0 ; k < math.select(0 , 1 , enemyTypeIndex == 0) ; k++) { EntityCommandBufferParallelWriter.AddComponent<TriangleEnemyTag>(entityInQueryIndex , newEnemyEntity); }
@@ -62,7 +62,7 @@ namespace Systems
                 for(int k = 0 ; k < math.select(0 , 1 , enemyTypeIndex == 2) ; k++) { EntityCommandBufferParallelWriter.AddComponent<SquareEnemyTag>(entityInQueryIndex , newEnemyEntity); }
             }
 
-            timerComponent.Timer = math.select(timerComponent.Timer , enemySpawnRateComponent.Rate , canSpawn);
+            timerComponent.Timer = math.select(timerComponent.Timer , spawnRateComponent.Rate , canSpawn);
             waveStockComponent.Stock -= math.select(0 , 1 , canSpawn);
         }
     }

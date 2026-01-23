@@ -80,36 +80,6 @@ namespace Components
         public int EnemiesToKillIncrement;
     }
 
-    public struct EnemyEntityComponent : IComponentData
-    {
-        public Entity Entity;
-    }
-
-    public struct EnemyFireRateComponent : IComponentData
-    {
-        public float Rate;
-    }
-
-    public struct EnemyProjectilePrefabComponent : IComponentData
-    {
-        public Entity Prefab;
-    }
-
-    public struct EnemyReloadTimerComponent : IComponentData
-    {
-        public float Timer;
-    }
-
-    public struct EnemySpawnRadiusComponent : IComponentData
-    {
-        public float Radius;
-    }
-
-    public struct EnemySpawnRateComponent : IComponentData
-    {
-        public float Rate;
-    }
-
     public struct HealthMultiplierComponent : IComponentData
     {
         public float HealthMultiplier;
@@ -143,11 +113,6 @@ namespace Components
     public struct MaxHealthComponent : IComponentData
     {
         public float MaxHealth;
-    }
-
-    public struct MaxTurretsComponent : IComponentData
-    {
-        public int MaxTurrets;
     }
 
     public struct MoveSpeedComponent : IComponentData
@@ -190,6 +155,16 @@ namespace Components
     public struct SelectedTurretEntityComponent : IComponentData
     {
         public Entity Entity;
+    }
+    
+    public struct SpawnRadiusComponent : IComponentData
+    {
+        public float Radius;
+    }
+
+    public struct SpawnRateComponent : IComponentData
+    {
+        public float Rate;
     }
 
     // The total angle of the spread in degrees
@@ -244,11 +219,6 @@ namespace Components
         public uint UnlockedEnemiesBitmask;
     }
 
-    public struct UnlockedTurretsComponent : IComponentData
-    {
-        public uint UnlockedTurretsBitmask;
-    }
-
     public struct VelocityComponent : IComponentData
     {
         public float2 Velocity;
@@ -276,11 +246,6 @@ namespace Components
     public struct WavePrepDurationComponent : IComponentData
     {
         public float Duration;
-    }
-
-    public struct WavesPerLevelComponent : IComponentData
-    {
-        public int WavesPerLevel;
     }
 
     // 0 = Preparation Phase, 1 = Combat Phase

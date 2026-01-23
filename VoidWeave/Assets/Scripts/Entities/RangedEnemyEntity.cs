@@ -28,7 +28,6 @@ namespace Entities
                 AddComponent(entity , new BulletEntityComponent { Entity = GetEntity(authoring.projectilePrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new CooldownComponent());
                 AddComponent(entity , new DamageComponent { Damage = authoring.damage });
-                AddComponent(entity , new EnemyReloadTimerComponent { Timer = 0f });
                 AddComponent(entity , new CurrentHealthComponent { CurrentHealth = authoring.maxHealth });
                 AddComponent(entity , new LootAmountComponent { Amount = authoring.lootAmount });
                 AddComponent(entity , new LootEntityComponent { Entity = GetEntity(authoring.lootPrefab , TransformUsageFlags.Dynamic) });

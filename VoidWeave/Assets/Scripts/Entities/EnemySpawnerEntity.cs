@@ -42,14 +42,14 @@ namespace Entities
                 AddComponent(entity , new EnemiesKilledComponent());
                 AddComponent(entity , new EnemiesToKillComponent { EnemiesToKill = enemiesToKill });
                 AddComponent(entity , new EnemiesToKillIncrementComponent { EnemiesToKillIncrement = authoring.enemiesToKillIncrement });
-                AddComponent(entity , new EnemySpawnRadiusComponent { Radius = authoring.enemySpawnRadius });
-                AddComponent(entity , new EnemySpawnRateComponent { Rate = authoring.enemySpawnRate });
                 AddComponent(entity , new EnemySpawnerTag());
                 AddComponent(entity , new HealthMultiplierComponent { HealthMultiplier = authoring.healthMultiplierPerLevel });
                 AddComponent(entity , new LevelComponent { Level = startingLevel });
                 AddComponent(entity , new LineEnemyEntityComponent { Entity = GetEntity(authoring.lineEnemyPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new LootMultiplierComponent { LootMultiplier = authoring.lootMultiplierPerLevel });
                 AddComponent(entity , new RandomComponent { Random = new Unity.Mathematics.Random(seed) });
+                AddComponent(entity , new SpawnRadiusComponent { Radius = authoring.enemySpawnRadius });
+                AddComponent(entity , new SpawnRateComponent { Rate = authoring.enemySpawnRate });
                 AddComponent(entity , new SquareEnemyEntityComponent { Entity = GetEntity(authoring.squareEnemyPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new TimerComponent { Timer = authoring.wavePrepDuration });
                 AddComponent(entity , new TriangleEnemyEntityComponent { Entity = GetEntity(authoring.triangleEnemyPrefab , TransformUsageFlags.Dynamic) });
