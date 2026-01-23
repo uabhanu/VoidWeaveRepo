@@ -6,18 +6,12 @@ namespace Entities
 
     public class PlayerEntity : MonoBehaviour
     {
-        [SerializeField] private int beamTurretCost;
-        [SerializeField] private GameObject beamTurretPrefab;
         [SerializeField] private float dashCooldownTimer; // Time before next dash   
         [SerializeField] private float dashDuration; // Length of dash   
         [SerializeField] private float dashMultiplier; // Speed boost (5 * 5 = 25 units/sec)
         [SerializeField] private int maxHealth;
         [SerializeField] private float moveSpeed;
-        [SerializeField] private int scatterTurretCost;
-        [SerializeField] private GameObject scatterTurretPrefab;
         [SerializeField] private int startingResources;
-        [SerializeField] private int strikerTurretCost;
-        [SerializeField] private GameObject strikerTurretPrefab;
         [SerializeField] private int teamID;
 
         class PlayerBaker : Baker<PlayerEntity>
@@ -27,8 +21,6 @@ namespace Entities
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
                 AddComponent(entity , new BaseMoveSpeedComponent { Speed = authoring.moveSpeed });
-                AddComponent(entity , new BeamTurretCostComponent { Cost = authoring.beamTurretCost });
-                AddComponent(entity , new BeamTurretEntityComponent { Entity = GetEntity(authoring.beamTurretPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new CurrentEnergyComponent { Energy = authoring.startingResources });
                 AddComponent(entity , new CurrentHealthComponent { CurrentHealth = authoring.maxHealth });
                 AddComponent(entity , new DashCooldownComponent { Timer = authoring.dashCooldownTimer });
@@ -37,12 +29,8 @@ namespace Entities
                 AddComponent(entity , new MaxHealthComponent { MaxHealth = authoring.maxHealth });
                 AddComponent(entity , new MoveSpeedComponent { Speed = authoring.moveSpeed });
                 AddComponent(entity , new PlayerInputComponent());
-                AddComponent(entity , new ScatterTurretCostComponent { Cost = authoring.scatterTurretCost });
-                AddComponent(entity , new ScatterTurretEntityComponent { Entity = GetEntity(authoring.scatterTurretPrefab , TransformUsageFlags.Dynamic) });
-                AddComponent(entity , new SelectedTurretCostComponent { Cost = authoring.strikerTurretCost });
-                AddComponent(entity , new SelectedTurretEntityComponent { Entity = GetEntity(authoring.strikerTurretPrefab , TransformUsageFlags.Dynamic) });
-                AddComponent(entity , new StrikerTurretCostComponent { Cost = authoring.strikerTurretCost });
-                AddComponent(entity , new StrikerTurretEntityComponent { Entity = GetEntity(authoring.strikerTurretPrefab , TransformUsageFlags.Dynamic) });
+                AddComponent(entity , new SelectedTurretCostComponent { Cost = 0 });
+                AddComponent(entity , new SelectedTurretEntityComponent { Entity = Entity.Null });
                 AddComponent(entity , new TeamComponent { ID = authoring.teamID });
 
                 AddComponent(entity , new PlayerTag());

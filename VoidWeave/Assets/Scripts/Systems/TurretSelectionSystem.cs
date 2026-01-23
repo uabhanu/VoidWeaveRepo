@@ -12,15 +12,51 @@ namespace Systems
         public void OnCreate(ref SystemState systemState) { systemState.RequireForUpdate<LevelComponent>(); }
 
         [BurstCompile]
-        public void OnUpdate(ref SystemState systemState) { new TurretSelectionJob { CurrentLevel = SystemAPI.GetSingleton<LevelComponent>().Level }.ScheduleParallel(); }
+        public void OnUpdate(ref SystemState systemState) 
+        { 
+            var strikerTurretConfigEntity = SystemAPI.QueryBuilder().WithAll<StrikerTurretTag, TurretEntityComponent>().Build().GetSingletonEntity();
+            var scatterTurretConfigEntity = SystemAPI.QueryBuilder().WithAll<ScatterTurretTag, TurretEntityComponent>().Build().GetSingletonEntity();
+            var beamTurretConfigEntity = SystemAPI.QueryBuilder().WithAll<BeamTurretTag, TurretEntityComponent>().Build().GetSingletonEntity();
+            
+            Entity strikerTurretEntity = SystemAPI.GetComponent<TurretEntityComponent>(strikerTurretConfigEntity).Entity;
+            Entity scatterTurretEntity = SystemAPI.GetComponent<TurretEntityComponent>(scatterTurretConfigEntity).Entity;
+            Entity beamTurretEntity = SystemAPI.GetComponent<TurretEntityComponent>(beamTurretConfigEntity).Entity;
+            
+            int strikerTurretCost = SystemAPI.GetComponent<TurretCostComponent>(strikerTurretEntity).Cost;
+            int scatterTurretCost = SystemAPI.GetComponent<TurretCostComponent>(scatterTurretEntity).Cost;
+            int beamTurretCost = SystemAPI.GetComponent<TurretCostComponent>(beamTurretEntity).Cost;
+            
+            new TurretSelectionJob
+            {
+                CurrentLevel = SystemAPI.GetSingleton<LevelComponent>().Level,
+                
+                StrikerTurretEntity = strikerTurretEntity,
+                StrikerTurretCost = strikerTurretCost,
+
+                ScatterTurretEntity = scatterTurretEntity,
+                ScatterTurretCost = scatterTurretCost,
+
+                BeamTurretEntity = beamTurretEntity,
+                BeamTurretCost = beamTurretCost
+                
+            }.ScheduleParallel(); }
     }
 
     [BurstCompile]
     public partial struct TurretSelectionJob : IJobEntity
     {
         public int CurrentLevel;
+        
+        public int BeamTurretCost;
+        public Entity BeamTurretEntity;
 
-        private void Execute(in BeamTurretCostComponent beamTurretCostComponent , in BeamTurretEntityComponent beamTurretEntityComponent , in PlayerInputComponent playerInputComponent , in ScatterTurretCostComponent scatterTurretCostComponent , in ScatterTurretEntityComponent scatterTurretEntityComponent , ref SelectedTurretCostComponent selectedTurretCostComponent , ref SelectedTurretEntityComponent selectedTurretEntityComponent , in StrikerTurretCostComponent strikerTurretCostComponent , in StrikerTurretEntityComponent strikerTurretEntityComponent)
+        public int ScatterTurretCost;
+        public Entity ScatterTurretEntity;
+
+        public int StrikerTurretCost;
+        public Entity StrikerTurretEntity;
+
+        private void Execute(in PlayerInputComponent playerInputComponent , ref SelectedTurretCostComponent selectedTurretCostComponent , ref SelectedTurretEntityComponent selectedTurretEntityComponent)
         {
             // Input Flags:
             // 64  = Key 1 (Striker)
@@ -37,19 +73,19 @@ namespace Systems
 
             // --- Select Entity ---
             // Striker (Base priority): Set if pressed.
-            selectedTurretEntityComponent.Entity = strikerTurretKeyPressed ? strikerTurretEntityComponent.Entity : selectedTurretEntityComponent.Entity;
+            selectedTurretEntityComponent.Entity = strikerTurretKeyPressed ? StrikerTurretEntity : selectedTurretEntityComponent.Entity;
 
             // Scatter: If pressed -> (Unlocked ? Scatter : Null). Else keep current.
             // This ensures pressing a locked key clears the selection instead of keeping the previous one.
-            selectedTurretEntityComponent.Entity = scatterTurretKeyPressed ? scatterTurretUnlocked ? scatterTurretEntityComponent.Entity : Entity.Null : selectedTurretEntityComponent.Entity;
+            selectedTurretEntityComponent.Entity = scatterTurretKeyPressed ? scatterTurretUnlocked ? ScatterTurretEntity : Entity.Null : selectedTurretEntityComponent.Entity;
 
             // Beam: If pressed -> (Unlocked ? Beam : Null). Else keep current.
-            selectedTurretEntityComponent.Entity = beamTurretKeyPressed ? beamTurretUnlocked ? beamTurretEntityComponent.Entity : Entity.Null : selectedTurretEntityComponent.Entity;
+            selectedTurretEntityComponent.Entity = beamTurretKeyPressed ? beamTurretUnlocked ? BeamTurretEntity : Entity.Null : selectedTurretEntityComponent.Entity;
 
             // Must match Entity order exactly (Striker -> Scatter -> Beam)
-            selectedTurretCostComponent.Cost = math.select(selectedTurretCostComponent.Cost , strikerTurretCostComponent.Cost , strikerTurretKeyPressed);
-            selectedTurretCostComponent.Cost = math.select(selectedTurretCostComponent.Cost , scatterTurretCostComponent.Cost , scatterTurretUnlocked);
-            selectedTurretCostComponent.Cost = math.select(selectedTurretCostComponent.Cost , beamTurretCostComponent.Cost , beamTurretUnlocked);
+            selectedTurretCostComponent.Cost = math.select(selectedTurretCostComponent.Cost , StrikerTurretCost , strikerTurretKeyPressed);
+            selectedTurretCostComponent.Cost = math.select(selectedTurretCostComponent.Cost , ScatterTurretCost , scatterTurretUnlocked);
+            selectedTurretCostComponent.Cost = math.select(selectedTurretCostComponent.Cost , BeamTurretCost , beamTurretUnlocked);
         }
     }
 }

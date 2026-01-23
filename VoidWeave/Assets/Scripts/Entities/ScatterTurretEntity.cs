@@ -28,10 +28,10 @@ namespace Entities
                 AddComponent(entity , new CooldownComponent { Timer = authoring.cooldownTime });
                 AddComponent(entity , new ProjectileCountComponent { Count = authoring.projectileCount });
                 AddComponent(entity , new RangeComponent { Range = authoring.range });
-                AddComponent(entity , new ScatterTurretCostComponent { Cost = authoring.deploymentCost });
                 AddComponent(entity , new SpreadComponent { Degrees = authoring.spreadDegrees });
                 AddComponent(entity , new TargetPositionComponent());
                 AddComponent(entity , new TeamComponent { ID = authoring.teamID });
+                AddComponent(entity , new TurretCostComponent { Cost = authoring.deploymentCost });
                 
                 AddComponent(entity , new ScatterTurretTag());
             }
