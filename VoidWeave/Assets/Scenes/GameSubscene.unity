@@ -119,7 +119,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &587164561
+--- !u!1 &1220176063
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,153 +127,37 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 587164563}
-  - component: {fileID: 587164562}
+  - component: {fileID: 1220176065}
+  - component: {fileID: 1220176064}
   m_Layer: 0
-  m_Name: EnemySpawnerEntity
+  m_Name: GameConfigEntity
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &587164562
+--- !u!114 &1220176064
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 587164561}
+  m_GameObject: {fileID: 1220176063}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd6dc88fc89b2bf42bd4816a77933097, type: 3}
+  m_Script: {fileID: 11500000, guid: 4440088ea66c3bc43801a02e61b4f762, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Entities.EnemySpawnerEntity
-  baseEnemies: 10
-  damageMultiplierPerLevel: 0.2
-  enemiesToKill: 20
-  enemiesToKillIncrement: 5
-  enemyIncrement: 5
-  enemySpawnRadius: 7.2
-  enemySpawnRate: 2.1
-  healthMultiplierPerLevel: 0.3
-  lineEnemyPrefab: {fileID: 2768343762146773365, guid: c5a66dd71980323478ef27cdd55a4a59, type: 3}
-  lootMultiplierPerLevel: 0.25
-  randomSeed: 1
-  squareEnemyPrefab: {fileID: 5566403319572895637, guid: 3a11e4bdcdb3b4b40a107b434e2cb590, type: 3}
-  startingLevel: 1
-  triangleEnemyPrefab: {fileID: 4429918964874133129, guid: fa278bf6dc9f86f4ca9633468be8bffb, type: 3}
-  wavePrepDuration: 30
---- !u!4 &587164563
+  m_EditorClassIdentifier: Assembly-CSharp::Entities.GameConfigEntity
+  enemySpawnerPrefab: {fileID: 9071633379703226984, guid: 55c28ec5c3d184f40a1b0224da9a5ea4, type: 3}
+  playerPrefab: {fileID: 4043072570545550109, guid: 3cefbfe9652710640b54b28569aed323, type: 3}
+  turretConfigPrefab: {fileID: 1521002163540263446, guid: 64eb09c65643256499a17ec4c8315219, type: 3}
+--- !u!4 &1220176065
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 587164561}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &639223504
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 59797660760159997, guid: 3cefbfe9652710640b54b28569aed323, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 59797660760159997, guid: 3cefbfe9652710640b54b28569aed323, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 59797660760159997, guid: 3cefbfe9652710640b54b28569aed323, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 59797660760159997, guid: 3cefbfe9652710640b54b28569aed323, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 59797660760159997, guid: 3cefbfe9652710640b54b28569aed323, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 59797660760159997, guid: 3cefbfe9652710640b54b28569aed323, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 59797660760159997, guid: 3cefbfe9652710640b54b28569aed323, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 59797660760159997, guid: 3cefbfe9652710640b54b28569aed323, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 59797660760159997, guid: 3cefbfe9652710640b54b28569aed323, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 59797660760159997, guid: 3cefbfe9652710640b54b28569aed323, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4043072570545550109, guid: 3cefbfe9652710640b54b28569aed323, type: 3}
-      propertyPath: m_Name
-      value: PlayerEntity
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 3cefbfe9652710640b54b28569aed323, type: 3}
---- !u!1 &950155641
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 950155643}
-  - component: {fileID: 950155642}
-  m_Layer: 0
-  m_Name: TurretConfigEntity
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &950155642
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 950155641}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ff731c1d9bee42048bc1e30b2bb69ea2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Entities.TurretConfigEntity
-  beamTurretPrefab: {fileID: 711497252927264400, guid: fd6663aa39cb7e84684d8c0a90d46344, type: 3}
-  scatterTurretPrefab: {fileID: 7147771515477003866, guid: 0f70713e52d8be545acfd8038c8c4f01, type: 3}
-  strikerTurretPrefab: {fileID: 4277810797187180050, guid: 0abb7e31f7cb9cb48acbbcf3740df43e, type: 3}
---- !u!4 &950155643
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 950155641}
+  m_GameObject: {fileID: 1220176063}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -286,6 +170,4 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 639223504}
-  - {fileID: 587164563}
-  - {fileID: 950155643}
+  - {fileID: 1220176065}

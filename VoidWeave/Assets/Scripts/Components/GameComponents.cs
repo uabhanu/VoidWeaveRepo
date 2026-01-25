@@ -79,6 +79,11 @@ namespace Components
     {
         public int EnemiesToKillIncrement;
     }
+    
+    public struct EnemySpawnerEntityComponent : IComponentData
+    {
+        public Entity Entity;
+    }
 
     public struct HealthMultiplierComponent : IComponentData
     {
@@ -118,6 +123,11 @@ namespace Components
     public struct MoveSpeedComponent : IComponentData
     {
         public float Speed;
+    }
+    
+    public struct PlayerEntityComponent : IComponentData
+    {
+        public Entity Entity;
     }
 
     public struct PlayerInputComponent : IComponentData
@@ -195,6 +205,11 @@ namespace Components
     }
 
     public struct TriangleEnemyEntityComponent : IComponentData
+    {
+        public Entity Entity;
+    }
+    
+    public struct TurretConfigEntityComponent : IComponentData
     {
         public Entity Entity;
     }
@@ -277,6 +292,8 @@ namespace Components
     public struct EnemyTag : IComponentData {}
 
     public struct EnemySpawnerTag : IComponentData {}
+    
+    public struct InitializeGameTag : IComponentData {}
 
     public struct LineEnemyTag : IComponentData {}
 
