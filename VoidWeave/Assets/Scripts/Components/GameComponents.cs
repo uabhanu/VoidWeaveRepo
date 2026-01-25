@@ -314,6 +314,8 @@ namespace Components
     public struct SquareEnemyTag : IComponentData {}
 
     public struct StrikerTurretTag : IComponentData {}
+    
+    public struct TurretDebugNamedTag : IComponentData {}
 
     public struct UpgradeBeamTurretTag : IComponentData {}
 
