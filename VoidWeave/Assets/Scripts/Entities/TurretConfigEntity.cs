@@ -6,7 +6,6 @@ namespace Entities
 
     public class TurretConfigEntity : MonoBehaviour
     {
-        [Header("Assign Prefabs Here")]
         [SerializeField] private GameObject beamTurretPrefab;
         [SerializeField] private GameObject scatterTurretPrefab;
         [SerializeField] private GameObject strikerTurretPrefab;
