@@ -148,8 +148,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4440088ea66c3bc43801a02e61b4f762, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entities.GameConfigEntity
+  damageMultiplierPerLevel: 0.05
+  enemiesToKill: 20
+  enemiesToKillIncrement: 5
   enemySpawnerPrefab: {fileID: 9071633379703226984, guid: 55c28ec5c3d184f40a1b0224da9a5ea4, type: 3}
+  healthMultiplierPerLevel: 0.1
+  lootMultiplierPerLevel: 0.2
   playerPrefab: {fileID: 4043072570545550109, guid: 3cefbfe9652710640b54b28569aed323, type: 3}
+  startingLevel: 1
+  startingResources: 100
   turretConfigPrefab: {fileID: 1521002163540263446, guid: 64eb09c65643256499a17ec4c8315219, type: 3}
 --- !u!4 &1220176065
 Transform:

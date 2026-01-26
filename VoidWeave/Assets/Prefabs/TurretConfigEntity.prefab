@@ -44,6 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff731c1d9bee42048bc1e30b2bb69ea2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entities.TurretConfigEntity
+  beamTurretCost: 200
   beamTurretPrefab: {fileID: 711497252927264400, guid: fd6663aa39cb7e84684d8c0a90d46344, type: 3}
+  scatterTurretCost: 150
   scatterTurretPrefab: {fileID: 7147771515477003866, guid: 0f70713e52d8be545acfd8038c8c4f01, type: 3}
+  strikerTurretCost: 100
   strikerTurretPrefab: {fileID: 4277810797187180050, guid: 0abb7e31f7cb9cb48acbbcf3740df43e, type: 3}

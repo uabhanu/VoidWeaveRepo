@@ -11,17 +11,15 @@ namespace Entities
         [SerializeField] private float dashMultiplier; // Speed boost (5 * 5 = 25 units/sec)
         [SerializeField] private int maxHealth;
         [SerializeField] private float moveSpeed;
-        [SerializeField] private int startingResources;
         [SerializeField] private int teamID;
 
-        class PlayerBaker : Baker<PlayerEntity>
+        private class PlayerBaker : Baker<PlayerEntity>
         {
             public override void Bake(PlayerEntity authoring)
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
                 AddComponent(entity , new BaseMoveSpeedComponent { Speed = authoring.moveSpeed });
-                AddComponent(entity , new CurrentEnergyComponent { Energy = authoring.startingResources });
                 AddComponent(entity , new CurrentHealthComponent { CurrentHealth = authoring.maxHealth });
                 AddComponent(entity , new DashCooldownComponent { Timer = authoring.dashCooldownTimer });
                 AddComponent(entity , new DashDurationComponent { Duration = authoring.dashDuration });

@@ -10,7 +10,7 @@ namespace Entities
         [SerializeField] private float speed;
         [SerializeField] private int teamID;
 
-        class ProjectileBaker : Baker<ProjectileEntity>
+        private class ProjectileBaker : Baker<ProjectileEntity>
         {
             public override void Bake(ProjectileEntity authoring)
             {
