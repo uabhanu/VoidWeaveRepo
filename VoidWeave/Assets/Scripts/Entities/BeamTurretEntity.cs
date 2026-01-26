@@ -10,7 +10,6 @@ namespace Entities
         [SerializeField] private GameObject bulletPrefab;
         [SerializeField] private float cooldownTime;
         [SerializeField] private float damage;
-        [SerializeField] private int deploymentCost;
         [SerializeField] private int projectileCount;
         [SerializeField] private float range;
         [SerializeField] private float spreadDegrees;
@@ -31,7 +30,6 @@ namespace Entities
                 AddComponent(entity , new SpreadComponent { Degrees = authoring.spreadDegrees });
                 AddComponent(entity , new TargetPositionComponent());
                 AddComponent(entity , new TeamComponent { ID = authoring.teamID });
-                AddComponent(entity , new TurretCostComponent { Cost = authoring.deploymentCost });
 
                 AddComponent(entity , new BeamTurretTag());
             }

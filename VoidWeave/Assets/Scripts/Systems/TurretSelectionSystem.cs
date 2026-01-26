@@ -9,44 +9,43 @@ namespace Systems
     public partial struct TurretSelectionSystem : ISystem
     {
         [BurstCompile]
-        public void OnCreate(ref SystemState systemState) { systemState.RequireForUpdate<LevelComponent>(); }
+        public void OnCreate(ref SystemState systemState)
+        {
+            systemState.RequireForUpdate<LevelComponent>();
+
+            systemState.RequireForUpdate(SystemAPI.QueryBuilder().WithAll<StrikerTurretTag , TurretCostComponent , TurretEntityComponent>().Build());
+            systemState.RequireForUpdate(SystemAPI.QueryBuilder().WithAll<ScatterTurretTag , TurretCostComponent , TurretEntityComponent>().Build());
+            systemState.RequireForUpdate(SystemAPI.QueryBuilder().WithAll<BeamTurretTag , TurretCostComponent , TurretEntityComponent>().Build());
+        }
 
         [BurstCompile]
-        public void OnUpdate(ref SystemState systemState) 
-        { 
-            var strikerTurretConfigEntity = SystemAPI.QueryBuilder().WithAll<StrikerTurretTag, TurretEntityComponent>().Build().GetSingletonEntity();
-            var scatterTurretConfigEntity = SystemAPI.QueryBuilder().WithAll<ScatterTurretTag, TurretEntityComponent>().Build().GetSingletonEntity();
-            var beamTurretConfigEntity = SystemAPI.QueryBuilder().WithAll<BeamTurretTag, TurretEntityComponent>().Build().GetSingletonEntity();
-            
+        public void OnUpdate(ref SystemState systemState)
+        {
+            var strikerTurretQuery = SystemAPI.QueryBuilder().WithAll<StrikerTurretTag , TurretEntityComponent>().Build();
+            var scatterTurretQuery = SystemAPI.QueryBuilder().WithAll<ScatterTurretTag , TurretEntityComponent>().Build();
+            var beamTurretQuery = SystemAPI.QueryBuilder().WithAll<BeamTurretTag , TurretEntityComponent>().Build();
+
+            var strikerTurretConfigEntity = strikerTurretQuery.GetSingletonEntity();
+            var scatterTurretConfigEntity = scatterTurretQuery.GetSingletonEntity();
+            var beamTurretConfigEntity = beamTurretQuery.GetSingletonEntity();
+
             Entity strikerTurretEntity = SystemAPI.GetComponent<TurretEntityComponent>(strikerTurretConfigEntity).Entity;
             Entity scatterTurretEntity = SystemAPI.GetComponent<TurretEntityComponent>(scatterTurretConfigEntity).Entity;
             Entity beamTurretEntity = SystemAPI.GetComponent<TurretEntityComponent>(beamTurretConfigEntity).Entity;
-            
-            int strikerTurretCost = SystemAPI.GetComponent<TurretCostComponent>(strikerTurretEntity).Cost;
-            int scatterTurretCost = SystemAPI.GetComponent<TurretCostComponent>(scatterTurretEntity).Cost;
-            int beamTurretCost = SystemAPI.GetComponent<TurretCostComponent>(beamTurretEntity).Cost;
-            
-            new TurretSelectionJob
-            {
-                CurrentLevel = SystemAPI.GetSingleton<LevelComponent>().Level,
-                
-                StrikerTurretEntity = strikerTurretEntity,
-                StrikerTurretCost = strikerTurretCost,
 
-                ScatterTurretEntity = scatterTurretEntity,
-                ScatterTurretCost = scatterTurretCost,
+            int strikerTurretCost = SystemAPI.GetComponent<TurretCostComponent>(strikerTurretConfigEntity).Cost;
+            int scatterTurretCost = SystemAPI.GetComponent<TurretCostComponent>(scatterTurretConfigEntity).Cost;
+            int beamTurretCost = SystemAPI.GetComponent<TurretCostComponent>(beamTurretConfigEntity).Cost;
 
-                BeamTurretEntity = beamTurretEntity,
-                BeamTurretCost = beamTurretCost
-                
-            }.ScheduleParallel(); }
+            new TurretSelectionJob { CurrentLevel = SystemAPI.GetSingleton<LevelComponent>().Level , StrikerTurretEntity = strikerTurretEntity , StrikerTurretCost = strikerTurretCost , ScatterTurretEntity = scatterTurretEntity , ScatterTurretCost = scatterTurretCost , BeamTurretEntity = beamTurretEntity , BeamTurretCost = beamTurretCost }.ScheduleParallel();
+        }
     }
 
     [BurstCompile]
     public partial struct TurretSelectionJob : IJobEntity
     {
         public int CurrentLevel;
-        
+
         public int BeamTurretCost;
         public Entity BeamTurretEntity;
 
