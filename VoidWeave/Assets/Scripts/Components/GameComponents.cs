@@ -5,6 +5,11 @@ namespace Components
     using UnityEngine.InputSystem;
 
     #region Components
+    
+    public struct ActiveWaveStateComponent : IComponentData
+    {
+        public int ActiveWaveState;
+    }
 
     public struct AttackRateComponent : IComponentData
     {
@@ -105,10 +110,20 @@ namespace Components
     {
         public Entity Entity;
     }
+    
+    public struct EnemyTypesCountComponent : IComponentData
+    {
+        public int EnemyTypesCount;
+    }
 
     public struct HealthMultiplierComponent : IComponentData
     {
         public float HealthMultiplier;
+    }
+    
+    public struct InitialBitmaskComponent : IComponentData
+    {
+        public uint InitialBitmask;
     }
     
     public struct InputDashValueComponent : IComponentData
@@ -180,6 +195,11 @@ namespace Components
     {
         public Entity Entity;
     }
+    
+    public struct LineEnemyIndexComponent : IComponentData
+    {
+        public int LineEnemyIndex;
+    }
 
     public struct LootAmountComponent : IComponentData
     {
@@ -227,10 +247,15 @@ namespace Components
     {
         public float Timer;
     }
-
-    public struct RandomComponent : IComponentData
+    
+    public struct RandomRangeStartComponent : IComponentData
     {
-        public Random Random;
+        public int RandomRangeStartValue;
+    }
+    
+    public struct RandomSeedComponent : IComponentData
+    {
+        public Random RandomSeed;
     }
 
     public struct RangeComponent : IComponentData
@@ -274,6 +299,11 @@ namespace Components
     {
         public Entity Entity;
     }
+    
+    public struct SquareEnemyIndexComponent : IComponentData
+    {
+        public int SquareEnemyIndex;
+    }
 
     public struct TargetPositionComponent : IComponentData
     {
@@ -293,6 +323,11 @@ namespace Components
     public struct TriangleEnemyEntityComponent : IComponentData
     {
         public Entity Entity;
+    }
+    
+    public struct TriangleEnemyIndexComponent : IComponentData
+    {
+        public int TriangleEnemyIndex;
     }
     
     public struct Turret1KeyComponent : IComponentData
