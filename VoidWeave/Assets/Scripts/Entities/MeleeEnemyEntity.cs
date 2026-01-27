@@ -7,6 +7,7 @@ namespace Entities
     public class MeleeEnemyEntity : MonoBehaviour
     {
         [SerializeField] private float attackRate;
+        [SerializeField] private float collisionRadius; // Defines the radius of the hitbox used for collision detection
         [SerializeField] private int damage;
         [SerializeField] private int lootAmount;
         [SerializeField] private GameObject lootPrefab;
@@ -21,9 +22,10 @@ namespace Entities
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
                 
                 AddComponent(entity , new AttackRateComponent { AttackRate = authoring.attackRate });
+                AddComponent(entity , new CollisionRadiusComponent { Radius = authoring.collisionRadius });
                 AddComponent(entity , new CooldownComponent());
-                AddComponent(entity , new DamageComponent { Damage = authoring.damage });
                 AddComponent(entity , new CurrentHealthComponent { CurrentHealth = authoring.maxHealth });
+                AddComponent(entity , new DamageComponent { Damage = authoring.damage });
                 AddComponent(entity , new LootAmountComponent { Amount = authoring.lootAmount });
                 AddComponent(entity , new LootEntityComponent { Entity = GetEntity(authoring.lootPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new MaxHealthComponent { MaxHealth = authoring.maxHealth });

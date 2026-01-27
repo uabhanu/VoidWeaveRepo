@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entities.RangedEnemyEntity
   attackRate: 3.1
+  collisionRadius: 0.5
   damage: 15
   lootAmount: 25
   lootPrefab: {fileID: 6983080911018168034, guid: 29b5c2b76e555c84c9ae88bcb6766676, type: 3}

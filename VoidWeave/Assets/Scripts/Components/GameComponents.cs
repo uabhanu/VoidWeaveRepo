@@ -19,6 +19,11 @@ namespace Components
     {
         public Entity Entity;
     }
+    
+    public struct CollisionRadiusComponent : IComponentData
+    {
+        public float Radius;
+    }
 
     public struct CooldownComponent : IComponentData
     {

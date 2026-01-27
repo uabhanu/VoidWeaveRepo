@@ -14,17 +14,17 @@ namespace Systems
         {
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
             
+            systemState.RequireForUpdate<DamageMultiplierComponent>();
             systemState.RequireForUpdate<EnemyJustSpawnedTag>();
-            systemState.RequireForUpdate<EnemySpawnerTag>();
+            systemState.RequireForUpdate<HealthMultiplierComponent>();
             systemState.RequireForUpdate<LevelComponent>();
+            systemState.RequireForUpdate<LootMultiplierComponent>();
         }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            Entity spawnerEntity = SystemAPI.GetSingletonEntity<EnemySpawnerTag>();
-
-            systemState.Dependency = new ScalingJob { CurrentLevel = SystemAPI.GetSingleton<LevelComponent>().Level , DamageMultiplier = SystemAPI.GetComponent<DamageMultiplierComponent>(spawnerEntity).DamageMultiplier , EntityCommandBufferParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , HealthMultiplier = SystemAPI.GetComponent<HealthMultiplierComponent>(spawnerEntity).HealthMultiplier , LootMultiplier = SystemAPI.GetComponent<LootMultiplierComponent>(spawnerEntity).LootMultiplier , }.ScheduleParallel(systemState.Dependency);
+            systemState.Dependency = new ScalingJob { CurrentLevel = SystemAPI.GetSingleton<LevelComponent>().Level , DamageMultiplier = SystemAPI.GetSingleton<DamageMultiplierComponent>().DamageMultiplier , EntityCommandBufferParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , HealthMultiplier = SystemAPI.GetSingleton<HealthMultiplierComponent>().HealthMultiplier , LootMultiplier = SystemAPI.GetSingleton<LootMultiplierComponent>().LootMultiplier , }.ScheduleParallel(systemState.Dependency);
         }
     }
 
@@ -47,7 +47,7 @@ namespace Systems
             maxHealthComponent.MaxHealth = newHealth;
             currentHealthComponent.CurrentHealth = newHealth;
 
-            lootAmountComponent.Amount = (int)(lootAmountComponent.Amount * (1f + (levelMultiplier * LootMultiplier)));
+            lootAmountComponent.Amount = (int)(lootAmountComponent.Amount * (1f + levelMultiplier * LootMultiplier));
 
             EntityCommandBufferParallelWriter.RemoveComponent<EnemyJustSpawnedTag>(entityIndexInQuery , entity);
         }

@@ -6,6 +6,7 @@ namespace Entities
 
     public class PlayerEntity : MonoBehaviour
     {
+        [SerializeField] private float collisionRadius; // Defines the radius of the hitbox used for collision detection
         [SerializeField] private float dashCooldownTimer; // Time before next dash   
         [SerializeField] private float dashDuration; // Length of dash   
         [SerializeField] private float dashMultiplier; // Speed boost (5 * 5 = 25 units/sec)
@@ -20,6 +21,7 @@ namespace Entities
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
                 AddComponent(entity , new BaseMoveSpeedComponent { Speed = authoring.moveSpeed });
+                AddComponent(entity , new CollisionRadiusComponent { Radius = authoring.collisionRadius });
                 AddComponent(entity , new CurrentHealthComponent { CurrentHealth = authoring.maxHealth });
                 AddComponent(entity , new DashCooldownComponent { Timer = authoring.dashCooldownTimer });
                 AddComponent(entity , new DashDurationComponent { Duration = authoring.dashDuration });

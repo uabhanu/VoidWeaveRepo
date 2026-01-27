@@ -45,12 +45,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b280ac8c99ba8940911ff6d0c0bcf9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entities.PlayerEntity
+  collisionRadius: 0.5
   dashCooldownTimer: 1.1
   dashDuration: 0.2
   dashMultiplier: 4.9
   maxHealth: 80
   moveSpeed: 4.5
-  startingResources: 100
   teamID: 0
 --- !u!212 &2119879020573571634
 SpriteRenderer:

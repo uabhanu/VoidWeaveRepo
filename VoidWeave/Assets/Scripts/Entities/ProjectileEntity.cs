@@ -6,6 +6,7 @@ namespace Entities
 
     public class ProjectileEntity : MonoBehaviour
     {
+        [SerializeField] private float collisionRadius; // Defines the radius of the hitbox used for collision detection
         [SerializeField] private float lifetime;
         [SerializeField] private float speed;
         [SerializeField] private int teamID;
@@ -16,8 +17,9 @@ namespace Entities
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
                 
-                AddComponent(entity , new MoveSpeedComponent { Speed = authoring.speed });
+                AddComponent(entity , new CollisionRadiusComponent { Radius = authoring.collisionRadius });
                 AddComponent(entity , new DamageComponent { Damage = 0 });
+                AddComponent(entity , new MoveSpeedComponent { Speed = authoring.speed });
                 AddComponent(entity , new ProjectileLifetimeComponent { Timer = authoring.lifetime });
                 AddComponent(entity , new TeamComponent { ID = authoring.teamID });
                 AddComponent(entity , new VelocityComponent());
