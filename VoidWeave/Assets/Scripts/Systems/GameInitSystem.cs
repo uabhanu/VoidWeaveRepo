@@ -21,10 +21,12 @@ namespace Systems
             EntityCommandBuffer entityCommandBuffer = SystemAPI.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);
             
             EnemySpawnerEntityComponent enemySpawnerEntityComponent = SystemAPI.GetComponent<EnemySpawnerEntityComponent>(entity);
+            InputEntityComponent inputEntityComponent = SystemAPI.GetComponent<InputEntityComponent>(entity);
             PlayerEntityComponent playerEntityComponent = SystemAPI.GetComponent<PlayerEntityComponent>(entity);
             TurretConfigEntityComponent turretConfigEntityComponent = SystemAPI.GetComponent<TurretConfigEntityComponent>(entity);
             
             entityCommandBuffer.Instantiate(enemySpawnerEntityComponent.Entity);
+            entityCommandBuffer.Instantiate(inputEntityComponent.Entity);
             entityCommandBuffer.Instantiate(playerEntityComponent.Entity);
             entityCommandBuffer.Instantiate(turretConfigEntityComponent.Entity);
             

@@ -2,6 +2,7 @@ namespace Components
 {
     using Unity.Entities;
     using Unity.Mathematics;
+    using UnityEngine.InputSystem;
 
     #region Components
 
@@ -64,10 +65,25 @@ namespace Components
     {
         public float Duration;
     }
+    
+    public struct DashKeyComponent : IComponentData
+    {
+        public Key DashKey;
+    }
 
     public struct DashMultiplierComponent : IComponentData
     {
         public float Multiplier;
+    }
+    
+    public struct DeployKeyComponent : IComponentData
+    {
+        public Key DeployKey;
+    }
+    
+    public struct DownKeyComponent : IComponentData
+    {
+        public Key DownKey;
     }
 
     public struct EnemiesKilledComponent : IComponentData
@@ -93,6 +109,66 @@ namespace Components
     public struct HealthMultiplierComponent : IComponentData
     {
         public float HealthMultiplier;
+    }
+    
+    public struct InputDashValueComponent : IComponentData
+    {
+        public uint InputDashValue;
+    }
+    
+    public struct InputDeployValueComponent : IComponentData
+    {
+        public uint InputDeployValue;
+    }
+    
+    public struct InputDownValueComponent : IComponentData
+    {
+        public uint InputDownValue;
+    }
+    
+    public struct InputEntityComponent : IComponentData
+    {
+        public Entity Entity;
+    }
+    
+    public struct InputLeftValueComponent : IComponentData
+    {
+        public uint InputLeftValue;
+    }
+    
+    public struct InputNoneValueComponent : IComponentData
+    {
+        public uint InputNoneValue;
+    }
+    
+    public struct InputRightValueComponent : IComponentData
+    {
+        public uint InputRightValue;
+    }
+    
+    public struct InputTurret1ValueComponent : IComponentData
+    {
+        public uint InputTurret1Value;
+    }
+    
+    public struct InputTurret2ValueComponent : IComponentData
+    {
+        public uint InputTurret2Value;
+    }
+    
+    public struct InputTurret3ValueComponent : IComponentData
+    {
+        public uint InputTurret3Value;
+    }
+    
+    public struct InputUpValueComponent : IComponentData
+    {
+        public uint InputUpValue;
+    }
+    
+    public struct LeftKeyComponent : IComponentData
+    {
+        public Key LeftKey;
     }
 
     public struct LevelComponent : IComponentData
@@ -137,7 +213,7 @@ namespace Components
 
     public struct PlayerInputComponent : IComponentData
     {
-        public uint SelectedInput;
+        public uint PlayerInput;
     }
 
     // How many projectiles spawn per shot
@@ -160,6 +236,11 @@ namespace Components
     public struct RangeComponent : IComponentData
     {
         public float Range;
+    }
+    
+    public struct RightKeyComponent : IComponentData
+    {
+        public Key RightKey;
     }
 
     public struct SelectedTurretCostComponent : IComponentData
@@ -214,6 +295,21 @@ namespace Components
         public Entity Entity;
     }
     
+    public struct Turret1KeyComponent : IComponentData
+    {
+        public Key Turret1Key;
+    }
+    
+    public struct Turret2KeyComponent : IComponentData
+    {
+        public Key Turret2Key;
+    }
+    
+    public struct Turret3KeyComponent : IComponentData
+    {
+        public Key Turret3Key;
+    }
+    
     public struct TurretConfigEntityComponent : IComponentData
     {
         public Entity Entity;
@@ -237,6 +333,11 @@ namespace Components
     public struct UnlockedEnemiesComponent : IComponentData
     {
         public uint UnlockedEnemiesBitmask;
+    }
+    
+    public struct UpKeyComponent : IComponentData
+    {
+        public Key UpKey;
     }
 
     public struct VelocityComponent : IComponentData

@@ -62,9 +62,9 @@ namespace Systems
             // 128 = Key 2 (Scatter)
             // 256 = Key 3 (Beam)
 
-            bool strikerTurretKeyPressed = (playerInputComponent.SelectedInput & 64) != 0;
-            bool scatterTurretKeyPressed = (playerInputComponent.SelectedInput & 128) != 0;
-            bool beamTurretKeyPressed = (playerInputComponent.SelectedInput & 256) != 0;
+            bool strikerTurretKeyPressed = (playerInputComponent.PlayerInput & 64) != 0;
+            bool scatterTurretKeyPressed = (playerInputComponent.PlayerInput & 128) != 0;
+            bool beamTurretKeyPressed = (playerInputComponent.PlayerInput & 256) != 0;
 
             // Check Unlocks (Level 2 for Scatter, Level 3 for Beam)
             bool scatterTurretUnlocked = scatterTurretKeyPressed && CurrentLevel >= 2;

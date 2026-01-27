@@ -10,11 +10,11 @@ namespace Systems
     public partial struct MovementSystem : ISystem
     {
         [BurstCompile]
-        public void OnUpdate(ref SystemState state)
+        public void OnUpdate(ref SystemState systemState)
         {
-            new InputMovementJob { DeltaTime = SystemAPI.Time.DeltaTime }.ScheduleParallel();
             new BasicEnemyMovementJob { DeltaTime = SystemAPI.Time.DeltaTime }.ScheduleParallel();
             new FastEnemyMovementJob { DeltaTime = SystemAPI.Time.DeltaTime , ElapsedTime = (float)SystemAPI.Time.ElapsedTime }.ScheduleParallel();
+            new InputMovementJob { DeltaTime = SystemAPI.Time.DeltaTime }.ScheduleParallel();
             new ProjectileMovementJob { DeltaTime = SystemAPI.Time.DeltaTime }.ScheduleParallel();
             new SlowEnemyMovementJob { DeltaTime = SystemAPI.Time.DeltaTime }.ScheduleParallel();
         }
@@ -29,7 +29,7 @@ namespace Systems
 
         private void Execute(ref LocalTransform localTransform , in MoveSpeedComponent moveSpeedComponent , in PlayerInputComponent playerInputComponent)
         {
-            uint selectedInput = playerInputComponent.SelectedInput;
+            uint selectedInput = playerInputComponent.PlayerInput;
 
             // Decode Bits to Directions (No Ifs)
             // 1=Up, 2=Down, 4=Left, 8=Right

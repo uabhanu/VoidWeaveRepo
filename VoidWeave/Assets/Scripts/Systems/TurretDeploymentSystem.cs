@@ -41,7 +41,7 @@ namespace Systems
         private void Execute([EntityIndexInQuery] int entityInQueryIndex , in LocalTransform localTransform , in PlayerInputComponent playerInputComponent , in SelectedTurretCostComponent selectedTurretCostComponent , in SelectedTurretEntityComponent selectedTurretEntityComponent)
         {
             bool canAfford = EnergyRef.Value >= selectedTurretCostComponent.Cost;
-            bool isDeployAction = (playerInputComponent.SelectedInput & 32) != 0;
+            bool isDeployAction = (playerInputComponent.PlayerInput & 32) != 0;
             bool hasValidTurret = selectedTurretEntityComponent.Entity != Entity.Null;
 
             int spawnCount = math.select(0 , 1 , isDeployAction && canAfford && hasValidTurret);
