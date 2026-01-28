@@ -230,6 +230,26 @@ namespace Components
     {
         public float MaxHealth;
     }
+    
+    public struct MovementActiveValueComponent : IComponentData
+    {
+        public float MovementActiveValue;
+    }
+
+    public struct MovementNoneValueComponent : IComponentData
+    {
+        public float MovementNoneValue;
+    }
+    
+    public struct MovementZigZagAmplitudeComponent : IComponentData
+    {
+        public float ZigZagAmplitude;
+    }
+
+    public struct MovementZigZagFrequencyComponent : IComponentData
+    {
+        public float ZigZagFrequency;
+    }
 
     public struct MoveSpeedComponent : IComponentData
     {

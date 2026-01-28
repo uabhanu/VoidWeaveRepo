@@ -16,6 +16,8 @@ namespace Entities
         [SerializeField] private float healthMultiplierPerLevel;
         [SerializeField] private GameObject inputEntityPrefab;
         [SerializeField] private float lootMultiplierPerLevel;
+        [SerializeField] private float movementActiveValue;
+        [SerializeField] private float movementNoneValue;
         [SerializeField] private GameObject playerEntityPrefab;
         [SerializeField] private int startingLevel;
         [SerializeField] private int startingResources;
@@ -45,6 +47,8 @@ namespace Entities
                 AddComponent(entity , new InputEntityComponent { Entity = GetEntity(authoring.inputEntityPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new LevelComponent { Level = authoring.startingLevel });
                 AddComponent(entity , new LootMultiplierComponent { LootMultiplier = authoring.lootMultiplierPerLevel });
+                AddComponent(entity , new MovementActiveValueComponent { MovementActiveValue = authoring.movementActiveValue });
+                AddComponent(entity , new MovementNoneValueComponent { MovementNoneValue = authoring.movementNoneValue });
                 AddComponent(entity , new PlayerEntityComponent { Entity = GetEntity(authoring.playerEntityPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new TurretConfigEntityComponent { Entity = GetEntity(authoring.turretConfigEntityPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new UnlockedEnemiesComponent { UnlockedEnemiesBitmask = initialMask });

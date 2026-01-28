@@ -18,6 +18,8 @@ namespace Entities
         [SerializeField] private float range;
         [SerializeField] private float spreadDegrees;
         [SerializeField] private int teamID;
+        [SerializeField] private float zigZagAmplitude;
+        [SerializeField] private float zigZagFrequency;
 
         private class RangedEnemyBaker : Baker<RangedEnemyEntity>
         {
@@ -34,6 +36,8 @@ namespace Entities
                 AddComponent(entity , new LootAmountComponent { Amount = authoring.lootAmount });
                 AddComponent(entity , new LootEntityComponent { Entity = GetEntity(authoring.lootPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new MaxHealthComponent { MaxHealth = authoring.maxHealth });
+                AddComponent(entity , new MovementZigZagAmplitudeComponent { ZigZagAmplitude = authoring.zigZagAmplitude });
+                AddComponent(entity , new MovementZigZagFrequencyComponent { ZigZagFrequency = authoring.zigZagFrequency });
                 AddComponent(entity , new MoveSpeedComponent { Speed = authoring.moveSpeed });
                 AddComponent(entity , new ProjectileCountComponent { Count = authoring.projectileCount });
                 AddComponent(entity , new RangeComponent { Range = authoring.range });

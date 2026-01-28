@@ -53,6 +53,8 @@ MonoBehaviour:
   maxHealth: 50
   moveSpeed: 2.9
   teamID: 1
+  zigZagAmplitude: 2.2
+  zigZagFrequency: 10.1
 --- !u!212 &3166609023252933345
 SpriteRenderer:
   serializedVersion: 2
