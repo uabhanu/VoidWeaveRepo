@@ -19,12 +19,19 @@ namespace Systems
             systemState.RequireForUpdate<HealthMultiplierComponent>();
             systemState.RequireForUpdate<LevelComponent>();
             systemState.RequireForUpdate<LootMultiplierComponent>();
+            systemState.RequireForUpdate<ScalingBaseValueComponent>();
+            systemState.RequireForUpdate<ScalingLevelOffsetValueComponent>();
+            systemState.RequireForUpdate<ScalingMinLevelValueComponent>();
         }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            systemState.Dependency = new ScalingJob { CurrentLevel = SystemAPI.GetSingleton<LevelComponent>().Level , DamageMultiplier = SystemAPI.GetSingleton<DamageMultiplierComponent>().DamageMultiplier , EntityCommandBufferParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , HealthMultiplier = SystemAPI.GetSingleton<HealthMultiplierComponent>().HealthMultiplier , LootMultiplier = SystemAPI.GetSingleton<LootMultiplierComponent>().LootMultiplier , }.ScheduleParallel(systemState.Dependency);
+            float scalingBase = SystemAPI.GetSingleton<ScalingBaseValueComponent>().ScalingBaseValue;
+            int scalingLevelOffset = SystemAPI.GetSingleton<ScalingLevelOffsetValueComponent>().ScalingLevelOffsetValue;
+            int scalingMinLevel = SystemAPI.GetSingleton<ScalingMinLevelValueComponent>().ScalingMinLevelValue;
+            
+            systemState.Dependency = new ScalingJob { CurrentLevel = SystemAPI.GetSingleton<LevelComponent>().Level , DamageMultiplier = SystemAPI.GetSingleton<DamageMultiplierComponent>().DamageMultiplier , EntityCommandBufferParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , HealthMultiplier = SystemAPI.GetSingleton<HealthMultiplierComponent>().HealthMultiplier , LootMultiplier = SystemAPI.GetSingleton<LootMultiplierComponent>().LootMultiplier , ScalingBase = scalingBase , ScalingLevelOffset = scalingLevelOffset , ScalingMinLevel = scalingMinLevel}.ScheduleParallel(systemState.Dependency);
         }
     }
 
@@ -36,18 +43,21 @@ namespace Systems
         public EntityCommandBuffer.ParallelWriter EntityCommandBufferParallelWriter;
         public float HealthMultiplier;
         public float LootMultiplier;
+        public float ScalingBase;
+        public int ScalingLevelOffset;
+        public int ScalingMinLevel;
 
         private void Execute(ref CurrentHealthComponent currentHealthComponent , ref DamageComponent damageComponent , in EnemyJustSpawnedTag enemyJustSpawnedTag , Entity entity , [EntityIndexInQuery] int entityIndexInQuery , ref LootAmountComponent lootAmountComponent , ref MaxHealthComponent maxHealthComponent)
         {
-            float levelMultiplier = math.max(0 , CurrentLevel - 3);
+            float levelMultiplier = math.max(ScalingMinLevel , CurrentLevel - ScalingLevelOffset);
 
-            damageComponent.Damage = (int)math.ceil(damageComponent.Damage * (1f + levelMultiplier * DamageMultiplier));
+            damageComponent.Damage = (int)math.ceil(damageComponent.Damage * (ScalingBase + levelMultiplier * DamageMultiplier));
 
-            int newHealth = (int)math.ceil(maxHealthComponent.MaxHealth * (1f + levelMultiplier * HealthMultiplier));
+            int newHealth = (int)math.ceil(maxHealthComponent.MaxHealth * (ScalingBase + levelMultiplier * HealthMultiplier));
             maxHealthComponent.MaxHealth = newHealth;
             currentHealthComponent.CurrentHealth = newHealth;
 
-            lootAmountComponent.Amount = (int)(lootAmountComponent.Amount * (1f + levelMultiplier * LootMultiplier));
+            lootAmountComponent.Amount = (int)(lootAmountComponent.Amount * (ScalingBase + levelMultiplier * LootMultiplier));
 
             EntityCommandBufferParallelWriter.RemoveComponent<EnemyJustSpawnedTag>(entityIndexInQuery , entity);
         }

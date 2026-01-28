@@ -297,6 +297,21 @@ namespace Components
     {
         public Key RightKey;
     }
+    
+    public struct ScalingBaseValueComponent : IComponentData
+    {
+        public float ScalingBaseValue;
+    }
+    
+    public struct ScalingLevelOffsetValueComponent : IComponentData
+    {
+        public int ScalingLevelOffsetValue;
+    }
+
+    public struct ScalingMinLevelValueComponent : IComponentData
+    {
+        public int ScalingMinLevelValue;
+    }
 
     public struct SelectedTurretCostComponent : IComponentData
     {
