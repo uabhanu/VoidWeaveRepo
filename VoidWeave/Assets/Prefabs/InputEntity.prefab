@@ -44,8 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df4e0593f3979bd4ba71d7c57844f189, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entities.InputEntity
-  dashKey: 51
-  deployKey: 1
+  dashKey: 1
+  deployKey: 19
   downKey: 33
   leftKey: 15
   rightKey: 18
