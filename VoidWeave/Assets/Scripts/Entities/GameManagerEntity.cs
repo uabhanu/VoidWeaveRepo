@@ -5,8 +5,10 @@ using UnityEngine;
 
 namespace Entities
 {
-    public class GameConfigEntity : MonoBehaviour
+    public class GameManagerEntity : MonoBehaviour
     {
+        [SerializeField] private int collisionActiveValue;
+        [SerializeField] private int collisionNoneValue;
         [SerializeField] private float damageMultiplierPerLevel;
         [SerializeField] private int enemiesToKill;
         [SerializeField] private int enemiesToKillIncrement;
@@ -19,9 +21,9 @@ namespace Entities
         [SerializeField] private int startingResources;
         [SerializeField] private GameObject turretConfigEntityPrefab;
 
-        private class GameConfigBaker : Baker<GameConfigEntity>
+        private class GameConfigBaker : Baker<GameManagerEntity>
         {
-            public override void Bake(GameConfigEntity authoring)
+            public override void Bake(GameManagerEntity authoring)
             {
                 Entity entity = GetEntity(TransformUsageFlags.None);
                 
@@ -31,6 +33,8 @@ namespace Entities
                 initialMask |= (uint)math.select(0 , 2 , startingLevel >= 2);
                 initialMask |= (uint)math.select(0 , 4 , startingLevel >= 3);
 
+                AddComponent(entity , new CollisionActiveValueComponent { CollisionActiveValue = authoring.collisionActiveValue });
+                AddComponent(entity , new CollisionNoneValueComponent { CollisionNoneValue = authoring.collisionNoneValue });
                 AddComponent(entity , new CurrentEnergyComponent { Energy = authoring.startingResources });
                 AddComponent(entity , new DamageMultiplierComponent { DamageMultiplier = authoring.damageMultiplierPerLevel });
                 AddComponent(entity , new EnemiesToKillComponent { EnemiesToKill = enemiesToKill });

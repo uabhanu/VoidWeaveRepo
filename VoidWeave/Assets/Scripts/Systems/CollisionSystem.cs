@@ -18,7 +18,9 @@ namespace Systems
         public void OnCreate(ref SystemState systemState)
         {
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
-            
+            systemState.RequireForUpdate<CollisionActiveValueComponent>();
+            systemState.RequireForUpdate<CollisionNoneValueComponent>();
+
             // Targets: Valid victims (Players & Enemies)
             _targetQuery = SystemAPI.QueryBuilder().WithAll<CollisionRadiusComponent , LocalToWorld , TeamComponent>().WithAny<EnemyTag , PlayerTag>().WithNone<DeathTag>().Build();
         }
@@ -31,14 +33,17 @@ namespace Systems
             NativeArray<CollisionRadiusComponent> targetRadiiNativeArray = _targetQuery.ToComponentDataArray<CollisionRadiusComponent>(Allocator.TempJob);
             NativeArray<TeamComponent> targetTeamComponentsNativeArray = _targetQuery.ToComponentDataArray<TeamComponent>(Allocator.TempJob);
 
+            int collisionActiveValue = SystemAPI.GetSingleton<CollisionActiveValueComponent>().CollisionActiveValue;
+            int collisionNoneValue = SystemAPI.GetSingleton<CollisionNoneValueComponent>().CollisionNoneValue;
+
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
 
             // PROJECTILES (Bullet -> Player/Enemy)
             // Kills Self (1) + Deals Damage
-            JobHandle projectileJobHandle = new CollisionJob { ECB = ecb , KillSelf = 1 , TargetEntitiesNativeArray = targetEntitiesNativeArray , TargetPositionsNativeArray = targetPositionsNativeArray , TargetRadiiNativeArray = targetRadiiNativeArray , TargetTeamComponentsNativeArray = targetTeamComponentsNativeArray }.ScheduleParallel(SystemAPI.QueryBuilder().WithAll<CollisionRadiusComponent , DamageComponent , LocalToWorld , ProjectileTag , TeamComponent>().WithNone<DeathTag>().Build() , systemState.Dependency);
-            
+            JobHandle projectileJobHandle = new CollisionJob { CollisionActiveValue = collisionActiveValue , CollisionNoneValue = collisionNoneValue , ECB = ecb , KillSelf = collisionActiveValue , TargetEntitiesNativeArray = targetEntitiesNativeArray , TargetPositionsNativeArray = targetPositionsNativeArray , TargetRadiiNativeArray = targetRadiiNativeArray , TargetTeamComponentsNativeArray = targetTeamComponentsNativeArray }.ScheduleParallel(SystemAPI.QueryBuilder().WithAll<CollisionRadiusComponent , DamageComponent , LocalToWorld , ProjectileTag , TeamComponent>().WithNone<DeathTag>().Build() , systemState.Dependency);
+
             // Kills Self (0) + Deals Damage
-            systemState.Dependency = new CollisionJob { ECB = ecb , KillSelf = 0 , TargetEntitiesNativeArray = targetEntitiesNativeArray , TargetPositionsNativeArray = targetPositionsNativeArray , TargetRadiiNativeArray = targetRadiiNativeArray , TargetTeamComponentsNativeArray = targetTeamComponentsNativeArray }.ScheduleParallel(SystemAPI.QueryBuilder().WithAll<CanMeleeAttackTag , CollisionRadiusComponent , DamageComponent , EnemyTag , LocalToWorld , TeamComponent>().WithNone<DeathTag>().Build() , projectileJobHandle);
+            systemState.Dependency = new CollisionJob { CollisionActiveValue = collisionActiveValue , CollisionNoneValue = collisionNoneValue , ECB = ecb , KillSelf = collisionNoneValue , TargetEntitiesNativeArray = targetEntitiesNativeArray , TargetPositionsNativeArray = targetPositionsNativeArray , TargetRadiiNativeArray = targetRadiiNativeArray , TargetTeamComponentsNativeArray = targetTeamComponentsNativeArray }.ScheduleParallel(SystemAPI.QueryBuilder().WithAll<CanMeleeAttackTag , CollisionRadiusComponent , DamageComponent , EnemyTag , LocalToWorld , TeamComponent>().WithNone<DeathTag>().Build() , projectileJobHandle);
 
             targetEntitiesNativeArray.Dispose(systemState.Dependency);
             targetPositionsNativeArray.Dispose(systemState.Dependency);
@@ -52,9 +57,11 @@ namespace Systems
     [WithNone(typeof(DeathTag))]
     public partial struct CollisionJob : IJobEntity
     {
+        public int CollisionActiveValue;
+        public int CollisionNoneValue;
         public EntityCommandBuffer.ParallelWriter ECB;
         public int KillSelf;
-        
+
         [ReadOnly] public NativeArray<Entity> TargetEntitiesNativeArray;
         [ReadOnly] public NativeArray<LocalToWorld> TargetPositionsNativeArray;
         [ReadOnly] public NativeArray<CollisionRadiusComponent> TargetRadiiNativeArray;
@@ -69,14 +76,14 @@ namespace Systems
                 bool isHit = math.distancesq(localToWorld.Position , TargetPositionsNativeArray[i].Position) <= hitRadiusSq && teamComponent.ID != TargetTeamComponentsNativeArray[i].ID;
 
                 // ADD DAMAGE EVENT
-                for(int k = 0 ; k < math.select(0 , 1 , isHit) ; k++) { ECB.AddComponent(entityIndexInQuery , TargetEntitiesNativeArray[i] , new DamageEventComponent { Damage = (int)damageComponent.Damage }); }
+                for(int k = 0 ; k < math.select(CollisionNoneValue , CollisionActiveValue , isHit) ; k++) { ECB.AddComponent(entityIndexInQuery , TargetEntitiesNativeArray[i] , new DamageEventComponent { Damage = (int)damageComponent.Damage }); }
 
                 // KILL SELF (Only if KillSelf is 1)
-                for(int k = 0 ; k < math.select(0 , 1 , isHit && KillSelf == 1) ; k++) { ECB.AddComponent<DeathTag>(entityIndexInQuery , entity); }
-                
+                for(int k = 0 ; k < math.select(CollisionNoneValue , CollisionActiveValue , isHit && KillSelf == CollisionActiveValue) ; k++) { ECB.AddComponent<DeathTag>(entityIndexInQuery , entity); }
+
                 // MELEE HIT TRIGGER
                 // If we hit and we are an Enemy (KillSelf=0), add Tag to Self to trigger cooldown
-                for(int k = 0 ; k < math.select(0 , 1 , isHit && KillSelf == 0) ; k++) { ECB.AddComponent<CanMeleeAttackTag>(entityIndexInQuery , entity); }
+                for(int k = 0 ; k < math.select(CollisionNoneValue , CollisionActiveValue , isHit && KillSelf == CollisionNoneValue) ; k++) { ECB.AddComponent<CanMeleeAttackTag>(entityIndexInQuery , entity); }
             }
         }
     }

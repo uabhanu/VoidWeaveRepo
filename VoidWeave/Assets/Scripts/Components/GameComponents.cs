@@ -26,6 +26,16 @@ namespace Components
         public Entity Entity;
     }
     
+    public struct CollisionActiveValueComponent : IComponentData
+    {
+        public int CollisionActiveValue;
+    }
+
+    public struct CollisionNoneValueComponent : IComponentData
+    {
+        public int CollisionNoneValue;
+    }
+    
     public struct CollisionRadiusComponent : IComponentData
     {
         public float Radius;

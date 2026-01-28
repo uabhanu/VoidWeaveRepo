@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 1220176065}
   - component: {fileID: 1220176064}
   m_Layer: 0
-  m_Name: GameConfigEntity
+  m_Name: GameManagerEntity
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -148,6 +148,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4440088ea66c3bc43801a02e61b4f762, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entities.GameConfigEntity
+  collisionActiveValue: 1
+  collisionNoneValue: 0
   damageMultiplierPerLevel: 0.05
   enemiesToKill: 20
   enemiesToKillIncrement: 5
