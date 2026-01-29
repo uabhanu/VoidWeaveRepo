@@ -133,21 +133,21 @@ Level 1 (Base) → Level 2 (+50%) → Level 3 (+100%)
 
 ## Enemy Types
 
-### 🔻 Triangle - The Swarm
-- **Health:** 50 HP
-- **Speed:** 4 units/sec (Fast)
-- **Damage:** Collision only
-- **Reward:** 5 resources
-- **Behaviour:** Erratic movement, spawns in groups of 10-20
-- **Counter:** Scatter turrets + dash through gaps
-
 ### ▬ Line - The Formation
 - **Health:** 100 HP
 - **Speed:** 2.5 units/sec (Medium)
 - **Damage:** Collision only
 - **Reward:** 15 resources
 - **Behaviour:** Moves in straight formations, spawns in groups of 5-10
-- **Counter:** Beam turrets + perpendicular dodging
+- **Counter:** Striker turrets + kiting
+
+### 🔻 Triangle - The Swarm
+- **Health:** 150 HP
+- **Speed:** 4 units/sec (Fast)
+- **Damage:** Collision only
+- **Reward:** 5 resources
+- **Behaviour:** Erratic movement, spawns in groups of 10-20
+- **Counter:** Scatter turrets + dash through gaps
 
 ### 🟥 Square - The Tank
 - **Health:** 200 HP
@@ -156,7 +156,7 @@ Level 1 (Base) → Level 2 (+50%) → Level 3 (+100%)
 - **Fire Rate:** 0.5/sec
 - **Reward:** 25 resources
 - **Behaviour:** Slow movement, shoots projectiles, high health
-- **Counter:** Striker turrets + kiting
+- **Counter:** Beam turrets + perpendicular dodging
 
 ---
 
