@@ -51,12 +51,13 @@ MonoBehaviour:
   enemySpawnRate: 2.1
   enemyTypesCount: 3
   initialBitmask: 1
-  lineEnemyIndex: 1
+  lineEnemyIndex: 0
   lineEnemyPrefab: {fileID: 2768343762146773365, guid: c5a66dd71980323478ef27cdd55a4a59, type: 3}
   randomRangeStartValue: 0
   randomSeed: 1
+  randomSeedMin: 1
   squareEnemyIndex: 2
   squareEnemyPrefab: {fileID: 5566403319572895637, guid: 3a11e4bdcdb3b4b40a107b434e2cb590, type: 3}
-  triangleEnemyIndex: 0
+  triangleEnemyIndex: 1
   triangleEnemyPrefab: {fileID: 4429918964874133129, guid: fa278bf6dc9f86f4ca9633468be8bffb, type: 3}
   wavePrepDuration: 30

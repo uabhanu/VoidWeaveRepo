@@ -18,7 +18,7 @@ namespace Entities
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
                 
                 AddComponent(entity , new CollisionRadiusComponent { Radius = authoring.collisionRadius });
-                AddComponent(entity , new DamageComponent { Damage = 0 });
+                AddComponent(entity , new DamageComponent());
                 AddComponent(entity , new MoveSpeedComponent { Speed = authoring.speed });
                 AddComponent(entity , new ProjectileLifetimeComponent { Timer = authoring.lifetime });
                 AddComponent(entity , new TeamComponent { ID = authoring.teamID });

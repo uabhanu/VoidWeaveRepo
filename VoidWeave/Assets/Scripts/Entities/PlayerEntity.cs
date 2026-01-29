@@ -29,7 +29,7 @@ namespace Entities
                 AddComponent(entity , new MaxHealthComponent { MaxHealth = authoring.maxHealth });
                 AddComponent(entity , new MoveSpeedComponent { Speed = authoring.moveSpeed });
                 AddComponent(entity , new PlayerInputComponent());
-                AddComponent(entity , new SelectedTurretCostComponent { Cost = 0 });
+                AddComponent(entity , new SelectedTurretCostComponent());
                 AddComponent(entity , new SelectedTurretEntityComponent { Entity = Entity.Null });
                 AddComponent(entity , new TeamComponent { ID = authoring.teamID });
 

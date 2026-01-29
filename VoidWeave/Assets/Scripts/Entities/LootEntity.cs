@@ -12,7 +12,7 @@ namespace Entities
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
-                AddComponent(entity , new LootAmountComponent { Amount = 0 });
+                AddComponent(entity , new LootAmountComponent());
                 AddComponent(entity , new LootPickupTag());
             }
         }

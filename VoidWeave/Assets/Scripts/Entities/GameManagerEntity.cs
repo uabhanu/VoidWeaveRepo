@@ -15,16 +15,25 @@ namespace Entities
         [SerializeField] private GameObject enemySpawnerEntityPrefab;
         [SerializeField] private float healthMultiplierPerLevel;
         [SerializeField] private GameObject inputEntityPrefab;
+        [SerializeField] private int lineEnemyUnlockLevel; //The When
         [SerializeField] private float lootMultiplierPerLevel;
+        [SerializeField] private int minEnemiesToKill;
+        [SerializeField] private int minStartingLevel;
         [SerializeField] private float movementActiveValue;
         [SerializeField] private float movementNoneValue;
         [SerializeField] private GameObject playerEntityPrefab;
         [SerializeField] private float scalingBaseValue;
         [SerializeField] private int scalingLevelOffset;
         [SerializeField] private int scalingMinLevel;
+        [SerializeField] private int squareEnemyUnlockLevel; //The When
         [SerializeField] private int startingLevel;
         [SerializeField] private int startingResources;
+        [SerializeField] private int triangleEnemyUnlockLevel; //The When
         [SerializeField] private GameObject turretConfigEntityPrefab;
+        [SerializeField] private uint unlockedLineEnemyValue; //The What
+        [SerializeField] private uint unlockedNoneValue;
+        [SerializeField] private uint unlockedSquareEnemyValue; //The What
+        [SerializeField] private uint unlockedTriangleEnemyValue; //The What
 
         private class GameConfigBaker : Baker<GameManagerEntity>
         {
@@ -32,11 +41,13 @@ namespace Entities
             {
                 Entity entity = GetEntity(TransformUsageFlags.None);
                 
-                int enemiesToKill = math.max(1 , authoring.enemiesToKill);
-                int startingLevel = math.max(1 , authoring.startingLevel);
-                uint initialMask = 1;
-                initialMask |= (uint)math.select(0 , 2 , startingLevel >= 2);
-                initialMask |= (uint)math.select(0 , 4 , startingLevel >= 3);
+                int enemiesToKill = math.max(authoring.minEnemiesToKill , authoring.enemiesToKill);
+                int startingLevel = math.max(authoring.minStartingLevel , authoring.startingLevel);
+                
+                uint initialMask = authoring.unlockedNoneValue;
+                initialMask |= math.select(authoring.unlockedNoneValue , authoring.unlockedLineEnemyValue , startingLevel >= authoring.lineEnemyUnlockLevel);
+                initialMask |= math.select(authoring.unlockedNoneValue , authoring.unlockedTriangleEnemyValue , startingLevel >= authoring.triangleEnemyUnlockLevel);
+                initialMask |= (uint)math.select(authoring.unlockedNoneValue , authoring.unlockedSquareEnemyValue , startingLevel >= authoring.squareEnemyUnlockLevel);
 
                 AddComponent(entity , new CollisionActiveValueComponent { CollisionActiveValue = authoring.collisionActiveValue });
                 AddComponent(entity , new CollisionNoneValueComponent { CollisionNoneValue = authoring.collisionNoneValue });

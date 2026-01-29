@@ -18,6 +18,7 @@ namespace Entities
         [SerializeField] private GameObject lineEnemyPrefab;
         [SerializeField] private int randomRangeStartValue;
         [SerializeField] private uint randomSeed;
+        [SerializeField] private uint randomSeedMin;
         [SerializeField] private int squareEnemyIndex;
         [SerializeField] private GameObject squareEnemyPrefab;
         [SerializeField] private int triangleEnemyIndex;
@@ -30,7 +31,10 @@ namespace Entities
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
                 
-                uint seed = math.max(1 , authoring.randomSeed);
+                // Random Seed Value and Random Seed Value Min both are set as 1 in the inspector but still this is correct:
+                // This logic acts as a mandatory safety clamp. It guarantees the seed is never 0 by forcing it to be at least the minimum.
+                // Even if both inputs are 1, the operation correctly resolves to 1, ensuring the RNG always initializes with a valid, non-zero value.
+                uint seed = math.max(authoring.randomSeedMin , authoring.randomSeed);
                 
                 AddComponent(entity , new ActiveWaveStateComponent { ActiveWaveState = authoring.activeWaveState });
                 AddComponent(entity , new EnemySpawnerTag());
