@@ -135,6 +135,11 @@ namespace Components
     {
         public float HealthMultiplier;
     }
+    
+    public struct HealthValueForDeathComponent : IComponentData
+    {
+        public float HealthValueForDeath;
+    }
 
     public struct InitialBitmaskComponent : IComponentData
     {
