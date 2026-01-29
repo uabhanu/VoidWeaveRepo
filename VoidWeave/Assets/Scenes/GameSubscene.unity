@@ -151,6 +151,8 @@ MonoBehaviour:
   collisionActiveValue: 1
   collisionNoneValue: 0
   damageMultiplierPerLevel: 0.05
+  doActionValue: 1
+  noActionValue: 0
   enemiesToKill: 20
   enemiesToKillIncrement: 5
   enemySpawnerEntityPrefab: {fileID: 9071633379703226984, guid: 55c28ec5c3d184f40a1b0224da9a5ea4, type: 3}
@@ -169,6 +171,7 @@ MonoBehaviour:
   squareEnemyUnlockLevel: 3
   startingLevel: 1
   startingResources: 100
+  timerExpiredValue: 0
   triangleEnemyUnlockLevel: 2
   turretConfigEntityPrefab: {fileID: 1521002163540263446, guid: 64eb09c65643256499a17ec4c8315219, type: 3}
   unlockedLineEnemyValue: 1

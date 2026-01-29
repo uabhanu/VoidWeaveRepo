@@ -12,14 +12,14 @@ namespace Systems
         [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
-            systemState.RequireForUpdate<InputUpValueComponent>();
-            systemState.RequireForUpdate<InputDownValueComponent>();
-            systemState.RequireForUpdate<InputLeftValueComponent>();
-            systemState.RequireForUpdate<InputNoneValueComponent>();
-            systemState.RequireForUpdate<InputRightValueComponent>();
+            systemState.RequireForUpdate<InputUpComponent>();
+            systemState.RequireForUpdate<InputDownComponent>();
+            systemState.RequireForUpdate<InputLeftComponent>();
+            systemState.RequireForUpdate<InputNoneComponent>();
+            systemState.RequireForUpdate<InputRightComponent>();
             
-            systemState.RequireForUpdate<MovementActiveValueComponent>();
-            systemState.RequireForUpdate<MovementNoneValueComponent>();
+            systemState.RequireForUpdate<MovementActiveComponent>();
+            systemState.RequireForUpdate<MovementNoneComponent>();
         }
         
         [BurstCompile]
@@ -28,14 +28,14 @@ namespace Systems
             float deltaTime = SystemAPI.Time.DeltaTime;
             float elapsedTime = (float)SystemAPI.Time.ElapsedTime;
             
-            uint inputUp = SystemAPI.GetSingleton<InputUpValueComponent>().InputUpValue;
-            uint inputDown = SystemAPI.GetSingleton<InputDownValueComponent>().InputDownValue;
-            uint inputLeft = SystemAPI.GetSingleton<InputLeftValueComponent>().InputLeftValue;
-            uint inputNone = SystemAPI.GetSingleton<InputNoneValueComponent>().InputNoneValue;
-            uint inputRight = SystemAPI.GetSingleton<InputRightValueComponent>().InputRightValue;
+            uint inputUp = SystemAPI.GetSingleton<InputUpComponent>().InputUpValue;
+            uint inputDown = SystemAPI.GetSingleton<InputDownComponent>().InputDownValue;
+            uint inputLeft = SystemAPI.GetSingleton<InputLeftComponent>().InputLeftValue;
+            uint inputNone = SystemAPI.GetSingleton<InputNoneComponent>().InputNoneValue;
+            uint inputRight = SystemAPI.GetSingleton<InputRightComponent>().InputRightValue;
             
-            float movementActive = SystemAPI.GetSingleton<MovementActiveValueComponent>().MovementActiveValue;
-            float movementNone = SystemAPI.GetSingleton<MovementNoneValueComponent>().MovementNoneValue;
+            float movementActive = SystemAPI.GetSingleton<MovementActiveComponent>().MovementActiveValue;
+            float movementNone = SystemAPI.GetSingleton<MovementNoneComponent>().MovementNoneValue;
             
             new BasicEnemyMovementJob { DeltaTime = deltaTime }.ScheduleParallel();
             new FastEnemyMovementJob { DeltaTime = deltaTime , ElapsedTime = elapsedTime , MovementNone = movementNone}.ScheduleParallel();

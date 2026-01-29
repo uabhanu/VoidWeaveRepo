@@ -18,8 +18,8 @@ namespace Systems
         public void OnCreate(ref SystemState systemState)
         {
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
-            systemState.RequireForUpdate<CollisionActiveValueComponent>();
-            systemState.RequireForUpdate<CollisionNoneValueComponent>();
+            systemState.RequireForUpdate<CollisionActiveComponent>();
+            systemState.RequireForUpdate<CollisionNoneComponent>();
 
             // Targets: Valid victims (Players & Enemies)
             _targetQuery = SystemAPI.QueryBuilder().WithAll<CollisionRadiusComponent , LocalToWorld , TeamComponent>().WithAny<EnemyTag , PlayerTag>().WithNone<DeathTag>().Build();
@@ -33,8 +33,8 @@ namespace Systems
             NativeArray<CollisionRadiusComponent> targetRadiiNativeArray = _targetQuery.ToComponentDataArray<CollisionRadiusComponent>(Allocator.TempJob);
             NativeArray<TeamComponent> targetTeamComponentsNativeArray = _targetQuery.ToComponentDataArray<TeamComponent>(Allocator.TempJob);
 
-            int collisionActiveValue = SystemAPI.GetSingleton<CollisionActiveValueComponent>().CollisionActiveValue;
-            int collisionNoneValue = SystemAPI.GetSingleton<CollisionNoneValueComponent>().CollisionNoneValue;
+            int collisionActiveValue = SystemAPI.GetSingleton<CollisionActiveComponent>().CollisionActiveValue;
+            int collisionNoneValue = SystemAPI.GetSingleton<CollisionNoneComponent>().CollisionNoneValue;
 
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
 

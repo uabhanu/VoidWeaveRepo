@@ -19,17 +19,17 @@ namespace Systems
             systemState.RequireForUpdate<HealthMultiplierComponent>();
             systemState.RequireForUpdate<LevelComponent>();
             systemState.RequireForUpdate<LootMultiplierComponent>();
-            systemState.RequireForUpdate<ScalingBaseValueComponent>();
-            systemState.RequireForUpdate<ScalingLevelOffsetValueComponent>();
-            systemState.RequireForUpdate<ScalingMinLevelValueComponent>();
+            systemState.RequireForUpdate<ScalingBaseComponent>();
+            systemState.RequireForUpdate<ScalingLevelOffsetComponent>();
+            systemState.RequireForUpdate<ScalingMinLevelComponent>();
         }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            float scalingBase = SystemAPI.GetSingleton<ScalingBaseValueComponent>().ScalingBaseValue;
-            int scalingLevelOffset = SystemAPI.GetSingleton<ScalingLevelOffsetValueComponent>().ScalingLevelOffsetValue;
-            int scalingMinLevel = SystemAPI.GetSingleton<ScalingMinLevelValueComponent>().ScalingMinLevelValue;
+            float scalingBase = SystemAPI.GetSingleton<ScalingBaseComponent>().ScalingBaseValue;
+            int scalingLevelOffset = SystemAPI.GetSingleton<ScalingLevelOffsetComponent>().ScalingLevelOffsetValue;
+            int scalingMinLevel = SystemAPI.GetSingleton<ScalingMinLevelComponent>().ScalingMinLevelValue;
             
             systemState.Dependency = new ScalingJob { CurrentLevel = SystemAPI.GetSingleton<LevelComponent>().Level , DamageMultiplier = SystemAPI.GetSingleton<DamageMultiplierComponent>().DamageMultiplier , EntityCommandBufferParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , HealthMultiplier = SystemAPI.GetSingleton<HealthMultiplierComponent>().HealthMultiplier , LootMultiplier = SystemAPI.GetSingleton<LootMultiplierComponent>().LootMultiplier , ScalingBase = scalingBase , ScalingLevelOffset = scalingLevelOffset , ScalingMinLevel = scalingMinLevel}.ScheduleParallel(systemState.Dependency);
         }
