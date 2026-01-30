@@ -148,6 +148,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4440088ea66c3bc43801a02e61b4f762, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entities.GameConfigEntity
+  boundaryOffset: 0.9
+  bulletRotationOffset: 1.570796
+  cameraOrthographicSize: 5
   collisionActive: 1
   collisionNone: 0
   damageMultiplierPerLevel: 0.05
@@ -165,6 +168,7 @@ MonoBehaviour:
   lootMultiplierPerLevel: 0.2
   lootPickupRadius: 0.5
   minEnemiesToKill: 0
+  minProjectileCount: 1
   minStartingLevel: 0
   movementActive: 1
   movementNone: 0
@@ -172,6 +176,8 @@ MonoBehaviour:
   scalingBase: 1
   scalingLevelOffset: 3
   scalingMinLevel: 0
+  spreadHalfMultiplier: 0
+  spreadZero: 0
   squareEnemyUnlockLevel: 3
   startingLevel: 1
   startingResources: 100

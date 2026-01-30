@@ -10,14 +10,31 @@ namespace Systems
     public partial struct ShootingSystem : ISystem
     {
         [BurstCompile]
-        public void OnCreate(ref SystemState systemState) { systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>(); }
+        public void OnCreate(ref SystemState systemState)
+        {
+            systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
+
+            systemState.RequireForUpdate<BulletRotationOffsetComponent>();
+            systemState.RequireForUpdate<MinProjectileCountComponent>();
+            systemState.RequireForUpdate<NoActionComponent>();
+            systemState.RequireForUpdate<SpreadHalfMultiplierComponent>();
+            systemState.RequireForUpdate<SpreadZeroComponent>();
+            systemState.RequireForUpdate<TimerExpiredComponent>();
+        }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
+            var ecbParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
 
-            systemState.Dependency = new ShootJob { ECB = ecb }.ScheduleParallel(systemState.Dependency);
+            float bulletRotationOffset = SystemAPI.GetSingleton<BulletRotationOffsetComponent>().Offset;
+            int minProjectileCount = SystemAPI.GetSingleton<MinProjectileCountComponent>().Count;
+            int noAction = SystemAPI.GetSingleton<NoActionComponent>().NoActionValue;
+            float spreadHalfMultiplier = SystemAPI.GetSingleton<SpreadHalfMultiplierComponent>().HalfMultiplier;
+            float spreadZero = SystemAPI.GetSingleton<SpreadZeroComponent>().Zero;
+            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().TimerExpired;
+
+            systemState.Dependency = new ShootJob { BulletRotationOffset = bulletRotationOffset , ECBParallelWriter = ecbParallelWriter , MinProjectileCount = minProjectileCount , NoAction = noAction , SpreadHalfMultiplier = spreadHalfMultiplier , SpreadZero = spreadZero , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
         }
     }
 
@@ -25,12 +42,18 @@ namespace Systems
     [WithAll(typeof(CanShootTag))]
     public partial struct ShootJob : IJobEntity
     {
-        public EntityCommandBuffer.ParallelWriter ECB;
-        
+        public float BulletRotationOffset;
+        public EntityCommandBuffer.ParallelWriter ECBParallelWriter;
+        public int MinProjectileCount;
+        public int NoAction;
+        public float SpreadHalfMultiplier;
+        public float SpreadZero;
+        public float TimerExpired;
+
         private void Execute(in BulletEntityComponent bulletEntityComponent , RefRW<CooldownComponent> cooldownComponent , in DamageComponent damageComponent , [EntityIndexInQuery] int entityIndexInQuery , in AttackRateComponent attackRateComponent , in LocalToWorld localToWorld , in ProjectileCountComponent projectileCountComponent , in SpreadComponent spreadComponent , in TargetPositionComponent targetPositionComponent)
         {
             // Check Condition
-            bool isReady = cooldownComponent.ValueRO.Timer <= 0;
+            bool isReady = cooldownComponent.ValueRO.Timer <= TimerExpired;
 
             // Reset Timer 
             // If isReady is true, set to AttackRate. Otherwise, keep current negative value.
@@ -39,18 +62,25 @@ namespace Systems
 
             // Calculate Loop Count
             // If not ready, count is 0. Loop will not run.
-            int spawnCount = math.select(0 , projectileCountComponent.Count , isReady);
+            int spawnCount = math.select(NoAction , projectileCountComponent.Count , isReady);
 
             for(int i = 0 ; i < spawnCount ; i++)
             {
-                Entity newBullet = ECB.Instantiate(entityIndexInQuery , bulletEntityComponent.Entity);
+                Entity newBullet = ECBParallelWriter.Instantiate(entityIndexInQuery , bulletEntityComponent.Entity);
 
-                ECB.SetComponent(entityIndexInQuery , newBullet , new DamageComponent { Damage = damageComponent.Damage });
+                ECBParallelWriter.SetComponent(entityIndexInQuery , newBullet , new DamageComponent { Damage = damageComponent.Damage });
+                
+                float spreadAngle = math.radians(spreadComponent.Degrees);
+                float angleStep = math.select(SpreadZero , spreadAngle / math.max(MinProjectileCount , projectileCountComponent.Count - MinProjectileCount) , projectileCountComponent.Count > MinProjectileCount);
+                float baseAngle = math.atan2(targetPositionComponent.Position.y - localToWorld.Position.y , targetPositionComponent.Position.x - localToWorld.Position.x);
+                float startOffset = spreadAngle * SpreadHalfMultiplier;
 
-                // Rotation Logic
-                ECB.SetComponent(entityIndexInQuery , newBullet , LocalTransform.FromPositionRotation(localToWorld.Position , quaternion.RotateZ((math.atan2(targetPositionComponent.Position.y - localToWorld.Position.y , targetPositionComponent.Position.x - localToWorld.Position.x) - (math.radians(spreadComponent.Degrees) * 0.5f) + (math.select(0 , math.radians(spreadComponent.Degrees) / math.max(1 , projectileCountComponent.Count - 1) , projectileCountComponent.Count > 1) * i)) - math.PI / 2f)));
+                float finalAngle = baseAngle - startOffset + angleStep * i - BulletRotationOffset;
 
-                ECB.SetComponent(entityIndexInQuery , newBullet , new VelocityComponent { Velocity = new float2(math.cos(math.atan2(targetPositionComponent.Position.y - localToWorld.Position.y , targetPositionComponent.Position.x - localToWorld.Position.x) - math.radians(spreadComponent.Degrees) * 0.5f + math.select(0 , math.radians(spreadComponent.Degrees) / math.max(1 , projectileCountComponent.Count - 1) , projectileCountComponent.Count > 1) * i) , math.sin(math.atan2(targetPositionComponent.Position.y - localToWorld.Position.y , targetPositionComponent.Position.x - localToWorld.Position.x) - math.radians(spreadComponent.Degrees) * 0.5f + math.select(0 , math.radians(spreadComponent.Degrees) / math.max(1 , projectileCountComponent.Count - 1) , projectileCountComponent.Count > 1) * i)) });
+                ECBParallelWriter.SetComponent(entityIndexInQuery , newBullet , LocalTransform.FromPositionRotation(localToWorld.Position , quaternion.RotateZ(finalAngle)));
+                
+                float velocityAngle = baseAngle - startOffset + (angleStep * i);
+                ECBParallelWriter.SetComponent(entityIndexInQuery , newBullet , new VelocityComponent { Velocity = new float2(math.cos(velocityAngle) , math.sin(velocityAngle)) });
             }
         }
     }

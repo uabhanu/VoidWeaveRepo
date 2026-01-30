@@ -20,10 +20,25 @@ namespace Components
     {
         public float Speed;
     }
+    
+    public struct BoundaryOffsetComponent : IComponentData
+    {
+        public float Offset;
+    }
 
     public struct BulletEntityComponent : IComponentData
     {
         public Entity Entity;
+    }
+    
+    public struct BulletRotationOffsetComponent : IComponentData
+    {
+        public float Offset;
+    }
+    
+    public struct CameraOrthographicSizeComponent : IComponentData
+    {
+        public float Size;
     }
 
     public struct CollisionActiveComponent : IComponentData
@@ -168,7 +183,7 @@ namespace Components
 
     public struct InputDownComponent : IComponentData
     {
-        public uint InputDownValue;
+        public uint InputDown;
     }
 
     public struct InputEntityComponent : IComponentData
@@ -178,17 +193,17 @@ namespace Components
 
     public struct InputLeftComponent : IComponentData
     {
-        public uint InputLeftValue;
+        public uint InputLeft;
     }
 
     public struct InputNoneComponent : IComponentData
     {
-        public uint InputNoneValue;
+        public uint InputNone;
     }
 
     public struct InputRightComponent : IComponentData
     {
-        public uint InputRightValue;
+        public uint InputRight;
     }
 
     public struct InputTurret1Component : IComponentData
@@ -208,7 +223,7 @@ namespace Components
 
     public struct InputUpComponent : IComponentData
     {
-        public uint InputUpValue;
+        public uint InputUp;
     }
 
     public struct LeftKeyComponent : IComponentData
@@ -269,6 +284,11 @@ namespace Components
     public struct MaxHealthComponent : IComponentData
     {
         public float MaxHealth;
+    }
+    
+    public struct MinProjectileCountComponent : IComponentData
+    {
+        public int Count;
     }
 
     public struct MovementActiveComponent : IComponentData
@@ -383,6 +403,16 @@ namespace Components
     public struct SpreadComponent : IComponentData
     {
         public float Degrees;
+    }
+    
+    public struct SpreadHalfMultiplierComponent : IComponentData
+    {
+        public float HalfMultiplier;
+    }
+
+    public struct SpreadZeroComponent : IComponentData
+    {
+        public float Zero;
     }
 
     public struct SquareEnemyEntityComponent : IComponentData

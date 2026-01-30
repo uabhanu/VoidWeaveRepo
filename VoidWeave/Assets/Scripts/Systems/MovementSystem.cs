@@ -28,11 +28,11 @@ namespace Systems
             float deltaTime = SystemAPI.Time.DeltaTime;
             float elapsedTime = (float)SystemAPI.Time.ElapsedTime;
             
-            uint inputUp = SystemAPI.GetSingleton<InputUpComponent>().InputUpValue;
-            uint inputDown = SystemAPI.GetSingleton<InputDownComponent>().InputDownValue;
-            uint inputLeft = SystemAPI.GetSingleton<InputLeftComponent>().InputLeftValue;
-            uint inputNone = SystemAPI.GetSingleton<InputNoneComponent>().InputNoneValue;
-            uint inputRight = SystemAPI.GetSingleton<InputRightComponent>().InputRightValue;
+            uint inputUp = SystemAPI.GetSingleton<InputUpComponent>().InputUp;
+            uint inputDown = SystemAPI.GetSingleton<InputDownComponent>().InputDown;
+            uint inputLeft = SystemAPI.GetSingleton<InputLeftComponent>().InputLeft;
+            uint inputNone = SystemAPI.GetSingleton<InputNoneComponent>().InputNone;
+            uint inputRight = SystemAPI.GetSingleton<InputRightComponent>().InputRight;
             
             float movementActive = SystemAPI.GetSingleton<MovementActiveComponent>().MovementActive;
             float movementNone = SystemAPI.GetSingleton<MovementNoneComponent>().MovementNone;

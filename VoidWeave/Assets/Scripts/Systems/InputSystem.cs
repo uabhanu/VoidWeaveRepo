@@ -46,15 +46,15 @@ namespace Systems
             uint deployValue = SystemAPI.GetSingleton<InputDeployComponent>().InputDeployValue;
 
             Key downKey = SystemAPI.GetSingleton<DownKeyComponent>().DownKey;
-            uint downValue = SystemAPI.GetSingleton<InputDownComponent>().InputDownValue;
+            uint downValue = SystemAPI.GetSingleton<InputDownComponent>().InputDown;
 
             Key leftKey = SystemAPI.GetSingleton<LeftKeyComponent>().LeftKey;
-            uint leftValue = SystemAPI.GetSingleton<InputLeftComponent>().InputLeftValue;
+            uint leftValue = SystemAPI.GetSingleton<InputLeftComponent>().InputLeft;
 
-            uint noneValue = SystemAPI.GetSingleton<InputNoneComponent>().InputNoneValue;
+            uint noneValue = SystemAPI.GetSingleton<InputNoneComponent>().InputNone;
 
             Key rightKey = SystemAPI.GetSingleton<RightKeyComponent>().RightKey;
-            uint rightValue = SystemAPI.GetSingleton<InputRightComponent>().InputRightValue;
+            uint rightValue = SystemAPI.GetSingleton<InputRightComponent>().InputRight;
 
             Key turret1Key = SystemAPI.GetSingleton<Turret1KeyComponent>().Turret1Key;
             uint turret1Value = SystemAPI.GetSingleton<InputTurret1Component>().InputTurret1Value;
@@ -66,7 +66,7 @@ namespace Systems
             uint turret3Value = SystemAPI.GetSingleton<InputTurret3Component>().InputTurret3Value;
 
             Key upKey = SystemAPI.GetSingleton<UpKeyComponent>().UpKey;
-            uint upValue = SystemAPI.GetSingleton<InputUpComponent>().InputUpValue;
+            uint upValue = SystemAPI.GetSingleton<InputUpComponent>().InputUp;
 
             uint selectedInput = noneValue;
             

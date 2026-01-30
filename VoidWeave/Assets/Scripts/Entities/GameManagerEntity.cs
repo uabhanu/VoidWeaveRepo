@@ -9,6 +9,9 @@ namespace Entities
     {
         #region Variables
 
+        [SerializeField] private float boundaryOffset;
+        [SerializeField] private float bulletRotationOffset; // PI / 2
+        [SerializeField] private float cameraOrthographicSize;
         [SerializeField] private int collisionActive;
         [SerializeField] private int collisionNone;
         [SerializeField] private float damageMultiplierPerLevel;
@@ -26,6 +29,7 @@ namespace Entities
         [SerializeField] private float lootMultiplierPerLevel;
         [SerializeField] private float lootPickupRadius;
         [SerializeField] private int minEnemiesToKill;
+        [SerializeField] private int minProjectileCount = 1;
         [SerializeField] private int minStartingLevel;
         [SerializeField] private float movementActive;
         [SerializeField] private float movementNone;
@@ -33,6 +37,8 @@ namespace Entities
         [SerializeField] private float scalingBase;
         [SerializeField] private int scalingLevelOffset;
         [SerializeField] private int scalingMinLevel;
+        [SerializeField] private float spreadHalfMultiplier;
+        [SerializeField] private float spreadZero;
         [SerializeField] private int squareEnemyUnlockLevel; //The When
         [SerializeField] private int startingLevel;
         [SerializeField] private int startingResources;
@@ -62,6 +68,9 @@ namespace Entities
                 initialMask |= math.select(authoring.unlockedNone , authoring.unlockedTriangleEnemy , startingLevel >= authoring.triangleEnemyUnlockLevel);
                 initialMask |= math.select(authoring.unlockedNone , authoring.unlockedSquareEnemy , startingLevel >= authoring.squareEnemyUnlockLevel);
 
+                AddComponent(entity, new BulletRotationOffsetComponent { Offset = authoring.bulletRotationOffset });
+                AddComponent(entity , new BoundaryOffsetComponent { Offset = authoring.boundaryOffset });
+                AddComponent(entity , new CameraOrthographicSizeComponent { Size = authoring.cameraOrthographicSize });
                 AddComponent(entity , new CollisionActiveComponent { CollisionActive = authoring.collisionActive });
                 AddComponent(entity , new CollisionNoneComponent { CollisionNone = authoring.collisionNone });
                 AddComponent(entity , new CurrentEnergyComponent { Energy = authoring.startingResources });
@@ -82,6 +91,7 @@ namespace Entities
                 AddComponent(entity , new LevelToUnlockTriangleEnemyComponent { LevelToUnlockTriangleEnemy = authoring.triangleEnemyUnlockLevel });
                 AddComponent(entity , new LootMultiplierComponent { LootMultiplier = authoring.lootMultiplierPerLevel });
                 AddComponent(entity , new LootPickupRadiusComponent { Radius = authoring.lootPickupRadius });
+                AddComponent(entity, new MinProjectileCountComponent { Count = authoring.minProjectileCount });
                 AddComponent(entity , new MovementActiveComponent { MovementActive = authoring.movementActive });
                 AddComponent(entity , new MovementNoneComponent { MovementNone = authoring.movementNone });
                 AddComponent(entity , new NoActionComponent { NoActionValue = authoring.noAction });
@@ -89,6 +99,8 @@ namespace Entities
                 AddComponent(entity , new ScalingBaseComponent { ScalingBase = authoring.scalingBase });
                 AddComponent(entity , new ScalingLevelOffsetComponent { ScalingLevelOffset = authoring.scalingLevelOffset });
                 AddComponent(entity , new ScalingMinLevelComponent { ScalingMinLevel = authoring.scalingMinLevel });
+                AddComponent(entity, new SpreadHalfMultiplierComponent { HalfMultiplier = authoring.spreadHalfMultiplier });
+                AddComponent(entity, new SpreadZeroComponent { Zero = authoring.spreadZero });
                 AddComponent(entity , new TimerExpiredComponent { TimerExpired = authoring.timerExpired });
                 AddComponent(entity , new TurretConfigEntityComponent { Entity = GetEntity(authoring.turretConfigEntityPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new UnlockedEnemiesComponent { UnlockedEnemiesBitmask = initialMask });

@@ -46,14 +46,14 @@ namespace Entities
                 AddComponent(entity , new DownKeyComponent { DownKey = authoring.downKey });
                 AddComponent(entity , new InputDashComponent { InputDash = authoring.inputDash });
                 AddComponent(entity , new InputDeployComponent { InputDeployValue = authoring.inputDeploy });
-                AddComponent(entity , new InputDownComponent { InputDownValue = authoring.inputDown });
-                AddComponent(entity , new InputLeftComponent { InputLeftValue = authoring.inputLeft });
+                AddComponent(entity , new InputDownComponent { InputDown = authoring.inputDown });
+                AddComponent(entity , new InputLeftComponent { InputLeft = authoring.inputLeft });
                 AddComponent(entity , new InputNoneComponent());
-                AddComponent(entity , new InputRightComponent { InputRightValue = authoring.inputRight });
+                AddComponent(entity , new InputRightComponent { InputRight = authoring.inputRight });
                 AddComponent(entity , new InputTurret1Component { InputTurret1Value = authoring.inputTurret1 });
                 AddComponent(entity , new InputTurret2Component { InputTurret2Value = authoring.inputTurret2 });
                 AddComponent(entity , new InputTurret3Component { InputTurret3Value = authoring.inputTurret3 });
-                AddComponent(entity , new InputUpComponent { InputUpValue = authoring.inputUp });
+                AddComponent(entity , new InputUpComponent { InputUp = authoring.inputUp });
                 AddComponent(entity , new LeftKeyComponent { LeftKey = authoring.leftKey });
                 AddComponent(entity , new RightKeyComponent { RightKey = authoring.rightKey });
                 AddComponent(entity , new Turret1KeyComponent { Turret1Key = authoring.turret1Key });
