@@ -260,6 +260,11 @@ namespace Components
     {
         public float LootMultiplier;
     }
+    
+    public struct LootPickupRadiusComponent : IComponentData
+    {
+        public float Radius;
+    }
 
     public struct MaxHealthComponent : IComponentData
     {

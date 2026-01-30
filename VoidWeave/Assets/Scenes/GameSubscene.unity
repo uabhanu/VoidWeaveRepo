@@ -160,10 +160,10 @@ MonoBehaviour:
   enemySpawnerEntityPrefab: {fileID: 9071633379703226984, guid: 55c28ec5c3d184f40a1b0224da9a5ea4, type: 3}
   healthMultiplierPerLevel: 0.3
   healthValueForDeath: 0
-  inputDash: 16
   inputEntityPrefab: {fileID: 6464459571194226029, guid: 7defc3eb64b3d2e418ff6dbec472138b, type: 3}
   lineEnemyUnlockLevel: 1
   lootMultiplierPerLevel: 0.2
+  lootPickupRadius: 0.5
   minEnemiesToKill: 0
   minStartingLevel: 0
   movementActive: 1

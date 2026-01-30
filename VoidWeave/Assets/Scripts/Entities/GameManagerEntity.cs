@@ -24,6 +24,7 @@ namespace Entities
         [SerializeField] private GameObject inputEntityPrefab;
         [SerializeField] private int lineEnemyUnlockLevel; //The When
         [SerializeField] private float lootMultiplierPerLevel;
+        [SerializeField] private float lootPickupRadius;
         [SerializeField] private int minEnemiesToKill;
         [SerializeField] private int minStartingLevel;
         [SerializeField] private float movementActive;
@@ -80,6 +81,7 @@ namespace Entities
                 AddComponent(entity , new LevelToUnlockSquareEnemyComponent { LevelToUnlockSquareEnemy = authoring.squareEnemyUnlockLevel });
                 AddComponent(entity , new LevelToUnlockTriangleEnemyComponent { LevelToUnlockTriangleEnemy = authoring.triangleEnemyUnlockLevel });
                 AddComponent(entity , new LootMultiplierComponent { LootMultiplier = authoring.lootMultiplierPerLevel });
+                AddComponent(entity , new LootPickupRadiusComponent { Radius = authoring.lootPickupRadius });
                 AddComponent(entity , new MovementActiveComponent { MovementActive = authoring.movementActive });
                 AddComponent(entity , new MovementNoneComponent { MovementNone = authoring.movementNone });
                 AddComponent(entity , new NoActionComponent { NoActionValue = authoring.noAction });
