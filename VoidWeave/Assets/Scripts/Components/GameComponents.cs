@@ -220,6 +220,21 @@ namespace Components
     {
         public int Level;
     }
+    
+    public struct LevelToUnlockLineEnemyComponent : IComponentData
+    {
+        public int LevelToUnlockLineEnemy;
+    }
+    
+    public struct LevelToUnlockSquareEnemyComponent : IComponentData
+    {
+        public int LevelToUnlockSquareEnemy;
+    }
+
+    public struct LevelToUnlockTriangleEnemyComponent : IComponentData
+    {
+        public int LevelToUnlockTriangleEnemy;
+    }
 
     public struct LineEnemyEntityComponent : IComponentData
     {
@@ -443,6 +458,26 @@ namespace Components
     public struct UnlockedEnemiesComponent : IComponentData
     {
         public uint UnlockedEnemiesBitmask;
+    }
+    
+    public struct UnlockedLineEnemyComponent : IComponentData
+    {
+        public uint UnlockedLineEnemy;
+    }
+    
+    public struct UnlockedNoneComponent : IComponentData
+    {
+        public uint UnlockedNone;
+    }
+    
+    public struct UnlockedSquareEnemyComponent : IComponentData
+    {
+        public uint UnlockedSquareEnemy;
+    }
+
+    public struct UnlockedTriangleEnemyComponent : IComponentData
+    {
+        public uint UnlockedTriangleEnemy;
     }
 
     public struct UpKeyComponent : IComponentData

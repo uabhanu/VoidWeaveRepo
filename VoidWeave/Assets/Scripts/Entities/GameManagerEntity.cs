@@ -76,6 +76,9 @@ namespace Entities
                 AddComponent(entity , new HealthValueForDeathComponent { HealthValueForDeath = authoring.healthValueForDeath });
                 AddComponent(entity , new InputEntityComponent { Entity = GetEntity(authoring.inputEntityPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new LevelComponent { Level = authoring.startingLevel });
+                AddComponent(entity , new LevelToUnlockLineEnemyComponent { LevelToUnlockLineEnemy = authoring.lineEnemyUnlockLevel });
+                AddComponent(entity , new LevelToUnlockSquareEnemyComponent { LevelToUnlockSquareEnemy = authoring.squareEnemyUnlockLevel });
+                AddComponent(entity , new LevelToUnlockTriangleEnemyComponent { LevelToUnlockTriangleEnemy = authoring.triangleEnemyUnlockLevel });
                 AddComponent(entity , new LootMultiplierComponent { LootMultiplier = authoring.lootMultiplierPerLevel });
                 AddComponent(entity , new MovementActiveComponent { MovementActive = authoring.movementActive });
                 AddComponent(entity , new MovementNoneComponent { MovementNone = authoring.movementNone });
@@ -87,6 +90,10 @@ namespace Entities
                 AddComponent(entity , new TimerExpiredComponent { TimerExpired = authoring.timerExpired });
                 AddComponent(entity , new TurretConfigEntityComponent { Entity = GetEntity(authoring.turretConfigEntityPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new UnlockedEnemiesComponent { UnlockedEnemiesBitmask = initialMask });
+                AddComponent(entity , new UnlockedLineEnemyComponent { UnlockedLineEnemy = authoring.unlockedLineEnemy });
+                AddComponent(entity , new UnlockedNoneComponent { UnlockedNone = authoring.unlockedNone });
+                AddComponent(entity , new UnlockedSquareEnemyComponent { UnlockedSquareEnemy = authoring.unlockedSquareEnemy });
+                AddComponent(entity , new UnlockedTriangleEnemyComponent { UnlockedTriangleEnemy = authoring.unlockedTriangleEnemy });
 
                 AddComponent(entity , new InitializeGameTag());
             }
