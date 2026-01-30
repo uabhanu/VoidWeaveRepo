@@ -17,12 +17,16 @@ namespace Systems
         {
             systemState.RequireForUpdate<ActiveWaveStateComponent>();
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
+            systemState.RequireForUpdate<DoActionComponent>();
             systemState.RequireForUpdate(SystemAPI.QueryBuilder().WithAll<EnemySpawnerTag>().Build());
             systemState.RequireForUpdate<EnemyTypesCountComponent>();
             systemState.RequireForUpdate<InitialBitmaskComponent>();
             systemState.RequireForUpdate<LineEnemyIndexComponent>();
+            systemState.RequireForUpdate<MovementNoneComponent>();
+            systemState.RequireForUpdate<NoActionComponent>();
             systemState.RequireForUpdate<RandomRangeStartComponent>();
             systemState.RequireForUpdate<SquareEnemyIndexComponent>();
+            systemState.RequireForUpdate<TimerExpiredComponent>();
             systemState.RequireForUpdate<TriangleEnemyIndexComponent>();
             systemState.RequireForUpdate<UnlockedEnemiesComponent>();
         }
@@ -31,15 +35,14 @@ namespace Systems
         public void OnUpdate(ref SystemState systemState)
         {
             int activeWaveState = SystemAPI.GetSingleton<ActiveWaveStateComponent>().ActiveWaveState;
-            
+            int doAction = SystemAPI.GetSingleton<DoActionComponent>().DoAction;
             int enemyTypesCount = SystemAPI.GetSingleton<EnemyTypesCountComponent>().EnemyTypesCount;
-            
             uint initialBitmask = SystemAPI.GetSingleton<InitialBitmaskComponent>().InitialBitmask;
-
+            float movementNone = SystemAPI.GetSingleton<MovementNoneComponent>().MovementNone;
+            int noAction = SystemAPI.GetSingleton<NoActionComponent>().NoActionValue;
             int randomRangeStartValue = SystemAPI.GetSingleton<RandomRangeStartComponent>().RandomRangeStartValue;
-            
+            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().TimerExpired;
             uint unlockedEnemiesBitmask = SystemAPI.GetSingleton<UnlockedEnemiesComponent>().UnlockedEnemiesBitmask;
-
             Entity spawnerEntity = SystemAPI.GetSingletonEntity<EnemySpawnerTag>();
 
             Entity lineEnemyEntity = SystemAPI.GetComponent<LineEnemyEntityComponent>(spawnerEntity).Entity;
@@ -54,15 +57,19 @@ namespace Systems
             systemState.Dependency = new EnemySpawnJob
             {
                 ActiveWaveState = activeWaveState ,
+                DoAction = doAction ,
                 EnemyTypesCount = enemyTypesCount ,
                 EntityCommandBufferParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() ,
                 InitialBitmask = initialBitmask ,
                 LineEnemyEntity = lineEnemyEntity ,
                 LineEnemyIndex = lineEnemyIndex ,
+                MovementNone = movementNone ,
+                NoAction = noAction ,
                 PlayerCount = SystemAPI.QueryBuilder().WithAll<PlayerTag>().WithNone<DeathTag>().Build().CalculateEntityCount() ,
                 RandomRangeStartValue = randomRangeStartValue ,
                 SquareEnemyEntity = squareEnemyEntity ,
                 SquareEnemyIndex = squareEnemyIndex ,
+                TimerExpired = timerExpired ,
                 TriangleEnemyEntity = triangleEnemyEntity ,
                 TriangleEnemyIndex = triangleEnemyIndex ,
                 UnlockedEnemiesBitmask = unlockedEnemiesBitmask
@@ -74,42 +81,48 @@ namespace Systems
     public partial struct EnemySpawnJob : IJobEntity
     {
         public int ActiveWaveState;
+        public int DoAction;
         public int EnemyTypesCount;
         public EntityCommandBuffer.ParallelWriter EntityCommandBufferParallelWriter;
         public uint InitialBitmask;
         public Entity LineEnemyEntity;
         public int LineEnemyIndex;
+        public float MovementNone;
+        public int NoAction;
         public int PlayerCount;
         public int RandomRangeStartValue;
         public Entity SquareEnemyEntity;
         public int SquareEnemyIndex;
+        public float TimerExpired;
         public Entity TriangleEnemyEntity;
         public int TriangleEnemyIndex;
         public uint UnlockedEnemiesBitmask;
 
         private void Execute([EntityIndexInQuery] int entityInQueryIndex , in LocalTransform localTransform , ref RandomSeedComponent randomSeedComponent , in SpawnRadiusComponent spawnRadiusComponent , in SpawnRateComponent spawnRateComponent , ref TimerComponent timerComponent , in WaveStateComponent waveStateComponent , ref WaveStockComponent waveStockComponent)
         {
-            bool canSpawn = timerComponent.Timer <= 0f && PlayerCount > 0 && waveStateComponent.State == ActiveWaveState && waveStockComponent.Stock > 0;
+            bool canSpawn = timerComponent.Timer <= TimerExpired && PlayerCount > NoAction && waveStateComponent.State == ActiveWaveState && waveStockComponent.Stock > NoAction;
 
-            for(int i = 0 ; i < math.select(0 , 1 , canSpawn) ; i++)
+            for(int i = 0 ; i < math.select(NoAction , DoAction , canSpawn) ; i++)
             {
                 int enemyTypeIndex = randomSeedComponent.RandomSeed.NextInt(RandomRangeStartValue , EnemyTypesCount);
-                bool isUnlocked = (UnlockedEnemiesBitmask & (InitialBitmask << enemyTypeIndex)) != 0;
+                bool isUnlocked = (UnlockedEnemiesBitmask & (InitialBitmask << enemyTypeIndex)) != NoAction;
                 enemyTypeIndex = math.select(LineEnemyIndex , enemyTypeIndex , isUnlocked);
 
                 Entity enemyEntityToSpawn = enemyTypeIndex == LineEnemyIndex ? LineEnemyEntity : enemyTypeIndex == SquareEnemyIndex ? SquareEnemyEntity : TriangleEnemyEntity;
                 Entity newEnemyEntity = EntityCommandBufferParallelWriter.Instantiate(entityInQueryIndex , enemyEntityToSpawn);
 
-                EntityCommandBufferParallelWriter.SetComponent(entityInQueryIndex , newEnemyEntity , LocalTransform.FromPosition(localTransform.Position + new float3(randomSeedComponent.RandomSeed.NextFloat2Direction() * spawnRadiusComponent.Radius , 0f)));
+                EntityCommandBufferParallelWriter.SetComponent(entityInQueryIndex , newEnemyEntity , LocalTransform.FromPosition(localTransform.Position + new float3(randomSeedComponent.RandomSeed.NextFloat2Direction() * spawnRadiusComponent.Radius , MovementNone)));
                 EntityCommandBufferParallelWriter.AddComponent<EnemyJustSpawnedTag>(entityInQueryIndex , newEnemyEntity);
 
-                for(int k = 0 ; k < math.select(0 , 1 , enemyTypeIndex == LineEnemyIndex) ; k++) { EntityCommandBufferParallelWriter.AddComponent<LineEnemyTag>(entityInQueryIndex , newEnemyEntity); }
-                for(int k = 0 ; k < math.select(0 , 1 , enemyTypeIndex == TriangleEnemyIndex) ; k++) { EntityCommandBufferParallelWriter.AddComponent<TriangleEnemyTag>(entityInQueryIndex , newEnemyEntity); }
-                for(int k = 0 ; k < math.select(0 , 1 , enemyTypeIndex == SquareEnemyIndex) ; k++) { EntityCommandBufferParallelWriter.AddComponent<SquareEnemyTag>(entityInQueryIndex , newEnemyEntity); }
+                for(int k = 0 ; k < math.select(NoAction , DoAction , enemyTypeIndex == LineEnemyIndex) ; k++) { EntityCommandBufferParallelWriter.AddComponent<LineEnemyTag>(entityInQueryIndex , newEnemyEntity); }
+
+                for(int k = 0 ; k < math.select(NoAction , DoAction , enemyTypeIndex == TriangleEnemyIndex) ; k++) { EntityCommandBufferParallelWriter.AddComponent<TriangleEnemyTag>(entityInQueryIndex , newEnemyEntity); }
+
+                for(int k = 0 ; k < math.select(NoAction , DoAction , enemyTypeIndex == SquareEnemyIndex) ; k++) { EntityCommandBufferParallelWriter.AddComponent<SquareEnemyTag>(entityInQueryIndex , newEnemyEntity); }
             }
 
             timerComponent.Timer = math.select(timerComponent.Timer , spawnRateComponent.Rate , canSpawn);
-            waveStockComponent.Stock -= math.select(0 , 1 , canSpawn);
+            waveStockComponent.Stock -= math.select(NoAction , DoAction , canSpawn);
         }
     }
 }
