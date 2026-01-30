@@ -42,6 +42,7 @@ namespace Entities
         [SerializeField] private int squareEnemyUnlockLevel; //The When
         [SerializeField] private int startingLevel;
         [SerializeField] private int startingResources;
+        [Tooltip("Chosen this high value on purpose to make turret shoot nothing when there is no target")] [SerializeField] private float targetDefaultPosition;
         [SerializeField] private float timerExpired;
         [SerializeField] private int triangleEnemyUnlockLevel; //The When
         [SerializeField] private GameObject turretConfigEntityPrefab;
@@ -68,7 +69,7 @@ namespace Entities
                 initialMask |= math.select(authoring.unlockedNone , authoring.unlockedTriangleEnemy , startingLevel >= authoring.triangleEnemyUnlockLevel);
                 initialMask |= math.select(authoring.unlockedNone , authoring.unlockedSquareEnemy , startingLevel >= authoring.squareEnemyUnlockLevel);
 
-                AddComponent(entity, new BulletRotationOffsetComponent { Offset = authoring.bulletRotationOffset });
+                AddComponent(entity , new BulletRotationOffsetComponent { Offset = authoring.bulletRotationOffset });
                 AddComponent(entity , new BoundaryOffsetComponent { Offset = authoring.boundaryOffset });
                 AddComponent(entity , new CameraOrthographicSizeComponent { Size = authoring.cameraOrthographicSize });
                 AddComponent(entity , new CollisionActiveComponent { CollisionActive = authoring.collisionActive });
@@ -91,7 +92,7 @@ namespace Entities
                 AddComponent(entity , new LevelToUnlockTriangleEnemyComponent { LevelToUnlockTriangleEnemy = authoring.triangleEnemyUnlockLevel });
                 AddComponent(entity , new LootMultiplierComponent { LootMultiplier = authoring.lootMultiplierPerLevel });
                 AddComponent(entity , new LootPickupRadiusComponent { Radius = authoring.lootPickupRadius });
-                AddComponent(entity, new MinProjectileCountComponent { Count = authoring.minProjectileCount });
+                AddComponent(entity , new MinProjectileCountComponent { Count = authoring.minProjectileCount });
                 AddComponent(entity , new MovementActiveComponent { MovementActive = authoring.movementActive });
                 AddComponent(entity , new MovementNoneComponent { MovementNone = authoring.movementNone });
                 AddComponent(entity , new NoActionComponent { NoActionValue = authoring.noAction });
@@ -99,9 +100,10 @@ namespace Entities
                 AddComponent(entity , new ScalingBaseComponent { ScalingBase = authoring.scalingBase });
                 AddComponent(entity , new ScalingLevelOffsetComponent { ScalingLevelOffset = authoring.scalingLevelOffset });
                 AddComponent(entity , new ScalingMinLevelComponent { ScalingMinLevel = authoring.scalingMinLevel });
-                AddComponent(entity, new SpreadHalfMultiplierComponent { HalfMultiplier = authoring.spreadHalfMultiplier });
-                AddComponent(entity, new SpreadZeroComponent { Zero = authoring.spreadZero });
-                AddComponent(entity , new TimerExpiredComponent { TimerExpired = authoring.timerExpired });
+                AddComponent(entity , new SpreadHalfMultiplierComponent { HalfMultiplier = authoring.spreadHalfMultiplier });
+                AddComponent(entity , new SpreadZeroComponent { Zero = authoring.spreadZero });
+                AddComponent(entity , new TargetDefaultPositionComponent { DefaultPosition = authoring.targetDefaultPosition });
+                AddComponent(entity , new TimerExpiredComponent { Expired = authoring.timerExpired });
                 AddComponent(entity , new TurretConfigEntityComponent { Entity = GetEntity(authoring.turretConfigEntityPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new UnlockedEnemiesComponent { UnlockedEnemiesBitmask = initialMask });
                 AddComponent(entity , new UnlockedLineEnemyComponent { UnlockedLineEnemy = authoring.unlockedLineEnemy });

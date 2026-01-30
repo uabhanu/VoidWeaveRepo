@@ -424,6 +424,11 @@ namespace Components
     {
         public int SquareEnemyIndex;
     }
+    
+    public struct TargetDefaultPositionComponent : IComponentData
+    {
+        public float DefaultPosition;
+    }
 
     public struct TargetPositionComponent : IComponentData
     {
@@ -442,7 +447,7 @@ namespace Components
     
     public struct TimerExpiredComponent : IComponentData
     {
-        public float TimerExpired;
+        public float Expired;
     }
 
     public struct TriangleEnemyEntityComponent : IComponentData

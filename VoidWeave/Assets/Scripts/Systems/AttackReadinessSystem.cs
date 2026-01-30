@@ -25,7 +25,7 @@ namespace Systems
             
             int doAction = SystemAPI.GetSingleton<DoActionComponent>().DoAction;
             int noAction = SystemAPI.GetSingleton<NoActionComponent>().NoActionValue;
-            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().TimerExpired;
+            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Expired;
 
             // 1. Check Readiness (Open the Gate)
             systemState.Dependency = new CanMeleeAttackJob { DoAction = doAction , ECB = ecb , NoAction = noAction , TimerExpired = timerExpired}.ScheduleParallel(systemState.Dependency);

@@ -41,7 +41,7 @@ namespace Systems
             float movementNone = SystemAPI.GetSingleton<MovementNoneComponent>().MovementNone;
             int noAction = SystemAPI.GetSingleton<NoActionComponent>().NoActionValue;
             int randomRangeStartValue = SystemAPI.GetSingleton<RandomRangeStartComponent>().RandomRangeStartValue;
-            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().TimerExpired;
+            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Expired;
             uint unlockedEnemiesBitmask = SystemAPI.GetSingleton<UnlockedEnemiesComponent>().UnlockedEnemiesBitmask;
             Entity spawnerEntity = SystemAPI.GetSingletonEntity<EnemySpawnerTag>();
 

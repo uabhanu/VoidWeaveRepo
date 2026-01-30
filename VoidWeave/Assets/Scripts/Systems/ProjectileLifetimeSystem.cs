@@ -23,7 +23,7 @@ namespace Systems
         {
             int doAction = SystemAPI.GetSingleton<DoActionComponent>().DoAction;
             int noAction = SystemAPI.GetSingleton<NoActionComponent>().NoActionValue;
-            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().TimerExpired;
+            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Expired;
 
             new ProjectileLifetimeJob { DeltaTime = SystemAPI.Time.DeltaTime , DoAction = doAction , EntityCommandBuffer = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter() , NoAction = noAction , TimerExpired = timerExpired }.ScheduleParallel();
         }

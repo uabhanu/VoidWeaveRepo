@@ -32,7 +32,7 @@ namespace Systems
             int noAction = SystemAPI.GetSingleton<NoActionComponent>().NoActionValue;
             float spreadHalfMultiplier = SystemAPI.GetSingleton<SpreadHalfMultiplierComponent>().HalfMultiplier;
             float spreadZero = SystemAPI.GetSingleton<SpreadZeroComponent>().Zero;
-            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().TimerExpired;
+            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Expired;
 
             systemState.Dependency = new ShootJob { BulletRotationOffset = bulletRotationOffset , ECBParallelWriter = ecbParallelWriter , MinProjectileCount = minProjectileCount , NoAction = noAction , SpreadHalfMultiplier = spreadHalfMultiplier , SpreadZero = spreadZero , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
         }

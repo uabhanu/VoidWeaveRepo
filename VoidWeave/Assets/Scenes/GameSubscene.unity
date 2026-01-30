@@ -181,6 +181,7 @@ MonoBehaviour:
   squareEnemyUnlockLevel: 3
   startingLevel: 1
   startingResources: 100
+  targetDefaultPosition: 100000
   timerExpired: 0
   triangleEnemyUnlockLevel: 2
   turretConfigEntityPrefab: {fileID: 1521002163540263446, guid: 64eb09c65643256499a17ec4c8315219, type: 3}

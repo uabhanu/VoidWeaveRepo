@@ -28,7 +28,7 @@ namespace Systems
             uint inputDash = SystemAPI.GetSingleton<InputDashComponent>().InputDash;
             float movementActive = SystemAPI.GetSingleton<MovementActiveComponent>().MovementActive;
             float movementNone = SystemAPI.GetSingleton<MovementNoneComponent>().MovementNone;
-            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().TimerExpired;
+            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Expired;
             
             systemState.Dependency = new DashJob { DashCooldownDefault = dashCooldownDefault , DeltaTime = SystemAPI.Time.DeltaTime , DashDurationDefault = dashDurationDefault , InputDashBit = inputDash , MovementActive = movementActive , MovementNone = movementNone , TimerExpired = timerExpired}.ScheduleParallel(systemState.Dependency);
         }

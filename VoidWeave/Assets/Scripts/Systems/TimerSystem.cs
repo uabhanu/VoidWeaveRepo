@@ -9,21 +9,31 @@ namespace Systems
     public partial struct TimerSystem : ISystem
     {
         [BurstCompile]
-        public void OnCreate(ref SystemState systemState) { systemState.RequireForUpdate<TimerComponent>(); }
+        public void OnCreate(ref SystemState systemState) 
+        { 
+            systemState.RequireForUpdate<TimerComponent>(); 
+            systemState.RequireForUpdate<TimerExpiredComponent>();
+        }
 
         [BurstCompile]
-        public void OnUpdate(ref SystemState systemState) { systemState.Dependency = new TimerJob { DeltaTime = SystemAPI.Time.DeltaTime }.ScheduleParallel(systemState.Dependency); }
+        public void OnUpdate(ref SystemState systemState)
+        {
+            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Expired;
+            
+            systemState.Dependency = new TimerJob { DeltaTime = SystemAPI.Time.DeltaTime , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
+        }
     }
 
     [BurstCompile]
     public partial struct TimerJob : IJobEntity
     {
         public float DeltaTime;
+        public float TimerExpired;
 
         private void Execute(ref TimerComponent timerComponent)
         {
             timerComponent.Timer -= DeltaTime;
-            timerComponent.Timer = math.max(0f , timerComponent.Timer);
+            timerComponent.Timer = math.max(TimerExpired , timerComponent.Timer);
         }
     }
 }
