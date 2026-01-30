@@ -33,8 +33,8 @@ namespace Systems
             NativeArray<CollisionRadiusComponent> targetRadiiNativeArray = _targetQuery.ToComponentDataArray<CollisionRadiusComponent>(Allocator.TempJob);
             NativeArray<TeamComponent> targetTeamComponentsNativeArray = _targetQuery.ToComponentDataArray<TeamComponent>(Allocator.TempJob);
 
-            int collisionActiveValue = SystemAPI.GetSingleton<CollisionActiveComponent>().CollisionActiveValue;
-            int collisionNoneValue = SystemAPI.GetSingleton<CollisionNoneComponent>().CollisionNoneValue;
+            int collisionActiveValue = SystemAPI.GetSingleton<CollisionActiveComponent>().CollisionActive;
+            int collisionNoneValue = SystemAPI.GetSingleton<CollisionNoneComponent>().CollisionNone;
 
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
 

@@ -34,8 +34,8 @@ namespace Systems
             uint inputNone = SystemAPI.GetSingleton<InputNoneComponent>().InputNoneValue;
             uint inputRight = SystemAPI.GetSingleton<InputRightComponent>().InputRightValue;
             
-            float movementActive = SystemAPI.GetSingleton<MovementActiveComponent>().MovementActiveValue;
-            float movementNone = SystemAPI.GetSingleton<MovementNoneComponent>().MovementNoneValue;
+            float movementActive = SystemAPI.GetSingleton<MovementActiveComponent>().MovementActive;
+            float movementNone = SystemAPI.GetSingleton<MovementNoneComponent>().MovementNone;
             
             new BasicEnemyMovementJob { DeltaTime = deltaTime }.ScheduleParallel();
             new FastEnemyMovementJob { DeltaTime = deltaTime , ElapsedTime = elapsedTime , MovementNone = movementNone}.ScheduleParallel();

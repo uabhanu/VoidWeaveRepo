@@ -40,7 +40,7 @@ namespace Systems
             var keyboard = Keyboard.current;
             
             Key dashKey = SystemAPI.GetSingleton<DashKeyComponent>().DashKey;
-            uint dashValue = SystemAPI.GetSingleton<InputDashComponent>().InputDashValue;
+            uint dashValue = SystemAPI.GetSingleton<InputDashComponent>().InputDash;
             
             Key deployKey = SystemAPI.GetSingleton<DeployKeyComponent>().DeployKey;
             uint deployValue = SystemAPI.GetSingleton<InputDeployComponent>().InputDeployValue;

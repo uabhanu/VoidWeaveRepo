@@ -28,12 +28,12 @@ namespace Components
 
     public struct CollisionActiveComponent : IComponentData
     {
-        public int CollisionActiveValue;
+        public int CollisionActive;
     }
 
     public struct CollisionNoneComponent : IComponentData
     {
-        public int CollisionNoneValue;
+        public int CollisionNone;
     }
 
     public struct CollisionRadiusComponent : IComponentData
@@ -75,10 +75,20 @@ namespace Components
     {
         public float Timer;
     }
+    
+    public struct DashCooldownDefaultComponent : IComponentData
+    {
+        public float DashCooldownDefault;
+    }
 
     public struct DashDurationComponent : IComponentData
     {
         public float Duration;
+    }
+    
+    public struct DashDurationDefaultComponent : IComponentData
+    {
+        public float DashDurationDefault;
     }
 
     public struct DashKeyComponent : IComponentData
@@ -98,7 +108,7 @@ namespace Components
     
     public struct DoActionComponent : IComponentData
     {
-        public int DoActionValue;
+        public int DoAction;
     }
 
     public struct DownKeyComponent : IComponentData
@@ -148,7 +158,7 @@ namespace Components
 
     public struct InputDashComponent : IComponentData
     {
-        public uint InputDashValue;
+        public uint InputDash;
     }
 
     public struct InputDeployComponent : IComponentData
@@ -243,12 +253,12 @@ namespace Components
 
     public struct MovementActiveComponent : IComponentData
     {
-        public float MovementActiveValue;
+        public float MovementActive;
     }
 
     public struct MovementNoneComponent : IComponentData
     {
-        public float MovementNoneValue;
+        public float MovementNone;
     }
 
     public struct MovementZigZagAmplitudeComponent : IComponentData
@@ -315,17 +325,17 @@ namespace Components
 
     public struct ScalingBaseComponent : IComponentData
     {
-        public float ScalingBaseValue;
+        public float ScalingBase;
     }
 
     public struct ScalingLevelOffsetComponent : IComponentData
     {
-        public int ScalingLevelOffsetValue;
+        public int ScalingLevelOffset;
     }
 
     public struct ScalingMinLevelComponent : IComponentData
     {
-        public int ScalingMinLevelValue;
+        public int ScalingMinLevel;
     }
 
     public struct SelectedTurretCostComponent : IComponentData
@@ -382,7 +392,7 @@ namespace Components
     
     public struct TimerExpiredComponent : IComponentData
     {
-        public float TimerExpiredValue;
+        public float TimerExpired;
     }
 
     public struct TriangleEnemyEntityComponent : IComponentData

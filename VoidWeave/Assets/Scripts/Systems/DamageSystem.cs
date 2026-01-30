@@ -21,7 +21,7 @@ namespace Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            int doAction = SystemAPI.GetSingleton<DoActionComponent>().DoActionValue;
+            int doAction = SystemAPI.GetSingleton<DoActionComponent>().DoAction;
             float healthValueForDeath = SystemAPI.GetSingleton<HealthValueForDeathComponent>().HealthValueForDeath;
             int noAction = SystemAPI.GetSingleton<NoActionComponent>().NoActionValue;
             

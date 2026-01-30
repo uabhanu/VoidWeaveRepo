@@ -23,9 +23,9 @@ namespace Systems
         {
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
             
-            int doAction = SystemAPI.GetSingleton<DoActionComponent>().DoActionValue;
+            int doAction = SystemAPI.GetSingleton<DoActionComponent>().DoAction;
             int noAction = SystemAPI.GetSingleton<NoActionComponent>().NoActionValue;
-            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().TimerExpiredValue;
+            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().TimerExpired;
 
             // 1. Check Readiness (Open the Gate)
             systemState.Dependency = new CanMeleeAttackJob { DoAction = doAction , ECB = ecb , NoAction = noAction , TimerExpired = timerExpired}.ScheduleParallel(systemState.Dependency);

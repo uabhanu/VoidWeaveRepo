@@ -9,11 +9,13 @@ namespace Entities
     {
         #region Variables
 
-        [SerializeField] private int collisionActiveValue;
-        [SerializeField] private int collisionNoneValue;
+        [SerializeField] private int collisionActive;
+        [SerializeField] private int collisionNone;
         [SerializeField] private float damageMultiplierPerLevel;
-        [SerializeField] private int doActionValue;
-        [SerializeField] private int noActionValue;
+        [SerializeField] private float dashCooldownDefault;
+        [SerializeField] private float dashDurationDefault;
+        [SerializeField] private int doAction;
+        [SerializeField] private int noAction;
         [SerializeField] private int enemiesToKill;
         [SerializeField] private int enemiesToKillIncrement;
         [SerializeField] private GameObject enemySpawnerEntityPrefab;
@@ -24,22 +26,22 @@ namespace Entities
         [SerializeField] private float lootMultiplierPerLevel;
         [SerializeField] private int minEnemiesToKill;
         [SerializeField] private int minStartingLevel;
-        [SerializeField] private float movementActiveValue;
-        [SerializeField] private float movementNoneValue;
+        [SerializeField] private float movementActive;
+        [SerializeField] private float movementNone;
         [SerializeField] private GameObject playerEntityPrefab;
-        [SerializeField] private float scalingBaseValue;
+        [SerializeField] private float scalingBase;
         [SerializeField] private int scalingLevelOffset;
         [SerializeField] private int scalingMinLevel;
         [SerializeField] private int squareEnemyUnlockLevel; //The When
         [SerializeField] private int startingLevel;
         [SerializeField] private int startingResources;
-        [SerializeField] private float timerExpiredValue;
+        [SerializeField] private float timerExpired;
         [SerializeField] private int triangleEnemyUnlockLevel; //The When
         [SerializeField] private GameObject turretConfigEntityPrefab;
-        [SerializeField] private uint unlockedLineEnemyValue; //The What
-        [SerializeField] private uint unlockedNoneValue;
-        [SerializeField] private uint unlockedSquareEnemyValue; //The What
-        [SerializeField] private uint unlockedTriangleEnemyValue; //The What
+        [SerializeField] private uint unlockedLineEnemy; //The What
+        [SerializeField] private uint unlockedNone;
+        [SerializeField] private uint unlockedSquareEnemy; //The What
+        [SerializeField] private uint unlockedTriangleEnemy; //The What
 
         #endregion
 
@@ -54,16 +56,18 @@ namespace Entities
                 int enemiesToKill = math.max(authoring.minEnemiesToKill , authoring.enemiesToKill);
                 int startingLevel = math.max(authoring.minStartingLevel , authoring.startingLevel);
 
-                uint initialMask = authoring.unlockedNoneValue;
-                initialMask |= math.select(authoring.unlockedNoneValue , authoring.unlockedLineEnemyValue , startingLevel >= authoring.lineEnemyUnlockLevel);
-                initialMask |= math.select(authoring.unlockedNoneValue , authoring.unlockedTriangleEnemyValue , startingLevel >= authoring.triangleEnemyUnlockLevel);
-                initialMask |= (uint)math.select(authoring.unlockedNoneValue , authoring.unlockedSquareEnemyValue , startingLevel >= authoring.squareEnemyUnlockLevel);
+                uint initialMask = authoring.unlockedNone;
+                initialMask |= math.select(authoring.unlockedNone , authoring.unlockedLineEnemy , startingLevel >= authoring.lineEnemyUnlockLevel);
+                initialMask |= math.select(authoring.unlockedNone , authoring.unlockedTriangleEnemy , startingLevel >= authoring.triangleEnemyUnlockLevel);
+                initialMask |= math.select(authoring.unlockedNone , authoring.unlockedSquareEnemy , startingLevel >= authoring.squareEnemyUnlockLevel);
 
-                AddComponent(entity , new CollisionActiveComponent { CollisionActiveValue = authoring.collisionActiveValue });
-                AddComponent(entity , new CollisionNoneComponent { CollisionNoneValue = authoring.collisionNoneValue });
+                AddComponent(entity , new CollisionActiveComponent { CollisionActive = authoring.collisionActive });
+                AddComponent(entity , new CollisionNoneComponent { CollisionNone = authoring.collisionNone });
                 AddComponent(entity , new CurrentEnergyComponent { Energy = authoring.startingResources });
                 AddComponent(entity , new DamageMultiplierComponent { DamageMultiplier = authoring.damageMultiplierPerLevel });
-                AddComponent(entity , new DoActionComponent { DoActionValue = authoring.doActionValue });
+                AddComponent(entity , new DashCooldownDefaultComponent { DashCooldownDefault = authoring.dashCooldownDefault });
+                AddComponent(entity , new DashDurationDefaultComponent { DashDurationDefault = authoring.dashDurationDefault });
+                AddComponent(entity , new DoActionComponent { DoAction = authoring.doAction });
                 AddComponent(entity , new EnemiesToKillComponent { EnemiesToKill = enemiesToKill });
                 AddComponent(entity , new EnemiesKilledComponent());
                 AddComponent(entity , new EnemiesToKillIncrementComponent { EnemiesToKillIncrement = authoring.enemiesToKillIncrement });
@@ -73,14 +77,14 @@ namespace Entities
                 AddComponent(entity , new InputEntityComponent { Entity = GetEntity(authoring.inputEntityPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new LevelComponent { Level = authoring.startingLevel });
                 AddComponent(entity , new LootMultiplierComponent { LootMultiplier = authoring.lootMultiplierPerLevel });
-                AddComponent(entity , new MovementActiveComponent { MovementActiveValue = authoring.movementActiveValue });
-                AddComponent(entity , new MovementNoneComponent { MovementNoneValue = authoring.movementNoneValue });
-                AddComponent(entity , new NoActionComponent { NoActionValue = authoring.noActionValue });
+                AddComponent(entity , new MovementActiveComponent { MovementActive = authoring.movementActive });
+                AddComponent(entity , new MovementNoneComponent { MovementNone = authoring.movementNone });
+                AddComponent(entity , new NoActionComponent { NoActionValue = authoring.noAction });
                 AddComponent(entity , new PlayerEntityComponent { Entity = GetEntity(authoring.playerEntityPrefab , TransformUsageFlags.Dynamic) });
-                AddComponent(entity , new ScalingBaseComponent { ScalingBaseValue = authoring.scalingBaseValue });
-                AddComponent(entity , new ScalingLevelOffsetComponent { ScalingLevelOffsetValue = authoring.scalingLevelOffset });
-                AddComponent(entity , new ScalingMinLevelComponent { ScalingMinLevelValue = authoring.scalingMinLevel });
-                AddComponent(entity , new TimerExpiredComponent { TimerExpiredValue = authoring.timerExpiredValue });
+                AddComponent(entity , new ScalingBaseComponent { ScalingBase = authoring.scalingBase });
+                AddComponent(entity , new ScalingLevelOffsetComponent { ScalingLevelOffset = authoring.scalingLevelOffset });
+                AddComponent(entity , new ScalingMinLevelComponent { ScalingMinLevel = authoring.scalingMinLevel });
+                AddComponent(entity , new TimerExpiredComponent { TimerExpired = authoring.timerExpired });
                 AddComponent(entity , new TurretConfigEntityComponent { Entity = GetEntity(authoring.turretConfigEntityPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new UnlockedEnemiesComponent { UnlockedEnemiesBitmask = initialMask });
 

@@ -48,7 +48,7 @@ MonoBehaviour:
   attackRate: 1.8
   collisionRadius: 0.25
   damage: 5
-  lootAmount: 5
+  lootAmount: 15
   lootPrefab: {fileID: 6983080911018168034, guid: 29b5c2b76e555c84c9ae88bcb6766676, type: 3}
   maxHealth: 150
   moveSpeed: 2.9

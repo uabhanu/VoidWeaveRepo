@@ -48,11 +48,13 @@ MonoBehaviour:
   attackRate: 2.5
   collisionRadius: 0.5
   damage: 10
-  lootAmount: 15
+  lootAmount: 5
   lootPrefab: {fileID: 6983080911018168034, guid: 29b5c2b76e555c84c9ae88bcb6766676, type: 3}
   maxHealth: 100
   moveSpeed: 1.15
   teamID: 1
+  zigZagAmplitude: 0
+  zigZagFrequency: 0
 --- !u!212 &7437076987999956062
 SpriteRenderer:
   serializedVersion: 2

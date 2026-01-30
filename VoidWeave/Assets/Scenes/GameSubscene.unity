@@ -148,36 +148,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4440088ea66c3bc43801a02e61b4f762, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entities.GameConfigEntity
-  collisionActiveValue: 1
-  collisionNoneValue: 0
+  collisionActive: 1
+  collisionNone: 0
   damageMultiplierPerLevel: 0.05
-  doActionValue: 1
-  noActionValue: 0
+  dashCooldownDefault: 1
+  dashDurationDefault: 0.2
+  doAction: 1
+  noAction: 0
   enemiesToKill: 20
   enemiesToKillIncrement: 5
   enemySpawnerEntityPrefab: {fileID: 9071633379703226984, guid: 55c28ec5c3d184f40a1b0224da9a5ea4, type: 3}
   healthMultiplierPerLevel: 0.3
+  healthValueForDeath: 0
+  inputDash: 16
   inputEntityPrefab: {fileID: 6464459571194226029, guid: 7defc3eb64b3d2e418ff6dbec472138b, type: 3}
   lineEnemyUnlockLevel: 1
   lootMultiplierPerLevel: 0.2
   minEnemiesToKill: 0
   minStartingLevel: 0
-  movementActiveValue: 1
-  movementNoneValue: 0
+  movementActive: 1
+  movementNone: 0
   playerEntityPrefab: {fileID: 4043072570545550109, guid: 3cefbfe9652710640b54b28569aed323, type: 3}
-  scalingBaseValue: 1
+  scalingBase: 1
   scalingLevelOffset: 3
   scalingMinLevel: 0
   squareEnemyUnlockLevel: 3
   startingLevel: 1
   startingResources: 100
-  timerExpiredValue: 0
+  timerExpired: 0
   triangleEnemyUnlockLevel: 2
   turretConfigEntityPrefab: {fileID: 1521002163540263446, guid: 64eb09c65643256499a17ec4c8315219, type: 3}
-  unlockedLineEnemyValue: 1
-  unlockedNoneValue: 0
-  unlockedSquareEnemyValue: 4
-  unlockedTriangleEnemyValue: 2
+  unlockedLineEnemy: 1
+  unlockedNone: 0
+  unlockedSquareEnemy: 4
+  unlockedTriangleEnemy: 2
 --- !u!4 &1220176065
 Transform:
   m_ObjectHideFlags: 0
