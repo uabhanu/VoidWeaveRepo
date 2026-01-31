@@ -43,7 +43,7 @@ namespace Systems
             uint dashValue = SystemAPI.GetSingleton<InputDashComponent>().InputDash;
 
             Key deployKey = SystemAPI.GetSingleton<DeployKeyComponent>().DeployKey;
-            uint deployValue = SystemAPI.GetSingleton<InputDeployComponent>().InputDeployValue;
+            uint deployValue = SystemAPI.GetSingleton<InputDeployComponent>().InputDeploy;
 
             Key downKey = SystemAPI.GetSingleton<DownKeyComponent>().DownKey;
             uint downValue = SystemAPI.GetSingleton<InputDownComponent>().InputDown;
@@ -57,13 +57,13 @@ namespace Systems
             uint rightValue = SystemAPI.GetSingleton<InputRightComponent>().InputRight;
 
             Key turret1Key = SystemAPI.GetSingleton<Turret1KeyComponent>().Turret1Key;
-            uint turret1Value = SystemAPI.GetSingleton<InputTurret1Component>().InputTurret1Value;
+            uint turret1Value = SystemAPI.GetSingleton<InputTurret1Component>().InputTurret1;
 
             Key turret2Key = SystemAPI.GetSingleton<Turret2KeyComponent>().Turret2Key;
-            uint turret2Value = SystemAPI.GetSingleton<InputTurret2Component>().InputTurret2Value;
+            uint turret2Value = SystemAPI.GetSingleton<InputTurret2Component>().InputTurret2;
 
             Key turret3Key = SystemAPI.GetSingleton<Turret3KeyComponent>().Turret3Key;
-            uint turret3Value = SystemAPI.GetSingleton<InputTurret3Component>().InputTurret3Value;
+            uint turret3Value = SystemAPI.GetSingleton<InputTurret3Component>().InputTurret3;
 
             Key upKey = SystemAPI.GetSingleton<UpKeyComponent>().UpKey;
             uint upValue = SystemAPI.GetSingleton<InputUpComponent>().InputUp;

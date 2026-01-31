@@ -148,6 +148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4440088ea66c3bc43801a02e61b4f762, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entities.GameConfigEntity
+  beamTurretUnlockLevel: 3
   boundaryOffset: 0.9
   bulletRotationOffset: 1.570796
   cameraOrthographicSize: 5
@@ -176,6 +177,7 @@ MonoBehaviour:
   scalingBase: 1
   scalingLevelOffset: 3
   scalingMinLevel: 0
+  scatterTurretUnlockLevel: 2
   spreadHalfMultiplier: 0
   spreadZero: 0
   squareEnemyUnlockLevel: 3

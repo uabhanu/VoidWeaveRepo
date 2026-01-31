@@ -9,6 +9,7 @@ namespace Entities
     {
         #region Variables
 
+        [SerializeField] private int beamTurretUnlockLevel;
         [SerializeField] private float boundaryOffset;
         [SerializeField] private float bulletRotationOffset; // PI / 2
         [SerializeField] private float cameraOrthographicSize;
@@ -37,6 +38,7 @@ namespace Entities
         [SerializeField] private float scalingBase;
         [SerializeField] private int scalingLevelOffset;
         [SerializeField] private int scalingMinLevel;
+        [SerializeField] private int scatterTurretUnlockLevel;
         [SerializeField] private float spreadHalfMultiplier;
         [SerializeField] private float spreadZero;
         [SerializeField] private int squareEnemyUnlockLevel; //The When
@@ -69,6 +71,7 @@ namespace Entities
                 initialMask |= math.select(authoring.unlockedNone , authoring.unlockedTriangleEnemy , startingLevel >= authoring.triangleEnemyUnlockLevel);
                 initialMask |= math.select(authoring.unlockedNone , authoring.unlockedSquareEnemy , startingLevel >= authoring.squareEnemyUnlockLevel);
 
+                AddComponent(entity , new BeamTurretUnlockLevelComponent { Level = authoring.beamTurretUnlockLevel });
                 AddComponent(entity , new BulletRotationOffsetComponent { Offset = authoring.bulletRotationOffset });
                 AddComponent(entity , new BoundaryOffsetComponent { Offset = authoring.boundaryOffset });
                 AddComponent(entity , new CameraOrthographicSizeComponent { Size = authoring.cameraOrthographicSize });
@@ -100,6 +103,7 @@ namespace Entities
                 AddComponent(entity , new ScalingBaseComponent { ScalingBase = authoring.scalingBase });
                 AddComponent(entity , new ScalingLevelOffsetComponent { ScalingLevelOffset = authoring.scalingLevelOffset });
                 AddComponent(entity , new ScalingMinLevelComponent { ScalingMinLevel = authoring.scalingMinLevel });
+                AddComponent(entity , new ScatterTurretUnlockLevelComponent { Level = authoring.scatterTurretUnlockLevel });
                 AddComponent(entity , new SpreadHalfMultiplierComponent { HalfMultiplier = authoring.spreadHalfMultiplier });
                 AddComponent(entity , new SpreadZeroComponent { Zero = authoring.spreadZero });
                 AddComponent(entity , new TargetDefaultPositionComponent { DefaultPosition = authoring.targetDefaultPosition });

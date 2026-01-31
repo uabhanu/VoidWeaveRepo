@@ -21,6 +21,11 @@ namespace Components
         public float Speed;
     }
     
+    public struct BeamTurretUnlockLevelComponent : IComponentData
+    {
+        public int Level;
+    }
+    
     public struct BoundaryOffsetComponent : IComponentData
     {
         public float Offset;
@@ -178,7 +183,7 @@ namespace Components
 
     public struct InputDeployComponent : IComponentData
     {
-        public uint InputDeployValue;
+        public uint InputDeploy;
     }
 
     public struct InputDownComponent : IComponentData
@@ -198,7 +203,7 @@ namespace Components
 
     public struct InputNoneComponent : IComponentData
     {
-        public uint InputNone;
+        public uint InputNone; //Ignore this warning
     }
 
     public struct InputRightComponent : IComponentData
@@ -208,17 +213,17 @@ namespace Components
 
     public struct InputTurret1Component : IComponentData
     {
-        public uint InputTurret1Value;
+        public uint InputTurret1;
     }
 
     public struct InputTurret2Component : IComponentData
     {
-        public uint InputTurret2Value;
+        public uint InputTurret2;
     }
 
     public struct InputTurret3Component : IComponentData
     {
-        public uint InputTurret3Value;
+        public uint InputTurret3;
     }
 
     public struct InputUpComponent : IComponentData
@@ -376,6 +381,11 @@ namespace Components
     public struct ScalingMinLevelComponent : IComponentData
     {
         public int ScalingMinLevel;
+    }
+    
+    public struct ScatterTurretUnlockLevelComponent : IComponentData
+    {
+        public int Level;
     }
 
     public struct SelectedTurretCostComponent : IComponentData
