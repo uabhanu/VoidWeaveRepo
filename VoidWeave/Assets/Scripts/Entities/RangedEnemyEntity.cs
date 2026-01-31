@@ -7,6 +7,7 @@ namespace Entities
     public class RangedEnemyEntity : MonoBehaviour
     {
         [SerializeField] private float attackRate;
+        [SerializeField] private float collisionRadius; // Defines the radius of the hitbox used for collision detection
         [SerializeField] private int damage;
         [SerializeField] private int lootAmount;
         [SerializeField] private GameObject lootPrefab;
@@ -17,6 +18,8 @@ namespace Entities
         [SerializeField] private float range;
         [SerializeField] private float spreadDegrees;
         [SerializeField] private int teamID;
+        [SerializeField] private float zigZagAmplitude;
+        [SerializeField] private float zigZagFrequency;
 
         private class RangedEnemyBaker : Baker<RangedEnemyEntity>
         {
@@ -26,12 +29,15 @@ namespace Entities
                 
                 AddComponent(entity , new AttackRateComponent { AttackRate = authoring.attackRate });
                 AddComponent(entity , new BulletEntityComponent { Entity = GetEntity(authoring.projectilePrefab , TransformUsageFlags.Dynamic) });
+                AddComponent(entity , new CollisionRadiusComponent { Radius = authoring.collisionRadius });
                 AddComponent(entity , new CooldownComponent());
-                AddComponent(entity , new DamageComponent { Damage = authoring.damage });
                 AddComponent(entity , new CurrentHealthComponent { CurrentHealth = authoring.maxHealth });
+                AddComponent(entity , new DamageComponent { Damage = authoring.damage });
                 AddComponent(entity , new LootAmountComponent { Amount = authoring.lootAmount });
                 AddComponent(entity , new LootEntityComponent { Entity = GetEntity(authoring.lootPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new MaxHealthComponent { MaxHealth = authoring.maxHealth });
+                AddComponent(entity , new MovementZigZagAmplitudeComponent { ZigZagAmplitude = authoring.zigZagAmplitude });
+                AddComponent(entity , new MovementZigZagFrequencyComponent { ZigZagFrequency = authoring.zigZagFrequency });
                 AddComponent(entity , new MoveSpeedComponent { Speed = authoring.moveSpeed });
                 AddComponent(entity , new ProjectileCountComponent { Count = authoring.projectileCount });
                 AddComponent(entity , new RangeComponent { Range = authoring.range });

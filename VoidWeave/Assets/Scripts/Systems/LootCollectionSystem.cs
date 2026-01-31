@@ -14,14 +14,19 @@ namespace Systems
         private NativeQueue<int> _resourceQueue;
 
         [BurstCompile]
-        public void OnCreate(ref SystemState state)
+        public void OnCreate(ref SystemState systemState)
         {
             _resourceQueue = new NativeQueue<int>(Allocator.Persistent);
             
-            state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
-            state.RequireForUpdate<CurrentEnergyComponent>();
-            state.RequireForUpdate<LocalTransform>();
-            state.RequireForUpdate<PlayerTag>();
+            systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
+            
+            systemState.RequireForUpdate<CurrentEnergyComponent>();
+            systemState.RequireForUpdate<DoActionComponent>();
+            systemState.RequireForUpdate<LocalTransform>();
+            systemState.RequireForUpdate<LootPickupRadiusComponent>();
+            systemState.RequireForUpdate<NoActionComponent>();
+            
+            systemState.RequireForUpdate<PlayerTag>();
         }
 
         [BurstCompile]
@@ -30,7 +35,11 @@ namespace Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            new PickupJob { EntityCommandBufferParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter() , PlayerPos = SystemAPI.GetComponent<LocalTransform>(SystemAPI.GetSingletonEntity<PlayerTag>()).Position , PickupRadiusSq = 0.5f * 0.5f , ResourceNativeQueueParallelWriter = _resourceQueue.AsParallelWriter() }.ScheduleParallel(state.Dependency).Complete();
+            int doAction = SystemAPI.GetSingleton<DoActionComponent>().DoAction;
+            int noAction = SystemAPI.GetSingleton<NoActionComponent>().NoActionValue;
+            float pickupRadius = SystemAPI.GetSingleton<LootPickupRadiusComponent>().Radius;
+            
+            new PickupJob { DoAction = doAction , EntityCommandBufferParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter() , NoAction = noAction , PlayerPos = SystemAPI.GetComponent<LocalTransform>(SystemAPI.GetSingletonEntity<PlayerTag>()).Position , PickupRadiusSq = pickupRadius * pickupRadius , ResourceNativeQueueParallelWriter = _resourceQueue.AsParallelWriter() }.ScheduleParallel(state.Dependency).Complete();
 
             while(_resourceQueue.TryDequeue(out int value)) { SystemAPI.GetSingletonRW<CurrentEnergyComponent>().ValueRW.Energy += value; }
         }
@@ -40,14 +49,16 @@ namespace Systems
     [WithAll(typeof(LootPickupTag))]
     public partial struct PickupJob : IJobEntity
     {
+        public int DoAction;
         public EntityCommandBuffer.ParallelWriter EntityCommandBufferParallelWriter;
+        public int NoAction;
         public float3 PlayerPos;
         public float PickupRadiusSq;
         public NativeQueue<int>.ParallelWriter ResourceNativeQueueParallelWriter;
         
         private void Execute(Entity entity , [EntityIndexInQuery] int entityInQueryIndex , in LocalTransform localTransform , in LootAmountComponent lootAmountComponent)
         {
-            for(int i = 0 ; i < math.select(0 , 1 , math.distancesq(localTransform.Position , PlayerPos) <= PickupRadiusSq) ; i++)
+            for(int i = 0 ; i < math.select(NoAction , DoAction , math.distancesq(localTransform.Position , PlayerPos) <= PickupRadiusSq) ; i++)
             {
                 EntityCommandBufferParallelWriter.DestroyEntity(entityInQueryIndex , entity);
                 ResourceNativeQueueParallelWriter.Enqueue(lootAmountComponent.Amount);

@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84d29e5130d2f034890309d4fa99a0db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entities.ProjectileEntity
+  collisionRadius: 0.3
   lifetime: 0.5
   speed: 20.4
   teamID: 0

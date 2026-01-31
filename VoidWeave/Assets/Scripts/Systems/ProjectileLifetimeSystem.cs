@@ -12,24 +12,37 @@ namespace Systems
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
+            state.RequireForUpdate<DoActionComponent>();
+            state.RequireForUpdate<NoActionComponent>();
             state.RequireForUpdate<ProjectileTag>();
+            state.RequireForUpdate<TimerExpiredComponent>();
         }
 
         [BurstCompile]
-        public void OnUpdate(ref SystemState state) { new ProjectileLifetimeJob { DeltaTime = SystemAPI.Time.DeltaTime , EntityCommandBuffer = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter() }.ScheduleParallel(); }
+        public void OnUpdate(ref SystemState state)
+        {
+            int doAction = SystemAPI.GetSingleton<DoActionComponent>().DoAction;
+            int noAction = SystemAPI.GetSingleton<NoActionComponent>().NoActionValue;
+            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Expired;
+
+            new ProjectileLifetimeJob { DeltaTime = SystemAPI.Time.DeltaTime , DoAction = doAction , EntityCommandBuffer = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter() , NoAction = noAction , TimerExpired = timerExpired }.ScheduleParallel();
+        }
     }
 
     [BurstCompile]
     public partial struct ProjectileLifetimeJob : IJobEntity
     {
         public float DeltaTime;
+        public int DoAction;
         public EntityCommandBuffer.ParallelWriter EntityCommandBuffer;
-        
+        public int NoAction;
+        public float TimerExpired;
+
         private void Execute(Entity entity , [EntityIndexInQuery] int entityInQueryIndex , ref ProjectileLifetimeComponent projectileLifetimeComponent)
         {
             projectileLifetimeComponent.Timer -= DeltaTime;
-
-            for(int i = 0 ; i < math.select(0 , 1 , projectileLifetimeComponent.Timer <= 0f) ; i++) { EntityCommandBuffer.DestroyEntity(entityInQueryIndex , entity); }
+            
+            for(int i = 0 ; i < math.select(NoAction , DoAction , projectileLifetimeComponent.Timer <= TimerExpired) ; i++) { EntityCommandBuffer.DestroyEntity(entityInQueryIndex , entity); }
         }
     }
 }

@@ -1,5 +1,4 @@
 using Components;
-using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 
@@ -8,10 +7,8 @@ namespace Systems
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     public partial struct TurretConfigEntityNamingSystem : ISystem
     {
-        [BurstCompile]
         public void OnCreate(ref SystemState systemState) { systemState.RequireForUpdate<BeginInitializationEntityCommandBufferSystem.Singleton>(); }
-
-        [BurstCompile]
+        
         public void OnUpdate(ref SystemState systemState)
         {
             EntityCommandBuffer ecb = SystemAPI.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);

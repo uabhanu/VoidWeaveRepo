@@ -10,28 +10,77 @@ namespace Systems
     public partial struct InputSystem : ISystem
     {
         [BurstCompile]
-        public void OnCreate(ref SystemState systemState) { systemState.RequireForUpdate<PlayerTag>(); }
+        public void OnCreate(ref SystemState systemState)
+        {
+            systemState.RequireForUpdate<DashKeyComponent>();
+            systemState.RequireForUpdate<DeployKeyComponent>();
+            systemState.RequireForUpdate<DownKeyComponent>();
+            systemState.RequireForUpdate<InputDashComponent>();
+            systemState.RequireForUpdate<InputDeployComponent>();
+            systemState.RequireForUpdate<InputDownComponent>();
+            systemState.RequireForUpdate<InputLeftComponent>();
+            systemState.RequireForUpdate<InputNoneComponent>();
+            systemState.RequireForUpdate<InputRightComponent>();
+            systemState.RequireForUpdate<InputTurret1Component>();
+            systemState.RequireForUpdate<InputTurret2Component>();
+            systemState.RequireForUpdate<InputTurret3Component>();
+            systemState.RequireForUpdate<InputUpComponent>();
+            systemState.RequireForUpdate<LeftKeyComponent>();
+            systemState.RequireForUpdate<RightKeyComponent>();
+            systemState.RequireForUpdate<Turret1KeyComponent>();
+            systemState.RequireForUpdate<Turret2KeyComponent>();
+            systemState.RequireForUpdate<Turret3KeyComponent>();
+            systemState.RequireForUpdate<UpKeyComponent>();
+
+            systemState.RequireForUpdate<PlayerTag>();
+        }
 
         public void OnUpdate(ref SystemState systemState)
         {
             var keyboard = Keyboard.current;
 
-            uint selectedInput = 0;
+            Key dashKey = SystemAPI.GetSingleton<DashKeyComponent>().DashKey;
+            uint dashValue = SystemAPI.GetSingleton<InputDashComponent>().InputDash;
 
-            // Directions
-            selectedInput |= (uint)math.select(0 , 1 , keyboard.wKey.isPressed || keyboard.upArrowKey.isPressed);
-            selectedInput |= (uint)math.select(0 , 2 , keyboard.sKey.isPressed || keyboard.downArrowKey.isPressed);
-            selectedInput |= (uint)math.select(0 , 4 , keyboard.aKey.isPressed || keyboard.leftArrowKey.isPressed);
-            selectedInput |= (uint)math.select(0 , 8 , keyboard.dKey.isPressed || keyboard.rightArrowKey.isPressed);
+            Key deployKey = SystemAPI.GetSingleton<DeployKeyComponent>().DeployKey;
+            uint deployValue = SystemAPI.GetSingleton<InputDeployComponent>().InputDeploy;
 
-            // Actions
-            selectedInput |= (uint)math.select(0 , 16 , keyboard.leftShiftKey.wasPressedThisFrame); // Dash
-            selectedInput |= (uint)math.select(0 , 32 , keyboard.spaceKey.wasPressedThisFrame); // Deploy
-            selectedInput |= (uint)math.select(0 , 64 , keyboard.digit1Key.wasPressedThisFrame); // Striker Turret
-            selectedInput |= (uint)math.select(0 , 128 , keyboard.digit2Key.wasPressedThisFrame); // Scatter Turret
-            selectedInput |= (uint)math.select(0 , 256 , keyboard.digit3Key.wasPressedThisFrame); // Beam Turret
+            Key downKey = SystemAPI.GetSingleton<DownKeyComponent>().DownKey;
+            uint downValue = SystemAPI.GetSingleton<InputDownComponent>().InputDown;
 
-            foreach(var playerInputComponent in SystemAPI.Query<RefRW<PlayerInputComponent>>().WithAll<PlayerTag>()) { playerInputComponent.ValueRW.SelectedInput = selectedInput; }
+            Key leftKey = SystemAPI.GetSingleton<LeftKeyComponent>().LeftKey;
+            uint leftValue = SystemAPI.GetSingleton<InputLeftComponent>().InputLeft;
+
+            uint noneValue = SystemAPI.GetSingleton<InputNoneComponent>().InputNone;
+
+            Key rightKey = SystemAPI.GetSingleton<RightKeyComponent>().RightKey;
+            uint rightValue = SystemAPI.GetSingleton<InputRightComponent>().InputRight;
+
+            Key turret1Key = SystemAPI.GetSingleton<Turret1KeyComponent>().Turret1Key;
+            uint turret1Value = SystemAPI.GetSingleton<InputTurret1Component>().InputTurret1;
+
+            Key turret2Key = SystemAPI.GetSingleton<Turret2KeyComponent>().Turret2Key;
+            uint turret2Value = SystemAPI.GetSingleton<InputTurret2Component>().InputTurret2;
+
+            Key turret3Key = SystemAPI.GetSingleton<Turret3KeyComponent>().Turret3Key;
+            uint turret3Value = SystemAPI.GetSingleton<InputTurret3Component>().InputTurret3;
+
+            Key upKey = SystemAPI.GetSingleton<UpKeyComponent>().UpKey;
+            uint upValue = SystemAPI.GetSingleton<InputUpComponent>().InputUp;
+
+            uint selectedInput = noneValue;
+            
+            selectedInput |= math.select(noneValue , upValue , keyboard[upKey].isPressed);
+            selectedInput |= math.select(noneValue , downValue , keyboard[downKey].isPressed);
+            selectedInput |= math.select(noneValue , leftValue , keyboard[leftKey].isPressed);
+            selectedInput |= math.select(noneValue , rightValue , keyboard[rightKey].isPressed);
+            selectedInput |= math.select(noneValue , dashValue , keyboard[dashKey].wasPressedThisFrame);
+            selectedInput |= math.select(noneValue , deployValue , keyboard[deployKey].wasPressedThisFrame);
+            selectedInput |= math.select(noneValue , turret1Value , keyboard[turret1Key].wasPressedThisFrame);
+            selectedInput |= math.select(noneValue , turret2Value , keyboard[turret2Key].wasPressedThisFrame);
+            selectedInput |= math.select(noneValue , turret3Value , keyboard[turret3Key].wasPressedThisFrame);
+
+            foreach(var playerInputComponent in SystemAPI.Query<RefRW<PlayerInputComponent>>().WithAll<PlayerTag>()) { playerInputComponent.ValueRW.PlayerInput = selectedInput; }
         }
     }
 }

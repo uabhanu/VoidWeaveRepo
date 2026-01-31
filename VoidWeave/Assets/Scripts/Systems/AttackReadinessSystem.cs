@@ -10,23 +10,33 @@ namespace Systems
     public partial struct AttackReadinessSystem : ISystem
     {
         [BurstCompile]
-        public void OnCreate(ref SystemState systemState) { systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>(); }
+        public void OnCreate(ref SystemState systemState)
+        {
+            systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
+            systemState.RequireForUpdate<DoActionComponent>();
+            systemState.RequireForUpdate<NoActionComponent>();
+            systemState.RequireForUpdate<TimerExpiredComponent>();
+        }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
+            
+            int doAction = SystemAPI.GetSingleton<DoActionComponent>().DoAction;
+            int noAction = SystemAPI.GetSingleton<NoActionComponent>().NoActionValue;
+            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Expired;
 
             // 1. Check Readiness (Open the Gate)
-            systemState.Dependency = new CanMeleeAttackJob { ECB = ecb }.ScheduleParallel(systemState.Dependency);
-            systemState.Dependency = new CanRangeAttackJob { ECB = ecb }.ScheduleParallel(systemState.Dependency);
+            systemState.Dependency = new CanMeleeAttackJob { DoAction = doAction , ECB = ecb , NoAction = noAction , TimerExpired = timerExpired}.ScheduleParallel(systemState.Dependency);
+            systemState.Dependency = new CanRangeAttackJob { DoAction = doAction , ECB = ecb , NoAction = noAction , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
 
-            systemState.Dependency = new CannotMeleeAttackJob { ECB = ecb }.ScheduleParallel(systemState.Dependency);
-            systemState.Dependency = new CannotRangeAttackJob { ECB = ecb }.ScheduleParallel(systemState.Dependency);
+            systemState.Dependency = new CannotMeleeAttackJob { DoAction = doAction , ECB = ecb , NoAction = noAction , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
+            systemState.Dependency = new CannotRangeAttackJob { DoAction = doAction , ECB = ecb , NoAction = noAction , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
 
             // 2. Reset Cooldowns (Close the Gate after Attack) - FIXED
-            systemState.Dependency = new ResetMeleeAttackCooldownJob { ECB = ecb }.ScheduleParallel(systemState.Dependency);
-            systemState.Dependency = new ResetRangedAttackCooldownJob { ECB = ecb }.ScheduleParallel(systemState.Dependency);
+            systemState.Dependency = new ResetMeleeAttackCooldownJob { ECB = ecb}.ScheduleParallel(systemState.Dependency);
+            systemState.Dependency = new ResetRangedAttackCooldownJob { ECB = ecb}.ScheduleParallel(systemState.Dependency);
         }
     }
 
@@ -35,11 +45,14 @@ namespace Systems
     [WithNone(typeof(CanMeleeAttackTag))]
     public partial struct CanMeleeAttackJob : IJobEntity
     {
+        public int DoAction;
         public EntityCommandBuffer.ParallelWriter ECB;
+        public int NoAction;
+        public float TimerExpired;
 
         private void Execute(in CooldownComponent cooldownComponent , Entity entity , [EntityIndexInQuery] int entityIndexInQuery)
         {
-            for(int i = 0 ; i < math.select(0 , 1 , cooldownComponent.Timer <= 0) ; i++) { ECB.AddComponent<CanMeleeAttackTag>(entityIndexInQuery , entity); }
+            for(int i = 0 ; i < math.select(NoAction , DoAction , cooldownComponent.Timer <= TimerExpired) ; i++) { ECB.AddComponent<CanMeleeAttackTag>(entityIndexInQuery , entity); }
         }
     }
 
@@ -47,11 +60,14 @@ namespace Systems
     [WithAll(typeof(AttackRateComponent) , typeof(CanMeleeAttackTag))]
     public partial struct CannotMeleeAttackJob : IJobEntity
     {
+        public int DoAction;
         public EntityCommandBuffer.ParallelWriter ECB;
+        public int NoAction;
+        public float TimerExpired;
 
         private void Execute(in CooldownComponent cooldownComponent , Entity entity , [EntityIndexInQuery] int entityIndexInQuery)
         {
-            for(int i = 0 ; i < math.select(0 , 1 , cooldownComponent.Timer > 0) ; i++) { ECB.RemoveComponent<CanMeleeAttackTag>(entityIndexInQuery , entity); }
+            for(int i = 0 ; i < math.select(NoAction , DoAction , cooldownComponent.Timer > TimerExpired) ; i++) { ECB.RemoveComponent<CanMeleeAttackTag>(entityIndexInQuery , entity); }
         }
     }
 
@@ -60,11 +76,14 @@ namespace Systems
     [WithNone(typeof(CanShootTag))]
     public partial struct CanRangeAttackJob : IJobEntity
     {
+        public int DoAction;
         public EntityCommandBuffer.ParallelWriter ECB;
+        public int NoAction;
+        public float TimerExpired;
 
         private void Execute(in CooldownComponent cooldownComponent , Entity entity , [EntityIndexInQuery] int entityIndexInQuery)
         {
-            for(int i = 0 ; i < math.select(0 , 1 , cooldownComponent.Timer <= 0) ; i++) { ECB.AddComponent<CanShootTag>(entityIndexInQuery , entity); }
+            for(int i = 0 ; i < math.select(NoAction , DoAction , cooldownComponent.Timer <= TimerExpired) ; i++) { ECB.AddComponent<CanShootTag>(entityIndexInQuery , entity); }
         }
     }
 
@@ -72,11 +91,14 @@ namespace Systems
     [WithAll(typeof(AttackRateComponent) , typeof(CanShootTag))]
     public partial struct CannotRangeAttackJob : IJobEntity
     {
+        public int DoAction;
         public EntityCommandBuffer.ParallelWriter ECB;
+        public int NoAction;
+        public float TimerExpired;
 
         private void Execute(in CooldownComponent cooldownComponent , Entity entity , [EntityIndexInQuery] int entityIndexInQuery)
         {
-            for(int i = 0 ; i < math.select(0 , 1 , cooldownComponent.Timer > 0) ; i++) { ECB.RemoveComponent<CanShootTag>(entityIndexInQuery , entity); }
+            for(int i = 0 ; i < math.select(NoAction , DoAction , cooldownComponent.Timer > TimerExpired) ; i++) { ECB.RemoveComponent<CanShootTag>(entityIndexInQuery , entity); }
         }
     }
 
