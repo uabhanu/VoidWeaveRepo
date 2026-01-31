@@ -529,6 +529,16 @@ namespace Components
     {
         public uint UnlockedTriangleEnemy;
     }
+    
+    public struct UpgradeCostBaseMultiplierComponent : IComponentData
+    {
+        public float Multiplier;
+    }
+
+    public struct UpgradeCostMultiplierComponent : IComponentData
+    {
+        public float Multiplier;
+    }
 
     public struct UpKeyComponent : IComponentData
     {
@@ -566,6 +576,16 @@ namespace Components
 
     // 0 = Preparation Phase, 1 = Combat Phase
     public struct WaveStateComponent : IComponentData
+    {
+        public int State;
+    }
+    
+    public struct WaveStateCombatComponent : IComponentData
+    {
+        public int State;
+    }
+
+    public struct WaveStatePrepComponent : IComponentData
     {
         public int State;
     }

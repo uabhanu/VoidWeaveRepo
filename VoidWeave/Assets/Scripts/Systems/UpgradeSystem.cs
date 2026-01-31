@@ -12,7 +12,12 @@ namespace Systems
         public void OnCreate(ref SystemState systemState)
         {
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
+            
             systemState.RequireForUpdate<CurrentEnergyComponent>();
+            systemState.RequireForUpdate<DoActionComponent>();
+            systemState.RequireForUpdate<NoActionComponent>();
+            systemState.RequireForUpdate<UpgradeCostBaseMultiplierComponent>();
+            systemState.RequireForUpdate<UpgradeCostMultiplierComponent>();
         }
 
         [BurstCompile]
@@ -20,6 +25,10 @@ namespace Systems
         {
             var entityCommandBuffer = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);
             var currentEnergyComponent = SystemAPI.GetSingletonRW<CurrentEnergyComponent>();
+            int doAction = SystemAPI.GetSingleton<DoActionComponent>().DoAction;
+            int noAction = SystemAPI.GetSingleton<NoActionComponent>().NoActionValue;
+            float upgradeCostBaseMultiplier = SystemAPI.GetSingleton<UpgradeCostBaseMultiplierComponent>().Multiplier;
+            float upgradeCostMultiplier = SystemAPI.GetSingleton<UpgradeCostMultiplierComponent>().Multiplier;
 
             foreach(var (_ , entity) in SystemAPI.Query<RefRO<UpgradeStrikerTurretTag>>().WithEntityAccess())
             {
@@ -28,9 +37,9 @@ namespace Systems
                 var strikerTurretCost = SystemAPI.GetComponentRW<TurretCostComponent>(configEntity);
                 var strikerTurretLevel = SystemAPI.GetComponentRW<TurretLevelComponent>(configEntity);
 
-                ProcessUpgrade(ref strikerTurretCost.ValueRW.Cost , ref currentEnergyComponent , ref strikerTurretLevel.ValueRW.Level , entityCommandBuffer , entity);
+                ProcessUpgrade(ref strikerTurretCost.ValueRW.Cost , ref currentEnergyComponent , ref strikerTurretLevel.ValueRW.Level , entityCommandBuffer , entity , doAction , noAction , upgradeCostBaseMultiplier , upgradeCostMultiplier);
             }
-            
+
             foreach(var (_ , entity) in SystemAPI.Query<RefRO<UpgradeScatterTurretTag>>().WithEntityAccess())
             {
                 var configEntity = SystemAPI.QueryBuilder().WithAll<ScatterTurretTag , TurretCostComponent>().Build().GetSingletonEntity();
@@ -38,9 +47,9 @@ namespace Systems
                 var scatterTurretCost = SystemAPI.GetComponentRW<TurretCostComponent>(configEntity);
                 var scatterTurretLevel = SystemAPI.GetComponentRW<TurretLevelComponent>(configEntity);
 
-                ProcessUpgrade(ref scatterTurretCost.ValueRW.Cost , ref currentEnergyComponent , ref scatterTurretLevel.ValueRW.Level , entityCommandBuffer , entity);
+                ProcessUpgrade(ref scatterTurretCost.ValueRW.Cost , ref currentEnergyComponent , ref scatterTurretLevel.ValueRW.Level , entityCommandBuffer , entity , doAction , noAction , upgradeCostBaseMultiplier , upgradeCostMultiplier);
             }
-            
+
             foreach(var (_ , entity) in SystemAPI.Query<RefRO<UpgradeBeamTurretTag>>().WithEntityAccess())
             {
                 var configEntity = SystemAPI.QueryBuilder().WithAll<BeamTurretTag , TurretCostComponent>().Build().GetSingletonEntity();
@@ -48,17 +57,16 @@ namespace Systems
                 var beamTurretCost = SystemAPI.GetComponentRW<TurretCostComponent>(configEntity);
                 var beamTurretLevel = SystemAPI.GetComponentRW<TurretLevelComponent>(configEntity);
 
-                ProcessUpgrade(ref beamTurretCost.ValueRW.Cost , ref currentEnergyComponent , ref beamTurretLevel.ValueRW.Level , entityCommandBuffer , entity);
+                ProcessUpgrade(ref beamTurretCost.ValueRW.Cost , ref currentEnergyComponent , ref beamTurretLevel.ValueRW.Level , entityCommandBuffer , entity , doAction , noAction , upgradeCostBaseMultiplier , upgradeCostMultiplier);
             }
         }
 
-        private void ProcessUpgrade(ref int cost , ref RefRW<CurrentEnergyComponent> currentEnergyComponent , ref int level , EntityCommandBuffer entityCommandBuffer , Entity tagEntity)
+        private void ProcessUpgrade(ref int cost , ref RefRW<CurrentEnergyComponent> currentEnergyComponent , ref int level , EntityCommandBuffer entityCommandBuffer , Entity tagEntity , int doAction , int noAction , float upgradeCostBaseMultiplier , float upgradeCostMultiplier)
         {
             bool canAfford = currentEnergyComponent.ValueRO.Energy >= cost;
-
-            int costToDeduct = math.select(0 , cost , canAfford);
-            float costScalingFactor = math.select(1.0f , 1.5f , canAfford);
-            int levelToAdd = math.select(0 , 1 , canAfford);
+            float costScalingFactor = math.select(upgradeCostBaseMultiplier , upgradeCostMultiplier , canAfford);
+            int costToDeduct = math.select(noAction , cost , canAfford);
+            int levelToAdd = math.select(noAction , doAction , canAfford);
 
             level += levelToAdd;
             cost = (int)(cost * costScalingFactor);

@@ -191,6 +191,10 @@ MonoBehaviour:
   unlockedNone: 0
   unlockedSquareEnemy: 4
   unlockedTriangleEnemy: 2
+  upgradeCostBaseMultiplier: 1
+  upgradeCostMultiplier: 1.5
+  waveStateCombat: 1
+  waveStatePrep: 0
 --- !u!4 &1220176065
 Transform:
   m_ObjectHideFlags: 0

@@ -52,6 +52,10 @@ namespace Entities
         [SerializeField] private uint unlockedNone;
         [SerializeField] private uint unlockedSquareEnemy; //The What
         [SerializeField] private uint unlockedTriangleEnemy; //The What
+        [SerializeField] private float upgradeCostBaseMultiplier;
+        [SerializeField] private float upgradeCostMultiplier;
+        [SerializeField] private int waveStateCombat;
+        [SerializeField] private int waveStatePrep;
 
         #endregion
 
@@ -114,6 +118,10 @@ namespace Entities
                 AddComponent(entity , new UnlockedNoneComponent { UnlockedNone = authoring.unlockedNone });
                 AddComponent(entity , new UnlockedSquareEnemyComponent { UnlockedSquareEnemy = authoring.unlockedSquareEnemy });
                 AddComponent(entity , new UnlockedTriangleEnemyComponent { UnlockedTriangleEnemy = authoring.unlockedTriangleEnemy });
+                AddComponent(entity , new UpgradeCostBaseMultiplierComponent { Multiplier = authoring.upgradeCostBaseMultiplier });
+                AddComponent(entity , new UpgradeCostMultiplierComponent { Multiplier = authoring.upgradeCostMultiplier });
+                AddComponent(entity , new WaveStateCombatComponent { State = authoring.waveStateCombat });
+                AddComponent(entity , new WaveStatePrepComponent { State = authoring.waveStatePrep });
 
                 AddComponent(entity , new InitializeGameTag());
             }
