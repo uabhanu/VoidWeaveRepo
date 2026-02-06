@@ -55,13 +55,13 @@ namespace Systems
         private void Execute(ref TimerComponent timerComponent , in WaveBaseEnemyCountComponent waveBaseEnemyCountComponent , in WaveEnemyIncrementComponent waveEnemyIncrementComponent , ref WaveIndexComponent waveIndexComponent , in WavePrepDurationComponent wavePrepDurationComponent , ref WaveStateComponent waveStateComponent , ref WaveStockComponent waveStockComponent)
         {
             bool isPrepComplete = waveStateComponent.Value == WaveStatePrep && timerComponent.Value <= TimerExpired;
-            bool isWaveClear = waveStateComponent.Value == WaveStateCombat && waveStockComponent.Value <= NoAction && (AliveEnemyCount <= NoAction);
-            
+            bool isWaveClear = waveStateComponent.Value == WaveStateCombat && waveStockComponent.Value <= NoAction && AliveEnemyCount <= NoAction;
+
             waveIndexComponent.Value += math.select(NoAction , DoAction , isPrepComplete);
             waveStateComponent.Value = math.select(waveStateComponent.Value , WaveStateCombat , isPrepComplete);
             waveStateComponent.Value = math.select(waveStateComponent.Value , WaveStatePrep , isWaveClear);
 
-            int newStock = waveBaseEnemyCountComponent.Value + (waveIndexComponent.Value * waveEnemyIncrementComponent.Value);
+            int newStock = waveBaseEnemyCountComponent.Value + waveIndexComponent.Value * waveEnemyIncrementComponent.Value;
             waveStockComponent.Value = math.select(waveStockComponent.Value , newStock , isPrepComplete);
             timerComponent.Value = math.select(timerComponent.Value , wavePrepDurationComponent.Value , isWaveClear);
         }

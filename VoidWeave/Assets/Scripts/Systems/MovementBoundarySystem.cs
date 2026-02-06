@@ -5,6 +5,7 @@ namespace Systems
     using Unity.Entities;
     using Unity.Mathematics;
     using Unity.Transforms;
+    using UnityEngine;
 
     [UpdateInGroup(typeof(SimulationSystemGroup))]
     [UpdateBefore(typeof(MovementSystem))]
@@ -35,7 +36,7 @@ namespace Systems
             uint inputUp = SystemAPI.GetSingleton<InputUpComponent>().Value;
 
             // Screen Calculation
-            float aspect = (float)UnityEngine.Screen.width / UnityEngine.Screen.height;
+            float aspect = (float)Screen.width / Screen.height;
             float boundaryX = cameraSize * aspect - boundaryOffset;
             float boundaryY = cameraSize - boundaryOffset;
 

@@ -41,8 +41,8 @@ namespace Systems
         private void Execute(Entity entity , [EntityIndexInQuery] int entityInQueryIndex , ref ProjectileLifetimeComponent projectileLifetimeComponent)
         {
             projectileLifetimeComponent.Value -= DeltaTime;
-            
-            for(int i = 0 ; i < math.select(NoAction , DoAction , projectileLifetimeComponent.Value <= TimerExpired) ; i++) { EntityCommandBuffer.DestroyEntity(entityInQueryIndex , entity); }
+
+            for(var i = 0 ; i < math.select(NoAction , DoAction , projectileLifetimeComponent.Value <= TimerExpired) ; i++) EntityCommandBuffer.DestroyEntity(entityInQueryIndex , entity);
         }
     }
 }

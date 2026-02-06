@@ -19,7 +19,7 @@ namespace Systems
             systemState.RequireForUpdate<MovementNoneComponent>();
             systemState.RequireForUpdate<TimerExpiredComponent>();
         }
-        
+
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
@@ -29,8 +29,8 @@ namespace Systems
             float movementActive = SystemAPI.GetSingleton<MovementActiveComponent>().Value;
             float movementNone = SystemAPI.GetSingleton<MovementNoneComponent>().Value;
             float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value;
-            
-            systemState.Dependency = new DashJob { DashCooldownDefault = dashCooldownDefault , DeltaTime = SystemAPI.Time.DeltaTime , DashDurationDefault = dashDurationDefault , InputDashBit = inputDash , MovementActive = movementActive , MovementNone = movementNone , TimerExpired = timerExpired}.ScheduleParallel(systemState.Dependency);
+
+            systemState.Dependency = new DashJob { DashCooldownDefault = dashCooldownDefault , DeltaTime = SystemAPI.Time.DeltaTime , DashDurationDefault = dashDurationDefault , InputDashBit = inputDash , MovementActive = movementActive , MovementNone = movementNone , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
         }
     }
 
@@ -49,10 +49,10 @@ namespace Systems
         {
             bool isDashInputActive = (playerInputComponent.Value & InputDashBit) != (int)MovementNone;
             bool isCooldownReady = dashCooldownComponent.Value <= TimerExpired;
-            
+
             dashDurationComponent.Value = math.select(math.max(TimerExpired , dashDurationComponent.Value - DeltaTime) , DashDurationDefault , isDashInputActive && isCooldownReady);
             dashCooldownComponent.Value = math.select(math.max(TimerExpired , dashCooldownComponent.Value - DeltaTime) , DashCooldownDefault , isDashInputActive && isCooldownReady);
-            
+
             moveSpeedComponent.Value = baseMoveSpeedComponent.Value * math.select(MovementActive , dashMultiplierComponent.Value , dashDurationComponent.Value > TimerExpired);
         }
     }

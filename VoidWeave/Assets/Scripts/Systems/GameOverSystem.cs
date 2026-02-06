@@ -18,12 +18,12 @@ namespace Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            var ecbCleanup = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);
-            var ecbRestart = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);
-            
+            EntityCommandBuffer ecbCleanup = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);
+            EntityCommandBuffer ecbRestart = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);
+
             new CleanupJob { ECBParallelWriter = ecbCleanup.AsParallelWriter() }.ScheduleParallel(SystemAPI.QueryBuilder().WithAny<EnemyTag , ProjectileTag , ScatterTurretTag , StrikerTurretTag>().Build());
-            
-            var restartEntity = ecbRestart.CreateEntity();
+
+            Entity restartEntity = ecbRestart.CreateEntity();
             ecbRestart.AddComponent<RestartTag>(restartEntity);
         }
     }
@@ -32,7 +32,7 @@ namespace Systems
     public partial struct CleanupJob : IJobEntity
     {
         public EntityCommandBuffer.ParallelWriter ECBParallelWriter;
-        
+
         private void Execute(Entity entity , [EntityIndexInQuery] int entityIndexInQuery) { ECBParallelWriter.DestroyEntity(entityIndexInQuery , entity); }
     }
 }

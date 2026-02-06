@@ -24,7 +24,7 @@ namespace Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            var ecbParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
+            EntityCommandBuffer.ParallelWriter ecbParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
 
             int currentEnergy = SystemAPI.GetSingleton<CurrentEnergyComponent>().Value;
             int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
@@ -32,7 +32,7 @@ namespace Systems
             uint inputNone = SystemAPI.GetSingleton<InputNoneComponent>().Value;
             int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
 
-            NativeReference<int> energyRef = new NativeReference<int>(currentEnergy , Allocator.TempJob);
+            var energyRef = new NativeReference<int>(currentEnergy , Allocator.TempJob);
 
             var job = new TurretDeploymentJob { DoAction = doAction , EnergyRef = energyRef , EntityCommandBuffer = ecbParallelWriter , InputDeploy = inputDeploy , InputNone = inputNone , NoAction = noAction };
 
@@ -58,10 +58,10 @@ namespace Systems
             bool canAfford = EnergyRef.Value >= selectedTurretCostComponent.Value;
             bool hasValidTurret = selectedTurretEntityComponent.Entity != Entity.Null;
             bool isDeployAction = (playerInputComponent.Value & InputDeploy) != InputNone;
-            
+
             int spawnCount = math.select(NoAction , DoAction , isDeployAction && canAfford && hasValidTurret);
 
-            for(int i = 0 ; i < spawnCount ; i++)
+            for(var i = 0 ; i < spawnCount ; i++)
             {
                 Entity newTurret = EntityCommandBuffer.Instantiate(entityInQueryIndex , selectedTurretEntityComponent.Entity);
                 EntityCommandBuffer.SetComponent(entityInQueryIndex , newTurret , LocalTransform.FromPosition(localTransform.Position));

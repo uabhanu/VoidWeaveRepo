@@ -26,7 +26,7 @@ namespace Systems
         private void Execute([EntityIndexInQuery] int entityIndexInQuery , in LocalTransform localToWorld , in LootAmountComponent lootAmountComponent , in LootEntityComponent lootEntityComponent)
         {
             Entity newLoot = ECB.Instantiate(entityIndexInQuery , lootEntityComponent.Entity);
-            
+
             ECB.SetComponent(entityIndexInQuery , newLoot , LocalTransform.FromPosition(localToWorld.Position));
             ECB.SetComponent(entityIndexInQuery , newLoot , new LootAmountComponent { Value = lootAmountComponent.Value });
         }

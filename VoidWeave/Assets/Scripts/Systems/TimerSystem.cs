@@ -9,9 +9,9 @@ namespace Systems
     public partial struct TimerSystem : ISystem
     {
         [BurstCompile]
-        public void OnCreate(ref SystemState systemState) 
-        { 
-            systemState.RequireForUpdate<TimerComponent>(); 
+        public void OnCreate(ref SystemState systemState)
+        {
+            systemState.RequireForUpdate<TimerComponent>();
             systemState.RequireForUpdate<TimerExpiredComponent>();
         }
 
@@ -19,7 +19,7 @@ namespace Systems
         public void OnUpdate(ref SystemState systemState)
         {
             float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value;
-            
+
             systemState.Dependency = new TimerJob { DeltaTime = SystemAPI.Time.DeltaTime , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
         }
     }

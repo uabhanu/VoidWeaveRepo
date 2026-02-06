@@ -25,12 +25,12 @@ namespace Entities
                 AddComponent(entity , new BulletEntityComponent { Entity = GetEntity(authoring.bulletPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new CooldownComponent { Value = authoring.cooldownTime });
                 AddComponent(entity , new DamageComponent { Value = authoring.damage });
-                AddComponent(entity, new ProjectileCountComponent { Value = authoring.projectileCount });
+                AddComponent(entity , new ProjectileCountComponent { Value = authoring.projectileCount });
                 AddComponent(entity , new RangeComponent { Value = authoring.range });
-                AddComponent(entity, new SpreadComponent { Value = authoring.spreadDegrees });
+                AddComponent(entity , new SpreadComponent { Value = authoring.spreadDegrees });
                 AddComponent(entity , new TargetPositionComponent());
                 AddComponent(entity , new TeamComponent { Value = authoring.teamID });
-                
+
                 AddComponent(entity , new StrikerTurretTag());
             }
         }

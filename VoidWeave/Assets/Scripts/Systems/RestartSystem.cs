@@ -1,6 +1,7 @@
 namespace Systems
 {
     using Components;
+    using Unity.Collections;
     using Unity.Entities;
     using UnityEngine.SceneManagement;
 
@@ -11,13 +12,13 @@ namespace Systems
         protected override void OnUpdate()
         {
             // We destroy the entity so this system doesn't run again next frame to prevent infinite restarts
-            var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
-            
-            foreach(var (_ , entity) in SystemAPI.Query<RefRO<RestartTag>>().WithEntityAccess()) { ecb.DestroyEntity(entity); }
-            
+            var ecb = new EntityCommandBuffer(Allocator.Temp);
+
+            foreach((RefRO<RestartTag> _ , Entity entity) in SystemAPI.Query<RefRO<RestartTag>>().WithEntityAccess()) ecb.DestroyEntity(entity);
+
             ecb.Playback(EntityManager);
             ecb.Dispose();
-            
+
             int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
             SceneManager.LoadScene(currentSceneIndex);
         }

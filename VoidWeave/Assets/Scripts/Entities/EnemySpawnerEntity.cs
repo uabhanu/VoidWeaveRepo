@@ -4,6 +4,7 @@ namespace Entities
     using Unity.Entities;
     using Unity.Mathematics;
     using UnityEngine;
+    using Random = Unity.Mathematics.Random;
 
     public class EnemySpawnerEntity : MonoBehaviour
     {
@@ -30,12 +31,12 @@ namespace Entities
             public override void Bake(EnemySpawnerEntity authoring)
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-                
+
                 // Random Seed Entity and Random Seed Entity Min both are set as 1 in the inspector but still this is correct:
                 // This logic acts as a mandatory safety clamp. It guarantees the seed is never 0 by forcing it to be at least the minimum.
                 // Even if both inputs are 1, the operation correctly resolves to 1, ensuring the RNG always initializes with a valid, non-zero value.
                 uint seed = math.max(authoring.randomSeedMin , authoring.randomSeed);
-                
+
                 AddComponent(entity , new ActiveWaveStateComponent { Value = authoring.activeWaveState });
                 AddComponent(entity , new EnemySpawnerTag());
                 AddComponent(entity , new EnemyTypesCountComponent { Value = authoring.enemyTypesCount });
@@ -43,7 +44,7 @@ namespace Entities
                 AddComponent(entity , new LineEnemyEntityComponent { Entity = GetEntity(authoring.lineEnemyPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new LineEnemyIndexComponent { Value = authoring.lineEnemyIndex });
                 AddComponent(entity , new RandomRangeStartComponent { Value = authoring.randomRangeStartValue });
-                AddComponent(entity , new RandomSeedComponent { Value = new Unity.Mathematics.Random(seed) });
+                AddComponent(entity , new RandomSeedComponent { Value = new Random(seed) });
                 AddComponent(entity , new SpawnRadiusComponent { Value = authoring.enemySpawnRadius });
                 AddComponent(entity , new SpawnRateComponent { Value = authoring.enemySpawnRate });
                 AddComponent(entity , new SquareEnemyEntityComponent { Entity = GetEntity(authoring.squareEnemyPrefab , TransformUsageFlags.Dynamic) });
