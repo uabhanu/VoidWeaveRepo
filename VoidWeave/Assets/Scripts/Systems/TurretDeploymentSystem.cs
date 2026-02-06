@@ -26,11 +26,11 @@ namespace Systems
         {
             var ecbParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
 
-            int currentEnergy = SystemAPI.GetSingleton<CurrentEnergyComponent>().Energy;
-            int doAction = SystemAPI.GetSingleton<DoActionComponent>().DoAction;
-            uint inputDeploy = SystemAPI.GetSingleton<InputDeployComponent>().InputDeploy;
-            uint inputNone = SystemAPI.GetSingleton<InputNoneComponent>().InputNone;
-            int noAction = SystemAPI.GetSingleton<NoActionComponent>().NoActionValue;
+            int currentEnergy = SystemAPI.GetSingleton<CurrentEnergyComponent>().Value;
+            int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
+            uint inputDeploy = SystemAPI.GetSingleton<InputDeployComponent>().Value;
+            uint inputNone = SystemAPI.GetSingleton<InputNoneComponent>().Value;
+            int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
 
             NativeReference<int> energyRef = new NativeReference<int>(currentEnergy , Allocator.TempJob);
 
@@ -38,7 +38,7 @@ namespace Systems
 
             job.Schedule(systemState.Dependency).Complete();
 
-            SystemAPI.SetSingleton(new CurrentEnergyComponent { Energy = energyRef.Value });
+            SystemAPI.SetSingleton(new CurrentEnergyComponent { Value = energyRef.Value });
             energyRef.Dispose();
         }
     }
@@ -55,9 +55,9 @@ namespace Systems
 
         private void Execute([EntityIndexInQuery] int entityInQueryIndex , in LocalTransform localTransform , in PlayerInputComponent playerInputComponent , in SelectedTurretCostComponent selectedTurretCostComponent , in SelectedTurretEntityComponent selectedTurretEntityComponent)
         {
-            bool canAfford = EnergyRef.Value >= selectedTurretCostComponent.Cost;
+            bool canAfford = EnergyRef.Value >= selectedTurretCostComponent.Value;
             bool hasValidTurret = selectedTurretEntityComponent.Entity != Entity.Null;
-            bool isDeployAction = (playerInputComponent.PlayerInput & InputDeploy) != InputNone;
+            bool isDeployAction = (playerInputComponent.Value & InputDeploy) != InputNone;
             
             int spawnCount = math.select(NoAction , DoAction , isDeployAction && canAfford && hasValidTurret);
 
@@ -67,7 +67,7 @@ namespace Systems
                 EntityCommandBuffer.SetComponent(entityInQueryIndex , newTurret , LocalTransform.FromPosition(localTransform.Position));
             }
 
-            EnergyRef.Value -= selectedTurretCostComponent.Cost * spawnCount;
+            EnergyRef.Value -= selectedTurretCostComponent.Value * spawnCount;
         }
     }
 }

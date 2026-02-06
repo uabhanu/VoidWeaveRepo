@@ -18,7 +18,7 @@ namespace Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Expired;
+            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value;
             
             systemState.Dependency = new TimerJob { DeltaTime = SystemAPI.Time.DeltaTime , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
         }
@@ -32,8 +32,8 @@ namespace Systems
 
         private void Execute(ref TimerComponent timerComponent)
         {
-            timerComponent.Timer -= DeltaTime;
-            timerComponent.Timer = math.max(TimerExpired , timerComponent.Timer);
+            timerComponent.Value -= DeltaTime;
+            timerComponent.Value = math.max(TimerExpired , timerComponent.Value);
         }
     }
 }

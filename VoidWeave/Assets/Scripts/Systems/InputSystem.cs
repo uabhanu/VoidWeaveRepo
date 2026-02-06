@@ -39,34 +39,34 @@ namespace Systems
         {
             var keyboard = Keyboard.current;
 
-            Key dashKey = SystemAPI.GetSingleton<DashKeyComponent>().DashKey;
-            uint dashValue = SystemAPI.GetSingleton<InputDashComponent>().InputDash;
+            Key dashKey = SystemAPI.GetSingleton<DashKeyComponent>().Value;
+            uint dashValue = SystemAPI.GetSingleton<InputDashComponent>().Value;
 
-            Key deployKey = SystemAPI.GetSingleton<DeployKeyComponent>().DeployKey;
-            uint deployValue = SystemAPI.GetSingleton<InputDeployComponent>().InputDeploy;
+            Key deployKey = SystemAPI.GetSingleton<DeployKeyComponent>().Value;
+            uint deployValue = SystemAPI.GetSingleton<InputDeployComponent>().Value;
 
-            Key downKey = SystemAPI.GetSingleton<DownKeyComponent>().DownKey;
-            uint downValue = SystemAPI.GetSingleton<InputDownComponent>().InputDown;
+            Key downKey = SystemAPI.GetSingleton<DownKeyComponent>().Value;
+            uint downValue = SystemAPI.GetSingleton<InputDownComponent>().Value;
 
-            Key leftKey = SystemAPI.GetSingleton<LeftKeyComponent>().LeftKey;
-            uint leftValue = SystemAPI.GetSingleton<InputLeftComponent>().InputLeft;
+            Key leftKey = SystemAPI.GetSingleton<LeftKeyComponent>().Value;
+            uint leftValue = SystemAPI.GetSingleton<InputLeftComponent>().Value;
 
-            uint noneValue = SystemAPI.GetSingleton<InputNoneComponent>().InputNone;
+            uint noneValue = SystemAPI.GetSingleton<InputNoneComponent>().Value;
 
-            Key rightKey = SystemAPI.GetSingleton<RightKeyComponent>().RightKey;
-            uint rightValue = SystemAPI.GetSingleton<InputRightComponent>().InputRight;
+            Key rightKey = SystemAPI.GetSingleton<RightKeyComponent>().Value;
+            uint rightValue = SystemAPI.GetSingleton<InputRightComponent>().Value;
 
-            Key turret1Key = SystemAPI.GetSingleton<Turret1KeyComponent>().Turret1Key;
-            uint turret1Value = SystemAPI.GetSingleton<InputTurret1Component>().InputTurret1;
+            Key turret1Key = SystemAPI.GetSingleton<Turret1KeyComponent>().Value;
+            uint turret1Value = SystemAPI.GetSingleton<InputTurret1Component>().Value;
 
-            Key turret2Key = SystemAPI.GetSingleton<Turret2KeyComponent>().Turret2Key;
-            uint turret2Value = SystemAPI.GetSingleton<InputTurret2Component>().InputTurret2;
+            Key turret2Key = SystemAPI.GetSingleton<Turret2KeyComponent>().Value;
+            uint turret2Value = SystemAPI.GetSingleton<InputTurret2Component>().Value;
 
-            Key turret3Key = SystemAPI.GetSingleton<Turret3KeyComponent>().Turret3Key;
-            uint turret3Value = SystemAPI.GetSingleton<InputTurret3Component>().InputTurret3;
+            Key turret3Key = SystemAPI.GetSingleton<Turret3KeyComponent>().Value;
+            uint turret3Value = SystemAPI.GetSingleton<InputTurret3Component>().Value;
 
-            Key upKey = SystemAPI.GetSingleton<UpKeyComponent>().UpKey;
-            uint upValue = SystemAPI.GetSingleton<InputUpComponent>().InputUp;
+            Key upKey = SystemAPI.GetSingleton<UpKeyComponent>().Value;
+            uint upValue = SystemAPI.GetSingleton<InputUpComponent>().Value;
 
             uint selectedInput = noneValue;
             
@@ -80,7 +80,7 @@ namespace Systems
             selectedInput |= math.select(noneValue , turret2Value , keyboard[turret2Key].wasPressedThisFrame);
             selectedInput |= math.select(noneValue , turret3Value , keyboard[turret3Key].wasPressedThisFrame);
 
-            foreach(var playerInputComponent in SystemAPI.Query<RefRW<PlayerInputComponent>>().WithAll<PlayerTag>()) { playerInputComponent.ValueRW.PlayerInput = selectedInput; }
+            foreach(var playerInputComponent in SystemAPI.Query<RefRW<PlayerInputComponent>>().WithAll<PlayerTag>()) { playerInputComponent.ValueRW.Value = selectedInput; }
         }
     }
 }

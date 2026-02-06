@@ -21,9 +21,9 @@ namespace Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            int doAction = SystemAPI.GetSingleton<DoActionComponent>().DoAction;
-            int noAction = SystemAPI.GetSingleton<NoActionComponent>().NoActionValue;
-            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Expired;
+            int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
+            int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
+            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value;
 
             new ProjectileLifetimeJob { DeltaTime = SystemAPI.Time.DeltaTime , DoAction = doAction , EntityCommandBuffer = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter() , NoAction = noAction , TimerExpired = timerExpired }.ScheduleParallel();
         }
@@ -40,9 +40,9 @@ namespace Systems
 
         private void Execute(Entity entity , [EntityIndexInQuery] int entityInQueryIndex , ref ProjectileLifetimeComponent projectileLifetimeComponent)
         {
-            projectileLifetimeComponent.Timer -= DeltaTime;
+            projectileLifetimeComponent.Value -= DeltaTime;
             
-            for(int i = 0 ; i < math.select(NoAction , DoAction , projectileLifetimeComponent.Timer <= TimerExpired) ; i++) { EntityCommandBuffer.DestroyEntity(entityInQueryIndex , entity); }
+            for(int i = 0 ; i < math.select(NoAction , DoAction , projectileLifetimeComponent.Value <= TimerExpired) ; i++) { EntityCommandBuffer.DestroyEntity(entityInQueryIndex , entity); }
         }
     }
 }

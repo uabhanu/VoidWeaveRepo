@@ -23,12 +23,12 @@ namespace Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            float dashCooldownDefault = SystemAPI.GetSingleton<DashCooldownDefaultComponent>().DashCooldownDefault;
-            float dashDurationDefault = SystemAPI.GetSingleton<DashDurationDefaultComponent>().DashDurationDefault;
-            uint inputDash = SystemAPI.GetSingleton<InputDashComponent>().InputDash;
-            float movementActive = SystemAPI.GetSingleton<MovementActiveComponent>().MovementActive;
-            float movementNone = SystemAPI.GetSingleton<MovementNoneComponent>().MovementNone;
-            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Expired;
+            float dashCooldownDefault = SystemAPI.GetSingleton<DashCooldownDefaultComponent>().Value;
+            float dashDurationDefault = SystemAPI.GetSingleton<DashDurationDefaultComponent>().Value;
+            uint inputDash = SystemAPI.GetSingleton<InputDashComponent>().Value;
+            float movementActive = SystemAPI.GetSingleton<MovementActiveComponent>().Value;
+            float movementNone = SystemAPI.GetSingleton<MovementNoneComponent>().Value;
+            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value;
             
             systemState.Dependency = new DashJob { DashCooldownDefault = dashCooldownDefault , DeltaTime = SystemAPI.Time.DeltaTime , DashDurationDefault = dashDurationDefault , InputDashBit = inputDash , MovementActive = movementActive , MovementNone = movementNone , TimerExpired = timerExpired}.ScheduleParallel(systemState.Dependency);
         }
@@ -47,13 +47,13 @@ namespace Systems
 
         private void Execute(in BaseMoveSpeedComponent baseMoveSpeedComponent , ref DashCooldownComponent dashCooldownComponent , ref DashDurationComponent dashDurationComponent , in DashMultiplierComponent dashMultiplierComponent , ref MoveSpeedComponent moveSpeedComponent , in PlayerInputComponent playerInputComponent)
         {
-            bool isDashInputActive = (playerInputComponent.PlayerInput & InputDashBit) != (int)MovementNone;
-            bool isCooldownReady = dashCooldownComponent.Timer <= TimerExpired;
+            bool isDashInputActive = (playerInputComponent.Value & InputDashBit) != (int)MovementNone;
+            bool isCooldownReady = dashCooldownComponent.Value <= TimerExpired;
             
-            dashDurationComponent.Duration = math.select(math.max(TimerExpired , dashDurationComponent.Duration - DeltaTime) , DashDurationDefault , isDashInputActive && isCooldownReady);
-            dashCooldownComponent.Timer = math.select(math.max(TimerExpired , dashCooldownComponent.Timer - DeltaTime) , DashCooldownDefault , isDashInputActive && isCooldownReady);
+            dashDurationComponent.Value = math.select(math.max(TimerExpired , dashDurationComponent.Value - DeltaTime) , DashDurationDefault , isDashInputActive && isCooldownReady);
+            dashCooldownComponent.Value = math.select(math.max(TimerExpired , dashCooldownComponent.Value - DeltaTime) , DashCooldownDefault , isDashInputActive && isCooldownReady);
             
-            moveSpeedComponent.Speed = baseMoveSpeedComponent.Speed * math.select(MovementActive , dashMultiplierComponent.Multiplier , dashDurationComponent.Duration > TimerExpired);
+            moveSpeedComponent.Value = baseMoveSpeedComponent.Value * math.select(MovementActive , dashMultiplierComponent.Value , dashDurationComponent.Value > TimerExpired);
         }
     }
 }

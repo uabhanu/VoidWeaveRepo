@@ -25,7 +25,7 @@ namespace Systems
         {
             int killedCount = _dyingEnemyEntityQuery.CalculateEntityCount();
 
-            SystemAPI.GetSingletonRW<EnemiesKilledComponent>().ValueRW.KillsCount += killedCount;
+            SystemAPI.GetSingletonRW<EnemiesKilledComponent>().ValueRW.Value += killedCount;
 
             systemState.Dependency = new DeathJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() }.ScheduleParallel(systemState.Dependency);
         }

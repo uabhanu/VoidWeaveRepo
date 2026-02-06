@@ -24,15 +24,15 @@ namespace Systems
 
         public void OnUpdate(ref SystemState systemState)
         {
-            float boundaryOffset = SystemAPI.GetSingleton<BoundaryOffsetComponent>().Offset;
-            float cameraSize = SystemAPI.GetSingleton<CameraOrthographicSizeComponent>().Size;
+            float boundaryOffset = SystemAPI.GetSingleton<BoundaryOffsetComponent>().Value;
+            float cameraSize = SystemAPI.GetSingleton<CameraOrthographicSizeComponent>().Value;
 
             // Input Masks
-            uint inputDown = SystemAPI.GetSingleton<InputDownComponent>().InputDown;
-            uint inputLeft = SystemAPI.GetSingleton<InputLeftComponent>().InputLeft;
-            uint inputNone = SystemAPI.GetSingleton<InputNoneComponent>().InputNone;
-            uint inputRight = SystemAPI.GetSingleton<InputRightComponent>().InputRight;
-            uint inputUp = SystemAPI.GetSingleton<InputUpComponent>().InputUp;
+            uint inputDown = SystemAPI.GetSingleton<InputDownComponent>().Value;
+            uint inputLeft = SystemAPI.GetSingleton<InputLeftComponent>().Value;
+            uint inputNone = SystemAPI.GetSingleton<InputNoneComponent>().Value;
+            uint inputRight = SystemAPI.GetSingleton<InputRightComponent>().Value;
+            uint inputUp = SystemAPI.GetSingleton<InputUpComponent>().Value;
 
             // Screen Calculation
             float aspect = (float)UnityEngine.Screen.width / UnityEngine.Screen.height;
@@ -58,17 +58,17 @@ namespace Systems
         {
             // Mapping: Up=1, Down=2, Left=4, Right=8
 
-            // If Position.x >= BoundaryX, remove Right bit (~8u). Otherwise keep all (~0u).
-            playerInputComponent.PlayerInput &= math.select(~InputNone , ~InputRight , localTransform.Position.x >= BoundaryX);
+            // If Value.x >= BoundaryX, remove Right bit (~8u). Otherwise keep all (~0u).
+            playerInputComponent.Value &= math.select(~InputNone , ~InputRight , localTransform.Position.x >= BoundaryX);
 
-            // If Position.x <= -BoundaryX, remove Left bit (~4u).
-            playerInputComponent.PlayerInput &= math.select(~InputNone , ~InputLeft , localTransform.Position.x <= -BoundaryX);
+            // If Value.x <= -BoundaryX, remove Left bit (~4u).
+            playerInputComponent.Value &= math.select(~InputNone , ~InputLeft , localTransform.Position.x <= -BoundaryX);
 
-            // If Position.y >= BoundaryY, remove Up bit (~1u).
-            playerInputComponent.PlayerInput &= math.select(~InputNone , ~InputUp , localTransform.Position.y >= BoundaryY);
+            // If Value.y >= BoundaryY, remove Up bit (~1u).
+            playerInputComponent.Value &= math.select(~InputNone , ~InputUp , localTransform.Position.y >= BoundaryY);
 
-            // If Position.y <= -BoundaryY, remove Down bit (~2u).
-            playerInputComponent.PlayerInput &= math.select(~InputNone , ~InputDown , localTransform.Position.y <= -BoundaryY);
+            // If Value.y <= -BoundaryY, remove Down bit (~2u).
+            playerInputComponent.Value &= math.select(~InputNone , ~InputDown , localTransform.Position.y <= -BoundaryY);
         }
     }
 }

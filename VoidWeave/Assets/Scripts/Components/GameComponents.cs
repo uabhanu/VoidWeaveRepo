@@ -8,27 +8,27 @@ namespace Components
 
     public struct ActiveWaveStateComponent : IComponentData
     {
-        public int ActiveWaveState;
+        public int Value;
     }
 
     public struct AttackRateComponent : IComponentData
     {
-        public float AttackRate;
+        public float Value;
     }
 
     public struct BaseMoveSpeedComponent : IComponentData
     {
-        public float Speed;
+        public float Value;
     }
     
     public struct BeamTurretUnlockLevelComponent : IComponentData
     {
-        public int Level;
+        public int Value;
     }
     
     public struct BoundaryOffsetComponent : IComponentData
     {
-        public float Offset;
+        public float Value;
     }
 
     public struct BulletEntityComponent : IComponentData
@@ -38,117 +38,117 @@ namespace Components
     
     public struct BulletRotationOffsetComponent : IComponentData
     {
-        public float Offset;
+        public float Value;
     }
     
     public struct CameraOrthographicSizeComponent : IComponentData
     {
-        public float Size;
+        public float Value;
     }
 
     public struct CollisionActiveComponent : IComponentData
     {
-        public int CollisionActive;
+        public int Value;
     }
 
     public struct CollisionNoneComponent : IComponentData
     {
-        public int CollisionNone;
+        public int Value;
     }
 
     public struct CollisionRadiusComponent : IComponentData
     {
-        public float Radius;
+        public float Value;
     }
 
     public struct CooldownComponent : IComponentData
     {
-        public float Timer;
+        public float Value;
     }
 
     public struct CurrentEnergyComponent : IComponentData
     {
-        public int Energy;
+        public int Value;
     }
 
     public struct CurrentHealthComponent : IComponentData
     {
-        public float CurrentHealth;
+        public float Value;
     }
 
     public struct DamageComponent : IComponentData
     {
-        public float Damage;
+        public float Value;
     }
 
     public struct DamageEventComponent : IComponentData
     {
-        public float Damage;
+        public float Value;
     }
 
     public struct DamageMultiplierComponent : IComponentData
     {
-        public float DamageMultiplier;
+        public float Value;
     }
 
     public struct DashCooldownComponent : IComponentData
     {
-        public float Timer;
+        public float Value;
     }
     
     public struct DashCooldownDefaultComponent : IComponentData
     {
-        public float DashCooldownDefault;
+        public float Value;
     }
 
     public struct DashDurationComponent : IComponentData
     {
-        public float Duration;
+        public float Value;
     }
     
     public struct DashDurationDefaultComponent : IComponentData
     {
-        public float DashDurationDefault;
+        public float Value;
     }
 
     public struct DashKeyComponent : IComponentData
     {
-        public Key DashKey;
+        public Key Value;
     }
 
     public struct DashMultiplierComponent : IComponentData
     {
-        public float Multiplier;
+        public float Value;
     }
 
     public struct DeployKeyComponent : IComponentData
     {
-        public Key DeployKey;
+        public Key Value;
     }
     
     public struct DoActionComponent : IComponentData
     {
-        public int DoAction;
+        public int Value;
     }
 
     public struct DownKeyComponent : IComponentData
     {
-        public Key DownKey;
+        public Key Value;
     }
 
     public struct EnemiesKilledComponent : IComponentData
     {
-        public int KillsCount;
+        public int Value;
     }
 
     public struct EnemiesToKillComponent : IComponentData
     {
-        public int EnemiesToKill;
+        public int Value;
     }
 
     public struct EnemiesToKillIncrementComponent : IComponentData
     {
-        public int EnemiesToKillIncrement;
+        public int Value;
     }
 
     public struct EnemySpawnerEntityComponent : IComponentData
@@ -158,37 +158,37 @@ namespace Components
 
     public struct EnemyTypesCountComponent : IComponentData
     {
-        public int EnemyTypesCount;
+        public int Value;
     }
 
     public struct HealthMultiplierComponent : IComponentData
     {
-        public float HealthMultiplier;
+        public float Value;
     }
     
     public struct HealthValueForDeathComponent : IComponentData
     {
-        public float HealthValueForDeath;
+        public float Value;
     }
 
     public struct InitialBitmaskComponent : IComponentData
     {
-        public uint InitialBitmask;
+        public uint Value;
     }
 
     public struct InputDashComponent : IComponentData
     {
-        public uint InputDash;
+        public uint Value;
     }
 
     public struct InputDeployComponent : IComponentData
     {
-        public uint InputDeploy;
+        public uint Value;
     }
 
     public struct InputDownComponent : IComponentData
     {
-        public uint InputDown;
+        public uint Value;
     }
 
     public struct InputEntityComponent : IComponentData
@@ -198,62 +198,62 @@ namespace Components
 
     public struct InputLeftComponent : IComponentData
     {
-        public uint InputLeft;
+        public uint Value;
     }
 
     public struct InputNoneComponent : IComponentData
     {
-        public uint InputNone; //Ignore this warning
+        public uint Value; //Ignore this warning
     }
 
     public struct InputRightComponent : IComponentData
     {
-        public uint InputRight;
+        public uint Value;
     }
 
     public struct InputTurret1Component : IComponentData
     {
-        public uint InputTurret1;
+        public uint Value;
     }
 
     public struct InputTurret2Component : IComponentData
     {
-        public uint InputTurret2;
+        public uint Value;
     }
 
     public struct InputTurret3Component : IComponentData
     {
-        public uint InputTurret3;
+        public uint Value;
     }
 
     public struct InputUpComponent : IComponentData
     {
-        public uint InputUp;
+        public uint Value;
     }
 
     public struct LeftKeyComponent : IComponentData
     {
-        public Key LeftKey;
+        public Key Value;
     }
 
     public struct LevelComponent : IComponentData
     {
-        public int Level;
+        public int Value;
     }
     
     public struct LevelToUnlockLineEnemyComponent : IComponentData
     {
-        public int LevelToUnlockLineEnemy;
+        public int Value;
     }
     
     public struct LevelToUnlockSquareEnemyComponent : IComponentData
     {
-        public int LevelToUnlockSquareEnemy;
+        public int Value;
     }
 
     public struct LevelToUnlockTriangleEnemyComponent : IComponentData
     {
-        public int LevelToUnlockTriangleEnemy;
+        public int Value;
     }
 
     public struct LineEnemyEntityComponent : IComponentData
@@ -263,12 +263,12 @@ namespace Components
 
     public struct LineEnemyIndexComponent : IComponentData
     {
-        public int LineEnemyIndex;
+        public int Value;
     }
 
     public struct LootAmountComponent : IComponentData
     {
-        public int Amount;
+        public int Value;
     }
 
     public struct LootEntityComponent : IComponentData
@@ -278,52 +278,52 @@ namespace Components
 
     public struct LootMultiplierComponent : IComponentData
     {
-        public float LootMultiplier;
+        public float Value;
     }
     
     public struct LootPickupRadiusComponent : IComponentData
     {
-        public float Radius;
+        public float Value;
     }
 
     public struct MaxHealthComponent : IComponentData
     {
-        public float MaxHealth;
+        public float Value;
     }
     
     public struct MinProjectileCountComponent : IComponentData
     {
-        public int Count;
+        public int Value;
     }
 
     public struct MovementActiveComponent : IComponentData
     {
-        public float MovementActive;
+        public float Value;
     }
 
     public struct MovementNoneComponent : IComponentData
     {
-        public float MovementNone;
+        public float Value;
     }
 
     public struct MovementZigZagAmplitudeComponent : IComponentData
     {
-        public float ZigZagAmplitude;
+        public float Value;
     }
 
     public struct MovementZigZagFrequencyComponent : IComponentData
     {
-        public float ZigZagFrequency;
+        public float Value;
     }
 
     public struct MoveSpeedComponent : IComponentData
     {
-        public float Speed;
+        public float Value;
     }
 
     public struct NoActionComponent : IComponentData
     {
-        public int NoActionValue;
+        public int Value;
     }
 
     public struct PlayerEntityComponent : IComponentData
@@ -333,64 +333,64 @@ namespace Components
 
     public struct PlayerInputComponent : IComponentData
     {
-        public uint PlayerInput;
+        public uint Value;
     }
 
     // How many projectiles spawn per shot
     // Striker = 1, Scatter = 5
     public struct ProjectileCountComponent : IComponentData
     {
-        public int Count;
+        public int Value;
     }
 
     public struct ProjectileLifetimeComponent : IComponentData
     {
-        public float Timer;
+        public float Value;
     }
 
     public struct RandomRangeStartComponent : IComponentData
     {
-        public int RandomRangeStartValue;
+        public int Value;
     }
 
     public struct RandomSeedComponent : IComponentData
     {
-        public Random RandomSeed;
+        public Random Value;
     }
 
     public struct RangeComponent : IComponentData
     {
-        public float Range;
+        public float Value;
     }
 
     public struct RightKeyComponent : IComponentData
     {
-        public Key RightKey;
+        public Key Value;
     }
 
     public struct ScalingBaseComponent : IComponentData
     {
-        public float ScalingBase;
+        public float Value;
     }
 
     public struct ScalingLevelOffsetComponent : IComponentData
     {
-        public int ScalingLevelOffset;
+        public int Value;
     }
 
     public struct ScalingMinLevelComponent : IComponentData
     {
-        public int ScalingMinLevel;
+        public int Value;
     }
     
     public struct ScatterTurretUnlockLevelComponent : IComponentData
     {
-        public int Level;
+        public int Value;
     }
 
     public struct SelectedTurretCostComponent : IComponentData
     {
-        public int Cost;
+        public int Value;
     }
 
     public struct SelectedTurretEntityComponent : IComponentData
@@ -400,29 +400,29 @@ namespace Components
 
     public struct SpawnRadiusComponent : IComponentData
     {
-        public float Radius;
+        public float Value;
     }
 
     public struct SpawnRateComponent : IComponentData
     {
-        public float Rate;
+        public float Value;
     }
 
     // The total angle of the spread in degrees
     // Striker = 0, Scatter = 30
     public struct SpreadComponent : IComponentData
     {
-        public float Degrees;
+        public float Value;
     }
     
     public struct SpreadHalfMultiplierComponent : IComponentData
     {
-        public float HalfMultiplier;
+        public float Value;
     }
 
     public struct SpreadZeroComponent : IComponentData
     {
-        public float Zero;
+        public float Value;
     }
 
     public struct SquareEnemyEntityComponent : IComponentData
@@ -432,32 +432,32 @@ namespace Components
 
     public struct SquareEnemyIndexComponent : IComponentData
     {
-        public int SquareEnemyIndex;
+        public int Value;
     }
     
     public struct TargetDefaultPositionComponent : IComponentData
     {
-        public float DefaultPosition;
+        public float Value;
     }
 
     public struct TargetPositionComponent : IComponentData
     {
-        public float3 Position;
+        public float3 Value;
     }
 
     public struct TeamComponent : IComponentData
     {
-        public int ID; // 0 = Player , 1 = Enemy and so on
+        public int Value; // 0 = Player , 1 = Enemy and so on
     }
 
     public struct TimerComponent : IComponentData
     {
-        public float Timer;
+        public float Value;
     }
     
     public struct TimerExpiredComponent : IComponentData
     {
-        public float Expired;
+        public float Value;
     }
 
     public struct TriangleEnemyEntityComponent : IComponentData
@@ -467,22 +467,22 @@ namespace Components
 
     public struct TriangleEnemyIndexComponent : IComponentData
     {
-        public int TriangleEnemyIndex;
+        public int Value;
     }
 
     public struct Turret1KeyComponent : IComponentData
     {
-        public Key Turret1Key;
+        public Key Value;
     }
 
     public struct Turret2KeyComponent : IComponentData
     {
-        public Key Turret2Key;
+        public Key Value;
     }
 
     public struct Turret3KeyComponent : IComponentData
     {
-        public Key Turret3Key;
+        public Key Value;
     }
 
     public struct TurretConfigEntityComponent : IComponentData
@@ -492,7 +492,7 @@ namespace Components
 
     public struct TurretCostComponent : IComponentData
     {
-        public int Cost;
+        public int Value;
     }
 
     public struct TurretEntityComponent : IComponentData
@@ -502,98 +502,98 @@ namespace Components
 
     public struct TurretLevelComponent : IComponentData
     {
-        public int Level;
+        public int Value;
     }
 
     public struct UnlockedEnemiesComponent : IComponentData
     {
-        public uint UnlockedEnemiesBitmask;
+        public uint Value;
     }
     
     public struct UnlockedLineEnemyComponent : IComponentData
     {
-        public uint UnlockedLineEnemy;
+        public uint Value;
     }
     
     public struct UnlockedNoneComponent : IComponentData
     {
-        public uint UnlockedNone;
+        public uint Value;
     }
     
     public struct UnlockedSquareEnemyComponent : IComponentData
     {
-        public uint UnlockedSquareEnemy;
+        public uint Value;
     }
 
     public struct UnlockedTriangleEnemyComponent : IComponentData
     {
-        public uint UnlockedTriangleEnemy;
+        public uint Value;
     }
     
     public struct UpgradeCostBaseMultiplierComponent : IComponentData
     {
-        public float Multiplier;
+        public float Value;
     }
 
     public struct UpgradeCostMultiplierComponent : IComponentData
     {
-        public float Multiplier;
+        public float Value;
     }
 
     public struct UpKeyComponent : IComponentData
     {
-        public Key UpKey;
+        public Key Value;
     }
 
     public struct VelocityComponent : IComponentData
     {
-        public float2 Velocity;
+        public float2 Value;
     }
 
     // The starting number of enemies for Wave 1
     public struct WaveBaseEnemyCountComponent : IComponentData
     {
-        public int Count;
+        public int Value;
     }
 
     // How many additional enemies are added each subsequent wave
     public struct WaveEnemyIncrementComponent : IComponentData
     {
-        public int Count;
+        public int Value;
     }
 
     // Tracks the current wave number (1, 2, 3...)
     public struct WaveIndexComponent : IComponentData
     {
-        public int Index;
+        public int Value;
     }
 
-    // How long the preparation phase lasts in seconds (Reset Value)
+    // How long the preparation phase lasts in seconds (Reset Entity)
     public struct WavePrepDurationComponent : IComponentData
     {
-        public float Duration;
+        public float Value;
     }
 
     // 0 = Preparation Phase, 1 = Combat Phase
     public struct WaveStateComponent : IComponentData
     {
-        public int State;
+        public int Value;
     }
     
     public struct WaveStateCombatComponent : IComponentData
     {
-        public int State;
+        public int Value;
     }
 
     public struct WaveStatePrepComponent : IComponentData
     {
-        public int State;
+        public int Value;
     }
 
     // How many enemies are left to spawn in the current wave
     public struct WaveStockComponent : IComponentData
     {
-        public int Stock;
+        public int Value;
     }
 
     #endregion

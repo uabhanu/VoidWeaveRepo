@@ -35,13 +35,13 @@ namespace Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            int doAction = SystemAPI.GetSingleton<DoActionComponent>().DoAction;
-            int noAction = SystemAPI.GetSingleton<NoActionComponent>().NoActionValue;
-            float pickupRadius = SystemAPI.GetSingleton<LootPickupRadiusComponent>().Radius;
+            int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
+            int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
+            float pickupRadius = SystemAPI.GetSingleton<LootPickupRadiusComponent>().Value;
             
             new PickupJob { DoAction = doAction , EntityCommandBufferParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter() , NoAction = noAction , PlayerPos = SystemAPI.GetComponent<LocalTransform>(SystemAPI.GetSingletonEntity<PlayerTag>()).Position , PickupRadiusSq = pickupRadius * pickupRadius , ResourceNativeQueueParallelWriter = _resourceQueue.AsParallelWriter() }.ScheduleParallel(state.Dependency).Complete();
 
-            while(_resourceQueue.TryDequeue(out int value)) { SystemAPI.GetSingletonRW<CurrentEnergyComponent>().ValueRW.Energy += value; }
+            while(_resourceQueue.TryDequeue(out int value)) { SystemAPI.GetSingletonRW<CurrentEnergyComponent>().ValueRW.Value += value; }
         }
     }
 
@@ -61,7 +61,7 @@ namespace Systems
             for(int i = 0 ; i < math.select(NoAction , DoAction , math.distancesq(localTransform.Position , PlayerPos) <= PickupRadiusSq) ; i++)
             {
                 EntityCommandBufferParallelWriter.DestroyEntity(entityInQueryIndex , entity);
-                ResourceNativeQueueParallelWriter.Enqueue(lootAmountComponent.Amount);
+                ResourceNativeQueueParallelWriter.Enqueue(lootAmountComponent.Value);
             }
         }
     }

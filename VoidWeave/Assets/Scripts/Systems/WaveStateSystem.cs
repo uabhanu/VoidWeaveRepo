@@ -32,11 +32,11 @@ namespace Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            int doAction = SystemAPI.GetSingleton<DoActionComponent>().DoAction;
-            int noAction = SystemAPI.GetSingleton<NoActionComponent>().NoActionValue;
-            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Expired;
-            int waveStateCombat = SystemAPI.GetSingleton<WaveStateCombatComponent>().State;
-            int waveStatePrep = SystemAPI.GetSingleton<WaveStatePrepComponent>().State;
+            int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
+            int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
+            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value;
+            int waveStateCombat = SystemAPI.GetSingleton<WaveStateCombatComponent>().Value;
+            int waveStatePrep = SystemAPI.GetSingleton<WaveStatePrepComponent>().Value;
 
             systemState.Dependency = new WaveStateJob { AliveEnemyCount = _enemyQuery.CalculateEntityCount() , DoAction = doAction , NoAction = noAction , TimerExpired = timerExpired , WaveStateCombat = waveStateCombat , WaveStatePrep = waveStatePrep }.ScheduleParallel(systemState.Dependency);
         }
@@ -54,16 +54,16 @@ namespace Systems
 
         private void Execute(ref TimerComponent timerComponent , in WaveBaseEnemyCountComponent waveBaseEnemyCountComponent , in WaveEnemyIncrementComponent waveEnemyIncrementComponent , ref WaveIndexComponent waveIndexComponent , in WavePrepDurationComponent wavePrepDurationComponent , ref WaveStateComponent waveStateComponent , ref WaveStockComponent waveStockComponent)
         {
-            bool isPrepComplete = waveStateComponent.State == WaveStatePrep && timerComponent.Timer <= TimerExpired;
-            bool isWaveClear = waveStateComponent.State == WaveStateCombat && waveStockComponent.Stock <= NoAction && (AliveEnemyCount <= NoAction);
+            bool isPrepComplete = waveStateComponent.Value == WaveStatePrep && timerComponent.Value <= TimerExpired;
+            bool isWaveClear = waveStateComponent.Value == WaveStateCombat && waveStockComponent.Value <= NoAction && (AliveEnemyCount <= NoAction);
             
-            waveIndexComponent.Index += math.select(NoAction , DoAction , isPrepComplete);
-            waveStateComponent.State = math.select(waveStateComponent.State , WaveStateCombat , isPrepComplete);
-            waveStateComponent.State = math.select(waveStateComponent.State , WaveStatePrep , isWaveClear);
+            waveIndexComponent.Value += math.select(NoAction , DoAction , isPrepComplete);
+            waveStateComponent.Value = math.select(waveStateComponent.Value , WaveStateCombat , isPrepComplete);
+            waveStateComponent.Value = math.select(waveStateComponent.Value , WaveStatePrep , isWaveClear);
 
-            int newStock = waveBaseEnemyCountComponent.Count + (waveIndexComponent.Index * waveEnemyIncrementComponent.Count);
-            waveStockComponent.Stock = math.select(waveStockComponent.Stock , newStock , isPrepComplete);
-            timerComponent.Timer = math.select(timerComponent.Timer , wavePrepDurationComponent.Duration , isWaveClear);
+            int newStock = waveBaseEnemyCountComponent.Value + (waveIndexComponent.Value * waveEnemyIncrementComponent.Value);
+            waveStockComponent.Value = math.select(waveStockComponent.Value , newStock , isPrepComplete);
+            timerComponent.Value = math.select(timerComponent.Value , wavePrepDurationComponent.Value , isWaveClear);
         }
     }
 }

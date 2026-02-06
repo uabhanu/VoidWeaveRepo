@@ -41,25 +41,25 @@ namespace Entities
             {
                 Entity entity = GetEntity(TransformUsageFlags.None);
 
-                AddComponent(entity , new DashKeyComponent { DashKey = authoring.dashKey });
-                AddComponent(entity , new DeployKeyComponent { DeployKey = authoring.deployKey });
-                AddComponent(entity , new DownKeyComponent { DownKey = authoring.downKey });
-                AddComponent(entity , new InputDashComponent { InputDash = authoring.inputDash });
-                AddComponent(entity , new InputDeployComponent { InputDeploy = authoring.inputDeploy });
-                AddComponent(entity , new InputDownComponent { InputDown = authoring.inputDown });
-                AddComponent(entity , new InputLeftComponent { InputLeft = authoring.inputLeft });
+                AddComponent(entity , new DashKeyComponent { Value = authoring.dashKey });
+                AddComponent(entity , new DeployKeyComponent { Value = authoring.deployKey });
+                AddComponent(entity , new DownKeyComponent { Value = authoring.downKey });
+                AddComponent(entity , new InputDashComponent { Value = authoring.inputDash });
+                AddComponent(entity , new InputDeployComponent { Value = authoring.inputDeploy });
+                AddComponent(entity , new InputDownComponent { Value = authoring.inputDown });
+                AddComponent(entity , new InputLeftComponent { Value = authoring.inputLeft });
                 AddComponent(entity , new InputNoneComponent());
-                AddComponent(entity , new InputRightComponent { InputRight = authoring.inputRight });
-                AddComponent(entity , new InputTurret1Component { InputTurret1 = authoring.inputTurret1 });
-                AddComponent(entity , new InputTurret2Component { InputTurret2 = authoring.inputTurret2 });
-                AddComponent(entity , new InputTurret3Component { InputTurret3 = authoring.inputTurret3 });
-                AddComponent(entity , new InputUpComponent { InputUp = authoring.inputUp });
-                AddComponent(entity , new LeftKeyComponent { LeftKey = authoring.leftKey });
-                AddComponent(entity , new RightKeyComponent { RightKey = authoring.rightKey });
-                AddComponent(entity , new Turret1KeyComponent { Turret1Key = authoring.turret1Key });
-                AddComponent(entity , new Turret2KeyComponent { Turret2Key = authoring.turret2Key });
-                AddComponent(entity , new Turret3KeyComponent { Turret3Key = authoring.turret3Key });
-                AddComponent(entity , new UpKeyComponent { UpKey = authoring.upKey });
+                AddComponent(entity , new InputRightComponent { Value = authoring.inputRight });
+                AddComponent(entity , new InputTurret1Component { Value = authoring.inputTurret1 });
+                AddComponent(entity , new InputTurret2Component { Value = authoring.inputTurret2 });
+                AddComponent(entity , new InputTurret3Component { Value = authoring.inputTurret3 });
+                AddComponent(entity , new InputUpComponent { Value = authoring.inputUp });
+                AddComponent(entity , new LeftKeyComponent { Value = authoring.leftKey });
+                AddComponent(entity , new RightKeyComponent { Value = authoring.rightKey });
+                AddComponent(entity , new Turret1KeyComponent { Value = authoring.turret1Key });
+                AddComponent(entity , new Turret2KeyComponent { Value = authoring.turret2Key });
+                AddComponent(entity , new Turret3KeyComponent { Value = authoring.turret3Key });
+                AddComponent(entity , new UpKeyComponent { Value = authoring.upKey });
             }
         }
         
