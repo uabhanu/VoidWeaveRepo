@@ -1,0 +1,10 @@
+namespace Components
+{
+    using Unity.Entities;
+    using UnityEngine.InputSystem;
+
+    public struct Turret1KeyComponent : IComponentData
+    {
+        public Key Value;
+    }
+}

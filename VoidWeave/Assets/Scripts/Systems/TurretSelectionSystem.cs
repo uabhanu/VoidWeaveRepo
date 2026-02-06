@@ -27,13 +27,13 @@ namespace Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            var strikerTurretQuery = SystemAPI.QueryBuilder().WithAll<StrikerTurretTag , TurretEntityComponent>().Build();
-            var scatterTurretQuery = SystemAPI.QueryBuilder().WithAll<ScatterTurretTag , TurretEntityComponent>().Build();
-            var beamTurretQuery = SystemAPI.QueryBuilder().WithAll<BeamTurretTag , TurretEntityComponent>().Build();
+            EntityQuery strikerTurretQuery = SystemAPI.QueryBuilder().WithAll<StrikerTurretTag , TurretEntityComponent>().Build();
+            EntityQuery scatterTurretQuery = SystemAPI.QueryBuilder().WithAll<ScatterTurretTag , TurretEntityComponent>().Build();
+            EntityQuery beamTurretQuery = SystemAPI.QueryBuilder().WithAll<BeamTurretTag , TurretEntityComponent>().Build();
 
-            var strikerTurretConfigEntity = strikerTurretQuery.GetSingletonEntity();
-            var scatterTurretConfigEntity = scatterTurretQuery.GetSingletonEntity();
-            var beamTurretConfigEntity = beamTurretQuery.GetSingletonEntity();
+            Entity strikerTurretConfigEntity = strikerTurretQuery.GetSingletonEntity();
+            Entity scatterTurretConfigEntity = scatterTurretQuery.GetSingletonEntity();
+            Entity beamTurretConfigEntity = beamTurretQuery.GetSingletonEntity();
 
             Entity strikerTurretEntity = SystemAPI.GetComponent<TurretEntityComponent>(strikerTurretConfigEntity).Entity;
             Entity scatterTurretEntity = SystemAPI.GetComponent<TurretEntityComponent>(scatterTurretConfigEntity).Entity;

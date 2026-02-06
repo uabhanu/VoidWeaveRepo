@@ -19,9 +19,6 @@ namespace Systems
     {
         public float DeltaTime;
 
-        private void Execute(ref CooldownComponent cooldownComponent)
-        {
-            cooldownComponent.Value -= DeltaTime;
-        }
+        private void Execute(ref CooldownComponent cooldownComponent) { cooldownComponent.Value -= DeltaTime; }
     }
 }

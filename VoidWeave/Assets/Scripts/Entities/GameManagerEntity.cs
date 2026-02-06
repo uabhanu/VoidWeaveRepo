@@ -1,64 +1,12 @@
-using Components;
-using Unity.Entities;
-using Unity.Mathematics;
-using UnityEngine;
-
 namespace Entities
 {
+    using Components;
+    using Unity.Entities;
+    using Unity.Mathematics;
+    using UnityEngine;
+
     public class GameManagerEntity : MonoBehaviour
     {
-        #region Variables
-
-        [SerializeField] private int beamTurretUnlockLevel;
-        [SerializeField] private float boundaryOffset;
-        [SerializeField] private float bulletRotationOffset; // PI / 2
-        [SerializeField] private float cameraOrthographicSize;
-        [SerializeField] private int collisionActive;
-        [SerializeField] private int collisionNone;
-        [SerializeField] private float damageMultiplierPerLevel;
-        [SerializeField] private float dashCooldownDefault;
-        [SerializeField] private float dashDurationDefault;
-        [SerializeField] private int doAction;
-        [SerializeField] private int noAction;
-        [SerializeField] private int enemiesToKill;
-        [SerializeField] private int enemiesToKillIncrement;
-        [SerializeField] private GameObject enemySpawnerEntityPrefab;
-        [SerializeField] private float healthMultiplierPerLevel;
-        [SerializeField] private float healthValueForDeath;
-        [SerializeField] private GameObject inputEntityPrefab;
-        [SerializeField] private int lineEnemyUnlockLevel; //The When
-        [SerializeField] private float lootMultiplierPerLevel;
-        [SerializeField] private float lootPickupRadius;
-        [SerializeField] private int minEnemiesToKill;
-        [SerializeField] private int minProjectileCount = 1;
-        [SerializeField] private int minStartingLevel;
-        [SerializeField] private float movementActive;
-        [SerializeField] private float movementNone;
-        [SerializeField] private GameObject playerEntityPrefab;
-        [SerializeField] private float scalingBase;
-        [SerializeField] private int scalingLevelOffset;
-        [SerializeField] private int scalingMinLevel;
-        [SerializeField] private int scatterTurretUnlockLevel;
-        [SerializeField] private float spreadHalfMultiplier;
-        [SerializeField] private float spreadZero;
-        [SerializeField] private int squareEnemyUnlockLevel; //The When
-        [SerializeField] private int startingLevel;
-        [SerializeField] private int startingResources;
-        [Tooltip("Chosen this high value on purpose to make turret shoot nothing when there is no target")] [SerializeField] private float targetDefaultPosition;
-        [SerializeField] private float timerExpired;
-        [SerializeField] private int triangleEnemyUnlockLevel; //The When
-        [SerializeField] private GameObject turretConfigEntityPrefab;
-        [SerializeField] private uint unlockedLineEnemy; //The What
-        [SerializeField] private uint unlockedNone;
-        [SerializeField] private uint unlockedSquareEnemy; //The What
-        [SerializeField] private uint unlockedTriangleEnemy; //The What
-        [SerializeField] private float upgradeCostBaseMultiplier;
-        [SerializeField] private float upgradeCostMultiplier;
-        [SerializeField] private int waveStateCombat;
-        [SerializeField] private int waveStatePrep;
-
-        #endregion
-
         #region Baker
 
         private class GameManagerBaker : Baker<GameManagerEntity>
@@ -126,6 +74,57 @@ namespace Entities
                 AddComponent(entity , new InitializeGameTag());
             }
         }
+
+        #endregion
+        #region Variables
+
+        [SerializeField] private int beamTurretUnlockLevel;
+        [SerializeField] private float boundaryOffset;
+        [SerializeField] private float bulletRotationOffset; // PI / 2
+        [SerializeField] private float cameraOrthographicSize;
+        [SerializeField] private int collisionActive;
+        [SerializeField] private int collisionNone;
+        [SerializeField] private float damageMultiplierPerLevel;
+        [SerializeField] private float dashCooldownDefault;
+        [SerializeField] private float dashDurationDefault;
+        [SerializeField] private int doAction;
+        [SerializeField] private int noAction;
+        [SerializeField] private int enemiesToKill;
+        [SerializeField] private int enemiesToKillIncrement;
+        [SerializeField] private GameObject enemySpawnerEntityPrefab;
+        [SerializeField] private float healthMultiplierPerLevel;
+        [SerializeField] private float healthValueForDeath;
+        [SerializeField] private GameObject inputEntityPrefab;
+        [SerializeField] private int lineEnemyUnlockLevel; //The When
+        [SerializeField] private float lootMultiplierPerLevel;
+        [SerializeField] private float lootPickupRadius;
+        [SerializeField] private int minEnemiesToKill;
+        [SerializeField] private int minProjectileCount = 1;
+        [SerializeField] private int minStartingLevel;
+        [SerializeField] private float movementActive;
+        [SerializeField] private float movementNone;
+        [SerializeField] private GameObject playerEntityPrefab;
+        [SerializeField] private float scalingBase;
+        [SerializeField] private int scalingLevelOffset;
+        [SerializeField] private int scalingMinLevel;
+        [SerializeField] private int scatterTurretUnlockLevel;
+        [SerializeField] private float spreadHalfMultiplier;
+        [SerializeField] private float spreadZero;
+        [SerializeField] private int squareEnemyUnlockLevel; //The When
+        [SerializeField] private int startingLevel;
+        [SerializeField] private int startingResources;
+        [Tooltip("Chosen this high value on purpose to make turret shoot nothing when there is no target")] [SerializeField] private float targetDefaultPosition;
+        [SerializeField] private float timerExpired;
+        [SerializeField] private int triangleEnemyUnlockLevel; //The When
+        [SerializeField] private GameObject turretConfigEntityPrefab;
+        [SerializeField] private uint unlockedLineEnemy; //The What
+        [SerializeField] private uint unlockedNone;
+        [SerializeField] private uint unlockedSquareEnemy; //The What
+        [SerializeField] private uint unlockedTriangleEnemy; //The What
+        [SerializeField] private float upgradeCostBaseMultiplier;
+        [SerializeField] private float upgradeCostMultiplier;
+        [SerializeField] private int waveStateCombat;
+        [SerializeField] private int waveStatePrep;
 
         #endregion
     }

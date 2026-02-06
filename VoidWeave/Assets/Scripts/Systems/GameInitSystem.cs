@@ -1,9 +1,9 @@
-using Components;
-using Unity.Burst;
-using Unity.Entities;
-
 namespace Systems
 {
+    using Components;
+    using Unity.Burst;
+    using Unity.Entities;
+
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     public partial struct GameInitSystem : ISystem
     {
@@ -19,17 +19,17 @@ namespace Systems
         {
             Entity entity = SystemAPI.GetSingletonEntity<InitializeGameTag>();
             EntityCommandBuffer entityCommandBuffer = SystemAPI.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);
-            
-            EnemySpawnerEntityComponent enemySpawnerEntityComponent = SystemAPI.GetComponent<EnemySpawnerEntityComponent>(entity);
-            InputEntityComponent inputEntityComponent = SystemAPI.GetComponent<InputEntityComponent>(entity);
-            PlayerEntityComponent playerEntityComponent = SystemAPI.GetComponent<PlayerEntityComponent>(entity);
-            TurretConfigEntityComponent turretConfigEntityComponent = SystemAPI.GetComponent<TurretConfigEntityComponent>(entity);
-            
+
+            var enemySpawnerEntityComponent = SystemAPI.GetComponent<EnemySpawnerEntityComponent>(entity);
+            var inputEntityComponent = SystemAPI.GetComponent<InputEntityComponent>(entity);
+            var playerEntityComponent = SystemAPI.GetComponent<PlayerEntityComponent>(entity);
+            var turretConfigEntityComponent = SystemAPI.GetComponent<TurretConfigEntityComponent>(entity);
+
             entityCommandBuffer.Instantiate(enemySpawnerEntityComponent.Entity);
             entityCommandBuffer.Instantiate(inputEntityComponent.Entity);
             entityCommandBuffer.Instantiate(playerEntityComponent.Entity);
             entityCommandBuffer.Instantiate(turretConfigEntityComponent.Entity);
-            
+
             entityCommandBuffer.RemoveComponent<InitializeGameTag>(entity);
         }
     }

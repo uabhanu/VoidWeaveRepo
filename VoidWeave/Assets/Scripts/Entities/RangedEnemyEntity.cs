@@ -26,7 +26,7 @@ namespace Entities
             public override void Bake(RangedEnemyEntity authoring)
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-                
+
                 AddComponent(entity , new AttackRateComponent { Value = authoring.attackRate });
                 AddComponent(entity , new BulletEntityComponent { Entity = GetEntity(authoring.projectilePrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new CollisionRadiusComponent { Value = authoring.collisionRadius });
@@ -44,7 +44,7 @@ namespace Entities
                 AddComponent(entity , new SpreadComponent { Value = authoring.spreadDegrees });
                 AddComponent(entity , new TargetPositionComponent());
                 AddComponent(entity , new TeamComponent { Value = authoring.teamID });
-                
+
                 AddComponent(entity , new EnemyTag());
             }
         }

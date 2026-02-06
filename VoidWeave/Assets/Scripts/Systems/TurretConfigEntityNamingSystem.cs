@@ -1,31 +1,31 @@
-using Components;
-using Unity.Collections;
-using Unity.Entities;
-
 namespace Systems
 {
+    using Components;
+    using Unity.Collections;
+    using Unity.Entities;
+
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     public partial struct TurretConfigEntityNamingSystem : ISystem
     {
         public void OnCreate(ref SystemState systemState) { systemState.RequireForUpdate<BeginInitializationEntityCommandBufferSystem.Singleton>(); }
-        
+
         public void OnUpdate(ref SystemState systemState)
         {
             EntityCommandBuffer ecb = SystemAPI.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);
-            
-            foreach(var (_ , entity) in SystemAPI.Query<StrikerTurretTag>().WithNone<TurretDebugNamedTag>().WithEntityAccess())
+
+            foreach((StrikerTurretTag _ , Entity entity) in SystemAPI.Query<StrikerTurretTag>().WithNone<TurretDebugNamedTag>().WithEntityAccess())
             {
                 ecb.SetName(entity , new FixedString64Bytes("StrikerTurretConfig"));
                 ecb.AddComponent<TurretDebugNamedTag>(entity);
             }
-            
-            foreach(var (_ , entity) in SystemAPI.Query<ScatterTurretTag>().WithNone<TurretDebugNamedTag>().WithEntityAccess())
+
+            foreach((ScatterTurretTag _ , Entity entity) in SystemAPI.Query<ScatterTurretTag>().WithNone<TurretDebugNamedTag>().WithEntityAccess())
             {
                 ecb.SetName(entity , new FixedString64Bytes("ScatterTurretConfig"));
                 ecb.AddComponent<TurretDebugNamedTag>(entity);
             }
-            
-            foreach(var (_ , entity) in SystemAPI.Query<BeamTurretTag>().WithNone<TurretDebugNamedTag>().WithEntityAccess())
+
+            foreach((BeamTurretTag _ , Entity entity) in SystemAPI.Query<BeamTurretTag>().WithNone<TurretDebugNamedTag>().WithEntityAccess())
             {
                 ecb.SetName(entity , new FixedString64Bytes("BeamTurretConfig"));
                 ecb.AddComponent<TurretDebugNamedTag>(entity);

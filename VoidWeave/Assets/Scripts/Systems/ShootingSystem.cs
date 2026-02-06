@@ -25,7 +25,7 @@ namespace Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            var ecbParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
+            EntityCommandBuffer.ParallelWriter ecbParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
 
             float bulletRotationOffset = SystemAPI.GetSingleton<BulletRotationOffsetComponent>().Value;
             int minProjectileCount = SystemAPI.GetSingleton<MinProjectileCountComponent>().Value;
@@ -64,12 +64,12 @@ namespace Systems
             // If not ready, count is 0. Loop will not run.
             int spawnCount = math.select(NoAction , projectileCountComponent.Value , isReady);
 
-            for(int i = 0 ; i < spawnCount ; i++)
+            for(var i = 0 ; i < spawnCount ; i++)
             {
                 Entity newBullet = ECBParallelWriter.Instantiate(entityIndexInQuery , bulletEntityComponent.Entity);
 
                 ECBParallelWriter.SetComponent(entityIndexInQuery , newBullet , new DamageComponent { Value = damageComponent.Value });
-                
+
                 float spreadAngle = math.radians(spreadComponent.Value);
                 float angleStep = math.select(SpreadZero , spreadAngle / math.max(MinProjectileCount , projectileCountComponent.Value - MinProjectileCount) , projectileCountComponent.Value > MinProjectileCount);
                 float baseAngle = math.atan2(targetPositionComponent.Value.y - localToWorld.Position.y , targetPositionComponent.Value.x - localToWorld.Position.x);
@@ -78,8 +78,8 @@ namespace Systems
                 float finalAngle = baseAngle - startOffset + angleStep * i - BulletRotationOffset;
 
                 ECBParallelWriter.SetComponent(entityIndexInQuery , newBullet , LocalTransform.FromPositionRotation(localToWorld.Position , quaternion.RotateZ(finalAngle)));
-                
-                float velocityAngle = baseAngle - startOffset + (angleStep * i);
+
+                float velocityAngle = baseAngle - startOffset + angleStep * i;
                 ECBParallelWriter.SetComponent(entityIndexInQuery , newBullet , new VelocityComponent { Value = new float2(math.cos(velocityAngle) , math.sin(velocityAngle)) });
             }
         }

@@ -37,7 +37,7 @@ namespace Systems
 
         public void OnUpdate(ref SystemState systemState)
         {
-            var keyboard = Keyboard.current;
+            Keyboard keyboard = Keyboard.current;
 
             Key dashKey = SystemAPI.GetSingleton<DashKeyComponent>().Value;
             uint dashValue = SystemAPI.GetSingleton<InputDashComponent>().Value;
@@ -69,7 +69,7 @@ namespace Systems
             uint upValue = SystemAPI.GetSingleton<InputUpComponent>().Value;
 
             uint selectedInput = noneValue;
-            
+
             selectedInput |= math.select(noneValue , upValue , keyboard[upKey].isPressed);
             selectedInput |= math.select(noneValue , downValue , keyboard[downKey].isPressed);
             selectedInput |= math.select(noneValue , leftValue , keyboard[leftKey].isPressed);
@@ -80,7 +80,7 @@ namespace Systems
             selectedInput |= math.select(noneValue , turret2Value , keyboard[turret2Key].wasPressedThisFrame);
             selectedInput |= math.select(noneValue , turret3Value , keyboard[turret3Key].wasPressedThisFrame);
 
-            foreach(var playerInputComponent in SystemAPI.Query<RefRW<PlayerInputComponent>>().WithAll<PlayerTag>()) { playerInputComponent.ValueRW.Value = selectedInput; }
+            foreach(RefRW<PlayerInputComponent> playerInputComponent in SystemAPI.Query<RefRW<PlayerInputComponent>>().WithAll<PlayerTag>()) playerInputComponent.ValueRW.Value = selectedInput;
         }
     }
 }

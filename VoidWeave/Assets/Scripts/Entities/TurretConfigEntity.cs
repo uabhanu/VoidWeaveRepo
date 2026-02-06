@@ -8,10 +8,10 @@ namespace Entities
     {
         [SerializeField] private int beamTurretCost;
         [SerializeField] private GameObject beamTurretPrefab;
-        
+
         [SerializeField] private int scatterTurretCost;
         [SerializeField] private GameObject scatterTurretPrefab;
-        
+
         [SerializeField] private int strikerTurretCost;
         [SerializeField] private GameObject strikerTurretPrefab;
 

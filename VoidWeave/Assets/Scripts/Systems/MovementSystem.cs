@@ -17,29 +17,29 @@ namespace Systems
             systemState.RequireForUpdate<InputLeftComponent>();
             systemState.RequireForUpdate<InputNoneComponent>();
             systemState.RequireForUpdate<InputRightComponent>();
-            
+
             systemState.RequireForUpdate<MovementActiveComponent>();
             systemState.RequireForUpdate<MovementNoneComponent>();
         }
-        
+
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
             float deltaTime = SystemAPI.Time.DeltaTime;
-            float elapsedTime = (float)SystemAPI.Time.ElapsedTime;
-            
+            var elapsedTime = (float)SystemAPI.Time.ElapsedTime;
+
             uint inputUp = SystemAPI.GetSingleton<InputUpComponent>().Value;
             uint inputDown = SystemAPI.GetSingleton<InputDownComponent>().Value;
             uint inputLeft = SystemAPI.GetSingleton<InputLeftComponent>().Value;
             uint inputNone = SystemAPI.GetSingleton<InputNoneComponent>().Value;
             uint inputRight = SystemAPI.GetSingleton<InputRightComponent>().Value;
-            
+
             float movementActive = SystemAPI.GetSingleton<MovementActiveComponent>().Value;
             float movementNone = SystemAPI.GetSingleton<MovementNoneComponent>().Value;
-            
+
             new BasicEnemyMovementJob { DeltaTime = deltaTime }.ScheduleParallel();
-            new FastEnemyMovementJob { DeltaTime = deltaTime , ElapsedTime = elapsedTime , MovementNone = movementNone}.ScheduleParallel();
-            new InputMovementJob { DeltaTime = deltaTime , InputDown = inputDown , InputLeft = inputLeft , InputNone = inputNone , InputRight = inputRight , InputUp = inputUp , MovementActive = movementActive , MovementNone = movementNone}.ScheduleParallel();
+            new FastEnemyMovementJob { DeltaTime = deltaTime , ElapsedTime = elapsedTime , MovementNone = movementNone }.ScheduleParallel();
+            new InputMovementJob { DeltaTime = deltaTime , InputDown = inputDown , InputLeft = inputLeft , InputNone = inputNone , InputRight = inputRight , InputUp = inputUp , MovementActive = movementActive , MovementNone = movementNone }.ScheduleParallel();
             new ProjectileMovementJob { DeltaTime = deltaTime }.ScheduleParallel();
             new SlowEnemyMovementJob { DeltaTime = deltaTime , MovementActive = movementActive , MovementNone = movementNone }.ScheduleParallel();
         }
@@ -62,14 +62,14 @@ namespace Systems
         private void Execute(ref LocalTransform localTransform , in MoveSpeedComponent moveSpeedComponent , in PlayerInputComponent playerInputComponent)
         {
             uint selectedInput = playerInputComponent.Value;
-            
+
             float down = math.select(MovementNone , MovementActive , (selectedInput & InputDown) != InputNone);
             float left = math.select(MovementNone , MovementActive , (selectedInput & InputLeft) != InputNone);
             float right = math.select(MovementNone , MovementActive , (selectedInput & InputRight) != InputNone);
             float up = math.select(MovementNone , MovementActive , (selectedInput & InputUp) != InputNone);
 
             // Construct Vector
-            float2 input = new float2(right - left , up - down);
+            var input = new float2(right - left , up - down);
 
             // Apply Movement
             localTransform.Position.xy += input * moveSpeedComponent.Value * DeltaTime;
@@ -106,7 +106,7 @@ namespace Systems
 
             // Calculate perpendicular vector (Tangent) for the Zig-Zag offset
             // Rotates direction by 90 degrees in 2D: (x, y) -> (-y, x)
-            float3 tangent = new float3(-direction.y , direction.x , MovementNone);
+            var tangent = new float3(-direction.y , direction.x , MovementNone);
 
             // Apply Sine Wave to Tangent
             // Frequency = 10f (Speed of wiggle), Amplitude = 2.0f (Width of wiggle)
@@ -123,10 +123,7 @@ namespace Systems
     {
         public float DeltaTime;
 
-        private void Execute(ref LocalTransform localTransform , in MoveSpeedComponent moveSpeedComponent , in VelocityComponent velocityComponent)
-        {
-            localTransform.Position.xy += velocityComponent.Value * moveSpeedComponent.Value * DeltaTime;
-        }
+        private void Execute(ref LocalTransform localTransform , in MoveSpeedComponent moveSpeedComponent , in VelocityComponent velocityComponent) { localTransform.Position.xy += velocityComponent.Value * moveSpeedComponent.Value * DeltaTime; }
     }
 
     // --- SLOW ENEMY

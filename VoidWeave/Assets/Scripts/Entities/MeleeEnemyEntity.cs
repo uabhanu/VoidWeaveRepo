@@ -22,7 +22,7 @@ namespace Entities
             public override void Bake(MeleeEnemyEntity authoring)
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-                
+
                 AddComponent(entity , new AttackRateComponent { Value = authoring.attackRate });
                 AddComponent(entity , new CollisionRadiusComponent { Value = authoring.collisionRadius });
                 AddComponent(entity , new CooldownComponent());
@@ -37,7 +37,7 @@ namespace Entities
                 AddComponent(entity , new RangeComponent());
                 AddComponent(entity , new TargetPositionComponent());
                 AddComponent(entity , new TeamComponent { Value = authoring.teamID });
-                
+
                 AddComponent(entity , new EnemyTag());
             }
         }

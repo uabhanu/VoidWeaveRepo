@@ -9,12 +9,12 @@ namespace Systems
     public partial struct DeathSystem : ISystem
     {
         private EntityQuery _dyingEnemyEntityQuery;
-        
+
         [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
             _dyingEnemyEntityQuery = SystemAPI.QueryBuilder().WithAll<DeathTag , EnemyTag>().Build();
-            
+
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
             systemState.RequireForUpdate<DeathTag>();
             systemState.RequireForUpdate<EnemiesKilledComponent>();
@@ -36,7 +36,7 @@ namespace Systems
     public partial struct DeathJob : IJobEntity
     {
         public EntityCommandBuffer.ParallelWriter ECB;
-        
+
         private void Execute(Entity entity , [EntityIndexInQuery] int index) { ECB.DestroyEntity(index , entity); }
     }
 }

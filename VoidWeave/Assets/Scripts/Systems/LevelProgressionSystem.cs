@@ -35,7 +35,7 @@ namespace Systems
         public void OnUpdate(ref SystemState systemState)
         {
             systemState.Dependency.Complete();
-            
+
             int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
             int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
             int levelToUnlockLineEnemy = SystemAPI.GetSingleton<LevelToUnlockLineEnemyComponent>().Value;
@@ -46,12 +46,12 @@ namespace Systems
             uint unlockedSquareEnemy = SystemAPI.GetSingleton<UnlockedSquareEnemyComponent>().Value;
             uint unlockedTriangleEnemy = SystemAPI.GetSingleton<UnlockedTriangleEnemyComponent>().Value;
 
-            var enemiesKilledComponent = SystemAPI.GetSingletonRW<EnemiesKilledComponent>();
-            var enemiesToKillComponent = SystemAPI.GetSingletonRW<EnemiesToKillComponent>();
+            RefRW<EnemiesKilledComponent> enemiesKilledComponent = SystemAPI.GetSingletonRW<EnemiesKilledComponent>();
+            RefRW<EnemiesToKillComponent> enemiesToKillComponent = SystemAPI.GetSingletonRW<EnemiesToKillComponent>();
             var enemiesToKillIncrementComponent = SystemAPI.GetSingleton<EnemiesToKillIncrementComponent>();
-            var levelComponent = SystemAPI.GetSingletonRW<LevelComponent>();
-            var unlockedEnemiesComponent = SystemAPI.GetSingletonRW<UnlockedEnemiesComponent>();
-            var waveIndexComponent = SystemAPI.GetSingletonRW<WaveIndexComponent>();
+            RefRW<LevelComponent> levelComponent = SystemAPI.GetSingletonRW<LevelComponent>();
+            RefRW<UnlockedEnemiesComponent> unlockedEnemiesComponent = SystemAPI.GetSingletonRW<UnlockedEnemiesComponent>();
+            RefRW<WaveIndexComponent> waveIndexComponent = SystemAPI.GetSingletonRW<WaveIndexComponent>();
 
             // Check if Kill Value meets the Entity Threshold
             bool isLevelComplete = enemiesKilledComponent.ValueRO.Value >= enemiesToKillComponent.ValueRW.Value;
@@ -60,10 +60,10 @@ namespace Systems
             enemiesKilledComponent.ValueRW.Value = math.select(enemiesKilledComponent.ValueRO.Value , noAction , isLevelComplete);
             enemiesToKillComponent.ValueRW.Value += math.select(noAction , enemiesToKillIncrementComponent.Value , isLevelComplete);
 
-            var playerEntity = SystemAPI.GetSingletonEntity<PlayerTag>();
-            var currentHealthComponent = SystemAPI.GetComponentRW<CurrentHealthComponent>(playerEntity);
-            var maxHealthComponent = SystemAPI.GetComponentRW<MaxHealthComponent>(playerEntity);
-            
+            Entity playerEntity = SystemAPI.GetSingletonEntity<PlayerTag>();
+            RefRW<CurrentHealthComponent> currentHealthComponent = SystemAPI.GetComponentRW<CurrentHealthComponent>(playerEntity);
+            RefRW<MaxHealthComponent> maxHealthComponent = SystemAPI.GetComponentRW<MaxHealthComponent>(playerEntity);
+
             currentHealthComponent.ValueRW.Value = math.select(currentHealthComponent.ValueRO.Value , maxHealthComponent.ValueRO.Value , isLevelComplete);
 
             // Increment Entity

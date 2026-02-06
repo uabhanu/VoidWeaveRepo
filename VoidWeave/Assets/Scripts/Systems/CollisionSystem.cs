@@ -36,7 +36,7 @@ namespace Systems
             int collisionActiveValue = SystemAPI.GetSingleton<CollisionActiveComponent>().Value;
             int collisionNoneValue = SystemAPI.GetSingleton<CollisionNoneComponent>().Value;
 
-            var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
+            EntityCommandBuffer.ParallelWriter ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
 
             // PROJECTILES (Bullet -> Player/Enemy)
             // Kills Self (1) + Deals Entity
@@ -69,21 +69,21 @@ namespace Systems
 
         private void Execute(in CollisionRadiusComponent collisionRadiusComponent , in DamageComponent damageComponent , Entity entity , [EntityIndexInQuery] int entityIndexInQuery , in LocalToWorld localToWorld , in TeamComponent teamComponent)
         {
-            for(int i = 0 ; i < TargetPositionsNativeArray.Length ; i++)
+            for(var i = 0 ; i < TargetPositionsNativeArray.Length ; i++)
             {
                 float combinedRadius = collisionRadiusComponent.Value + TargetRadiiNativeArray[i].Value;
                 float hitRadiusSq = combinedRadius * combinedRadius;
                 bool isHit = math.distancesq(localToWorld.Position , TargetPositionsNativeArray[i].Position) <= hitRadiusSq && teamComponent.Value != TargetTeamComponentsNativeArray[i].Value;
 
                 // ADD DAMAGE EVENT
-                for(int k = 0 ; k < math.select(CollisionNoneValue , CollisionActiveValue , isHit) ; k++) { ECB.AddComponent(entityIndexInQuery , TargetEntitiesNativeArray[i] , new DamageEventComponent { Value = (int)damageComponent.Value }); }
+                for(var k = 0 ; k < math.select(CollisionNoneValue , CollisionActiveValue , isHit) ; k++) ECB.AddComponent(entityIndexInQuery , TargetEntitiesNativeArray[i] , new DamageEventComponent { Value = (int)damageComponent.Value });
 
                 // KILL SELF (Only if KillSelf is 1)
-                for(int k = 0 ; k < math.select(CollisionNoneValue , CollisionActiveValue , isHit && KillSelf == CollisionActiveValue) ; k++) { ECB.AddComponent<DeathTag>(entityIndexInQuery , entity); }
+                for(var k = 0 ; k < math.select(CollisionNoneValue , CollisionActiveValue , isHit && KillSelf == CollisionActiveValue) ; k++) ECB.AddComponent<DeathTag>(entityIndexInQuery , entity);
 
                 // MELEE HIT TRIGGER
                 // If we hit and we are an Enemy (KillSelf=0), add Tag to Self to trigger cooldown
-                for(int k = 0 ; k < math.select(CollisionNoneValue , CollisionActiveValue , isHit && KillSelf == CollisionNoneValue) ; k++) { ECB.AddComponent<CanMeleeAttackTag>(entityIndexInQuery , entity); }
+                for(var k = 0 ; k < math.select(CollisionNoneValue , CollisionActiveValue , isHit && KillSelf == CollisionNoneValue) ; k++) ECB.AddComponent<CanMeleeAttackTag>(entityIndexInQuery , entity);
             }
         }
     }

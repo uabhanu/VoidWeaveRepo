@@ -13,7 +13,7 @@ namespace Systems
         public void OnCreate(ref SystemState systemState)
         {
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
-            
+
             systemState.RequireForUpdate<DamageMultiplierComponent>();
             systemState.RequireForUpdate<EnemyJustSpawnedTag>();
             systemState.RequireForUpdate<HealthMultiplierComponent>();
@@ -30,8 +30,8 @@ namespace Systems
             float scalingBase = SystemAPI.GetSingleton<ScalingBaseComponent>().Value;
             int scalingLevelOffset = SystemAPI.GetSingleton<ScalingLevelOffsetComponent>().Value;
             int scalingMinLevel = SystemAPI.GetSingleton<ScalingMinLevelComponent>().Value;
-            
-            systemState.Dependency = new ScalingJob { CurrentLevel = SystemAPI.GetSingleton<LevelComponent>().Value , DamageMultiplier = SystemAPI.GetSingleton<DamageMultiplierComponent>().Value , EntityCommandBufferParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , HealthMultiplier = SystemAPI.GetSingleton<HealthMultiplierComponent>().Value , LootMultiplier = SystemAPI.GetSingleton<LootMultiplierComponent>().Value , ScalingBase = scalingBase , ScalingLevelOffset = scalingLevelOffset , ScalingMinLevel = scalingMinLevel}.ScheduleParallel(systemState.Dependency);
+
+            systemState.Dependency = new ScalingJob { CurrentLevel = SystemAPI.GetSingleton<LevelComponent>().Value , DamageMultiplier = SystemAPI.GetSingleton<DamageMultiplierComponent>().Value , EntityCommandBufferParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , HealthMultiplier = SystemAPI.GetSingleton<HealthMultiplierComponent>().Value , LootMultiplier = SystemAPI.GetSingleton<LootMultiplierComponent>().Value , ScalingBase = scalingBase , ScalingLevelOffset = scalingLevelOffset , ScalingMinLevel = scalingMinLevel }.ScheduleParallel(systemState.Dependency);
         }
     }
 
@@ -53,7 +53,7 @@ namespace Systems
 
             damageComponent.Value = (int)math.ceil(damageComponent.Value * (ScalingBase + levelMultiplier * DamageMultiplier));
 
-            int newHealth = (int)math.ceil(maxHealthComponent.Value * (ScalingBase + levelMultiplier * HealthMultiplier));
+            var newHealth = (int)math.ceil(maxHealthComponent.Value * (ScalingBase + levelMultiplier * HealthMultiplier));
             maxHealthComponent.Value = newHealth;
             currentHealthComponent.Value = newHealth;
 
