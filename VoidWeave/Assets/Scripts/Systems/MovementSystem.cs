@@ -28,14 +28,14 @@ namespace Systems
             float deltaTime = SystemAPI.Time.DeltaTime;
             float elapsedTime = (float)SystemAPI.Time.ElapsedTime;
             
-            uint inputUp = SystemAPI.GetSingleton<InputUpComponent>().InputUp;
-            uint inputDown = SystemAPI.GetSingleton<InputDownComponent>().InputDown;
-            uint inputLeft = SystemAPI.GetSingleton<InputLeftComponent>().InputLeft;
-            uint inputNone = SystemAPI.GetSingleton<InputNoneComponent>().InputNone;
-            uint inputRight = SystemAPI.GetSingleton<InputRightComponent>().InputRight;
+            uint inputUp = SystemAPI.GetSingleton<InputUpComponent>().Value;
+            uint inputDown = SystemAPI.GetSingleton<InputDownComponent>().Value;
+            uint inputLeft = SystemAPI.GetSingleton<InputLeftComponent>().Value;
+            uint inputNone = SystemAPI.GetSingleton<InputNoneComponent>().Value;
+            uint inputRight = SystemAPI.GetSingleton<InputRightComponent>().Value;
             
-            float movementActive = SystemAPI.GetSingleton<MovementActiveComponent>().MovementActive;
-            float movementNone = SystemAPI.GetSingleton<MovementNoneComponent>().MovementNone;
+            float movementActive = SystemAPI.GetSingleton<MovementActiveComponent>().Value;
+            float movementNone = SystemAPI.GetSingleton<MovementNoneComponent>().Value;
             
             new BasicEnemyMovementJob { DeltaTime = deltaTime }.ScheduleParallel();
             new FastEnemyMovementJob { DeltaTime = deltaTime , ElapsedTime = elapsedTime , MovementNone = movementNone}.ScheduleParallel();
@@ -61,7 +61,7 @@ namespace Systems
 
         private void Execute(ref LocalTransform localTransform , in MoveSpeedComponent moveSpeedComponent , in PlayerInputComponent playerInputComponent)
         {
-            uint selectedInput = playerInputComponent.PlayerInput;
+            uint selectedInput = playerInputComponent.Value;
             
             float down = math.select(MovementNone , MovementActive , (selectedInput & InputDown) != InputNone);
             float left = math.select(MovementNone , MovementActive , (selectedInput & InputLeft) != InputNone);
@@ -72,7 +72,7 @@ namespace Systems
             float2 input = new float2(right - left , up - down);
 
             // Apply Movement
-            localTransform.Position.xy += input * moveSpeedComponent.Speed * DeltaTime;
+            localTransform.Position.xy += input * moveSpeedComponent.Value * DeltaTime;
         }
     }
 
@@ -85,8 +85,8 @@ namespace Systems
 
         private void Execute(ref LocalTransform localTransform , in MoveSpeedComponent moveSpeedComponent , in TargetPositionComponent targetPositionComponent)
         {
-            float3 direction = math.normalizesafe(targetPositionComponent.Position - localTransform.Position);
-            localTransform.Position.xy += direction.xy * moveSpeedComponent.Speed * DeltaTime;
+            float3 direction = math.normalizesafe(targetPositionComponent.Value - localTransform.Position);
+            localTransform.Position.xy += direction.xy * moveSpeedComponent.Value * DeltaTime;
         }
     }
 
@@ -102,7 +102,7 @@ namespace Systems
         private void Execute(ref LocalTransform localTransform , in MovementZigZagAmplitudeComponent movementZigZagAmplitudeComponent , in MovementZigZagFrequencyComponent movementZigZagFrequencyComponent , in MoveSpeedComponent moveSpeedComponent , in TargetPositionComponent targetPositionComponent)
         {
             // Calculate base direction
-            float3 direction = math.normalizesafe(targetPositionComponent.Position - localTransform.Position);
+            float3 direction = math.normalizesafe(targetPositionComponent.Value - localTransform.Position);
 
             // Calculate perpendicular vector (Tangent) for the Zig-Zag offset
             // Rotates direction by 90 degrees in 2D: (x, y) -> (-y, x)
@@ -110,10 +110,10 @@ namespace Systems
 
             // Apply Sine Wave to Tangent
             // Frequency = 10f (Speed of wiggle), Amplitude = 2.0f (Width of wiggle)
-            float sineOffset = math.sin(ElapsedTime * movementZigZagFrequencyComponent.ZigZagFrequency) * movementZigZagAmplitudeComponent.ZigZagAmplitude;
+            float sineOffset = math.sin(ElapsedTime * movementZigZagFrequencyComponent.Value) * movementZigZagAmplitudeComponent.Value;
 
             // Combine Forward + Sideways Movement
-            localTransform.Position.xy += (direction.xy + tangent.xy * sineOffset) * moveSpeedComponent.Speed * DeltaTime;
+            localTransform.Position.xy += (direction.xy + tangent.xy * sineOffset) * moveSpeedComponent.Value * DeltaTime;
         }
     }
 
@@ -125,7 +125,7 @@ namespace Systems
 
         private void Execute(ref LocalTransform localTransform , in MoveSpeedComponent moveSpeedComponent , in VelocityComponent velocityComponent)
         {
-            localTransform.Position.xy += velocityComponent.Velocity * moveSpeedComponent.Speed * DeltaTime;
+            localTransform.Position.xy += velocityComponent.Value * moveSpeedComponent.Value * DeltaTime;
         }
     }
 
@@ -140,15 +140,15 @@ namespace Systems
 
         private void Execute(ref LocalTransform localTransform , in MoveSpeedComponent moveSpeedComponent , in RangeComponent rangeComponent , in TargetPositionComponent targetPositionComponent)
         {
-            float distanceSq = math.distancesq(localTransform.Position , targetPositionComponent.Position);
-            float rangeSq = rangeComponent.Range * rangeComponent.Range;
+            float distanceSq = math.distancesq(localTransform.Position , targetPositionComponent.Value);
+            float rangeSq = rangeComponent.Value * rangeComponent.Value;
 
             // Logic: If DistanceSq > RangeSq, we move (1). If DistanceSq <= RangeSq, we stop (0).
             // This prevents moving while reloading.
             float shouldMove = math.select(MovementActive , MovementNone , distanceSq <= rangeSq);
 
-            float3 direction = math.normalizesafe(targetPositionComponent.Position - localTransform.Position);
-            localTransform.Position.xy += direction.xy * moveSpeedComponent.Speed * DeltaTime * shouldMove;
+            float3 direction = math.normalizesafe(targetPositionComponent.Value - localTransform.Position);
+            localTransform.Position.xy += direction.xy * moveSpeedComponent.Value * DeltaTime * shouldMove;
         }
     }
 }

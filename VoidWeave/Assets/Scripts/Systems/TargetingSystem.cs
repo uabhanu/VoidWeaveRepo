@@ -33,9 +33,9 @@ namespace Systems
         {
             var ecbParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
 
-            int doAction = SystemAPI.GetSingleton<DoActionComponent>().DoAction;
-            int noAction = SystemAPI.GetSingleton<NoActionComponent>().NoActionValue;
-            float targetDefaultPosition = SystemAPI.GetSingleton<TargetDefaultPositionComponent>().DefaultPosition;
+            int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
+            int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
+            float targetDefaultPosition = SystemAPI.GetSingleton<TargetDefaultPositionComponent>().Value;
 
             NativeList<LocalToWorld> enemyPositionsNativeList = _enemyTargetQuery.ToComponentDataListAsync<LocalToWorld>(Allocator.TempJob , out var jobHandle1);
             NativeList<TeamComponent> enemyTeamComponentsNativeList = _enemyTargetQuery.ToComponentDataListAsync<TeamComponent>(Allocator.TempJob , out var jobHandle2);
@@ -74,11 +74,11 @@ namespace Systems
         {
             float4 targetCurrentPosition = new float4(TargetDefaultPosition , TargetDefaultPosition , 0f , float.MaxValue);
 
-            for(int i = 0 ; i < TargetPositionsNativeList.Length ; i++) { targetCurrentPosition = math.select(targetCurrentPosition , new float4(TargetPositionsNativeList[i].Position , math.distancesq(localToWorld.Position , TargetPositionsNativeList[i].Position)) , TargetTeamComponentsNativeList[i].ID != teamComponent.ID && math.distancesq(localToWorld.Position , TargetPositionsNativeList[i].Position) < targetCurrentPosition.w); }
+            for(int i = 0 ; i < TargetPositionsNativeList.Length ; i++) { targetCurrentPosition = math.select(targetCurrentPosition , new float4(TargetPositionsNativeList[i].Position , math.distancesq(localToWorld.Position , TargetPositionsNativeList[i].Position)) , TargetTeamComponentsNativeList[i].Value != teamComponent.Value && math.distancesq(localToWorld.Position , TargetPositionsNativeList[i].Position) < targetCurrentPosition.w); }
 
-            targetPositionComponent.Position = targetCurrentPosition.xyz;
+            targetPositionComponent.Value = targetCurrentPosition.xyz;
 
-            bool inRange = targetCurrentPosition.w <= rangeComponent.Range * rangeComponent.Range;
+            bool inRange = targetCurrentPosition.w <= rangeComponent.Value * rangeComponent.Value;
 
             for(int i = 0 ; i < math.select(NoAction , DoAction , inRange) ; i++) ECBParallelWriter.AddComponent<HasTargetTag>(entityIndexInQuery , entity);
             for(int i = 0 ; i < math.select(NoAction , DoAction , !inRange) ; i++) ECBParallelWriter.RemoveComponent<HasTargetTag>(entityIndexInQuery , entity);
@@ -99,11 +99,11 @@ namespace Systems
         {
             float4 target = new float4(localToWorld.Position , float.MaxValue);
 
-            for(int i = 0 ; i < TargetPositionsNativeList.Length ; i++) { target = math.select(target , new float4(TargetPositionsNativeList[i].Position , math.distancesq(localToWorld.Position , TargetPositionsNativeList[i].Position)) , TargetTeamComponentsNativeList[i].ID != teamComponent.ID && math.distancesq(localToWorld.Position , TargetPositionsNativeList[i].Position) < target.w); }
+            for(int i = 0 ; i < TargetPositionsNativeList.Length ; i++) { target = math.select(target , new float4(TargetPositionsNativeList[i].Position , math.distancesq(localToWorld.Position , TargetPositionsNativeList[i].Position)) , TargetTeamComponentsNativeList[i].Value != teamComponent.Value && math.distancesq(localToWorld.Position , TargetPositionsNativeList[i].Position) < target.w); }
 
-            targetPositionComponent.Position = target.xyz;
+            targetPositionComponent.Value = target.xyz;
 
-            bool inRange = target.w <= rangeComponent.Range * rangeComponent.Range;
+            bool inRange = target.w <= rangeComponent.Value * rangeComponent.Value;
 
             for(int i = 0 ; i < math.select(NoAction , DoAction , inRange) ; i++) ECBParallelWriter.AddComponent<HasTargetTag>(entityIndexInQuery , entity);
             for(int i = 0 ; i < math.select(NoAction , DoAction , !inRange) ; i++) ECBParallelWriter.RemoveComponent<HasTargetTag>(entityIndexInQuery , entity);

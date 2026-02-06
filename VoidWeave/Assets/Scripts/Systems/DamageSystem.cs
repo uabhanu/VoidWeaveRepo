@@ -21,9 +21,9 @@ namespace Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            int doAction = SystemAPI.GetSingleton<DoActionComponent>().DoAction;
-            float healthValueForDeath = SystemAPI.GetSingleton<HealthValueForDeathComponent>().HealthValueForDeath;
-            int noAction = SystemAPI.GetSingleton<NoActionComponent>().NoActionValue;
+            int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
+            float healthValueForDeath = SystemAPI.GetSingleton<HealthValueForDeathComponent>().Value;
+            int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
             
             systemState.Dependency = new DamageJob { HealthValueForDeath = healthValueForDeath , DoAction = doAction , ECBParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , NoAction = noAction }.ScheduleParallel(systemState.Dependency);
         }
@@ -41,9 +41,9 @@ namespace Systems
 
         private void Execute(in DamageEventComponent damageEventComponent , Entity entity , [EntityIndexInQuery] int entityIndexInQuery , ref CurrentHealthComponent currentHealthComponent)
         {
-            currentHealthComponent.CurrentHealth -= damageEventComponent.Damage;
+            currentHealthComponent.Value -= damageEventComponent.Value;
             
-            for(int i = 0 ; i < math.select(NoAction , DoAction , currentHealthComponent.CurrentHealth <= HealthValueForDeath) ; i++) { ECBParallelWriter.AddComponent<DeathTag>(entityIndexInQuery , entity); }
+            for(int i = 0 ; i < math.select(NoAction , DoAction , currentHealthComponent.Value <= HealthValueForDeath) ; i++) { ECBParallelWriter.AddComponent<DeathTag>(entityIndexInQuery , entity); }
             
             ECBParallelWriter.RemoveComponent<DamageEventComponent>(entityIndexInQuery , entity);
         }

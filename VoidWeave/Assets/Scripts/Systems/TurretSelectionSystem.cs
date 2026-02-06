@@ -39,23 +39,23 @@ namespace Systems
             Entity scatterTurretEntity = SystemAPI.GetComponent<TurretEntityComponent>(scatterTurretConfigEntity).Entity;
             Entity beamTurretEntity = SystemAPI.GetComponent<TurretEntityComponent>(beamTurretConfigEntity).Entity;
 
-            int strikerTurretCost = SystemAPI.GetComponent<TurretCostComponent>(strikerTurretConfigEntity).Cost;
-            int scatterTurretCost = SystemAPI.GetComponent<TurretCostComponent>(scatterTurretConfigEntity).Cost;
-            int beamTurretCost = SystemAPI.GetComponent<TurretCostComponent>(beamTurretConfigEntity).Cost;
+            int strikerTurretCost = SystemAPI.GetComponent<TurretCostComponent>(strikerTurretConfigEntity).Value;
+            int scatterTurretCost = SystemAPI.GetComponent<TurretCostComponent>(scatterTurretConfigEntity).Value;
+            int beamTurretCost = SystemAPI.GetComponent<TurretCostComponent>(beamTurretConfigEntity).Value;
 
-            int beamTurretUnlockLevel = SystemAPI.GetSingleton<BeamTurretUnlockLevelComponent>().Level;
-            uint inputNone = SystemAPI.GetSingleton<InputNoneComponent>().InputNone;
-            uint inputTurret1 = SystemAPI.GetSingleton<InputTurret1Component>().InputTurret1;
-            uint inputTurret2 = SystemAPI.GetSingleton<InputTurret2Component>().InputTurret2;
-            uint inputTurret3 = SystemAPI.GetSingleton<InputTurret3Component>().InputTurret3;
-            int scatterTurretUnlockLevel = SystemAPI.GetSingleton<ScatterTurretUnlockLevelComponent>().Level;
+            int beamTurretUnlockLevel = SystemAPI.GetSingleton<BeamTurretUnlockLevelComponent>().Value;
+            uint inputNone = SystemAPI.GetSingleton<InputNoneComponent>().Value;
+            uint inputTurret1 = SystemAPI.GetSingleton<InputTurret1Component>().Value;
+            uint inputTurret2 = SystemAPI.GetSingleton<InputTurret2Component>().Value;
+            uint inputTurret3 = SystemAPI.GetSingleton<InputTurret3Component>().Value;
+            int scatterTurretUnlockLevel = SystemAPI.GetSingleton<ScatterTurretUnlockLevelComponent>().Value;
 
             new TurretSelectionJob
             {
                 BeamTurretCost = beamTurretCost ,
                 BeamTurretEntity = beamTurretEntity ,
                 BeamTurretUnlockLevel = beamTurretUnlockLevel ,
-                CurrentLevel = SystemAPI.GetSingleton<LevelComponent>().Level ,
+                CurrentLevel = SystemAPI.GetSingleton<LevelComponent>().Value ,
                 InputNone = inputNone ,
                 InputTurret1 = inputTurret1 ,
                 InputTurret2 = inputTurret2 ,
@@ -89,10 +89,10 @@ namespace Systems
         private void Execute(in PlayerInputComponent playerInputComponent , ref SelectedTurretCostComponent selectedTurretCostComponent , ref SelectedTurretEntityComponent selectedTurretEntityComponent)
         {
             // Input Flags: Replaced 64, 128, 256 with InputTurret Components
-            // Replaced 0 with InputNone
-            bool strikerTurretKeyPressed = (playerInputComponent.PlayerInput & InputTurret1) != InputNone;
-            bool scatterTurretKeyPressed = (playerInputComponent.PlayerInput & InputTurret2) != InputNone;
-            bool beamTurretKeyPressed = (playerInputComponent.PlayerInput & InputTurret3) != InputNone;
+            // Replaced 0 with Value
+            bool strikerTurretKeyPressed = (playerInputComponent.Value & InputTurret1) != InputNone;
+            bool scatterTurretKeyPressed = (playerInputComponent.Value & InputTurret2) != InputNone;
+            bool beamTurretKeyPressed = (playerInputComponent.Value & InputTurret3) != InputNone;
 
             // Check Unlocks: Replaced 2 and 3 with UnlockLevel Components
             bool scatterTurretUnlocked = scatterTurretKeyPressed && CurrentLevel >= ScatterTurretUnlockLevel;
@@ -109,9 +109,9 @@ namespace Systems
             selectedTurretEntityComponent.Entity = beamTurretKeyPressed ? beamTurretUnlocked ? BeamTurretEntity : Entity.Null : selectedTurretEntityComponent.Entity;
 
             // Must match Entity order exactly (Striker -> Scatter -> Beam)
-            selectedTurretCostComponent.Cost = math.select(selectedTurretCostComponent.Cost , StrikerTurretCost , strikerTurretKeyPressed);
-            selectedTurretCostComponent.Cost = math.select(selectedTurretCostComponent.Cost , ScatterTurretCost , scatterTurretUnlocked);
-            selectedTurretCostComponent.Cost = math.select(selectedTurretCostComponent.Cost , BeamTurretCost , beamTurretUnlocked);
+            selectedTurretCostComponent.Value = math.select(selectedTurretCostComponent.Value , StrikerTurretCost , strikerTurretKeyPressed);
+            selectedTurretCostComponent.Value = math.select(selectedTurretCostComponent.Value , ScatterTurretCost , scatterTurretUnlocked);
+            selectedTurretCostComponent.Value = math.select(selectedTurretCostComponent.Value , BeamTurretCost , beamTurretUnlocked);
         }
     }
 }

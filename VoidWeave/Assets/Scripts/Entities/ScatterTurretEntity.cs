@@ -21,15 +21,15 @@ namespace Entities
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
                 
-                AddComponent(entity , new AttackRateComponent { AttackRate = authoring.attackRate });
+                AddComponent(entity , new AttackRateComponent { Value = authoring.attackRate });
                 AddComponent(entity , new BulletEntityComponent { Entity = GetEntity(authoring.bulletPrefab , TransformUsageFlags.Dynamic) });
-                AddComponent(entity , new DamageComponent { Damage = authoring.damage });
-                AddComponent(entity , new CooldownComponent { Timer = authoring.cooldownTime });
-                AddComponent(entity , new ProjectileCountComponent { Count = authoring.projectileCount });
-                AddComponent(entity , new RangeComponent { Range = authoring.range });
-                AddComponent(entity , new SpreadComponent { Degrees = authoring.spreadDegrees });
+                AddComponent(entity , new DamageComponent { Value = authoring.damage });
+                AddComponent(entity , new CooldownComponent { Value = authoring.cooldownTime });
+                AddComponent(entity , new ProjectileCountComponent { Value = authoring.projectileCount });
+                AddComponent(entity , new RangeComponent { Value = authoring.range });
+                AddComponent(entity , new SpreadComponent { Value = authoring.spreadDegrees });
                 AddComponent(entity , new TargetPositionComponent());
-                AddComponent(entity , new TeamComponent { ID = authoring.teamID });
+                AddComponent(entity , new TeamComponent { Value = authoring.teamID });
                 
                 AddComponent(entity , new ScatterTurretTag());
             }

@@ -20,18 +20,18 @@ namespace Entities
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
-                AddComponent(entity , new BaseMoveSpeedComponent { Speed = authoring.moveSpeed });
-                AddComponent(entity , new CollisionRadiusComponent { Radius = authoring.collisionRadius });
-                AddComponent(entity , new CurrentHealthComponent { CurrentHealth = authoring.maxHealth });
-                AddComponent(entity , new DashCooldownComponent { Timer = authoring.dashCooldownTimer });
-                AddComponent(entity , new DashDurationComponent { Duration = authoring.dashDuration });
-                AddComponent(entity , new DashMultiplierComponent { Multiplier = authoring.dashMultiplier });
-                AddComponent(entity , new MaxHealthComponent { MaxHealth = authoring.maxHealth });
-                AddComponent(entity , new MoveSpeedComponent { Speed = authoring.moveSpeed });
+                AddComponent(entity , new BaseMoveSpeedComponent { Value = authoring.moveSpeed });
+                AddComponent(entity , new CollisionRadiusComponent { Value = authoring.collisionRadius });
+                AddComponent(entity , new CurrentHealthComponent { Value = authoring.maxHealth });
+                AddComponent(entity , new DashCooldownComponent { Value = authoring.dashCooldownTimer });
+                AddComponent(entity , new DashDurationComponent { Value = authoring.dashDuration });
+                AddComponent(entity , new DashMultiplierComponent { Value = authoring.dashMultiplier });
+                AddComponent(entity , new MaxHealthComponent { Value = authoring.maxHealth });
+                AddComponent(entity , new MoveSpeedComponent { Value = authoring.moveSpeed });
                 AddComponent(entity , new PlayerInputComponent());
                 AddComponent(entity , new SelectedTurretCostComponent());
                 AddComponent(entity , new SelectedTurretEntityComponent { Entity = Entity.Null });
-                AddComponent(entity , new TeamComponent { ID = authoring.teamID });
+                AddComponent(entity , new TeamComponent { Value = authoring.teamID });
 
                 AddComponent(entity , new PlayerTag());
             }

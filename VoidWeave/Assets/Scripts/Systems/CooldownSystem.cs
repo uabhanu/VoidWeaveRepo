@@ -21,7 +21,7 @@ namespace Systems
 
         private void Execute(ref CooldownComponent cooldownComponent)
         {
-            cooldownComponent.Timer -= DeltaTime;
+            cooldownComponent.Value -= DeltaTime;
         }
     }
 }

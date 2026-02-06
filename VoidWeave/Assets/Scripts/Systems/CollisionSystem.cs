@@ -33,16 +33,16 @@ namespace Systems
             NativeArray<CollisionRadiusComponent> targetRadiiNativeArray = _targetQuery.ToComponentDataArray<CollisionRadiusComponent>(Allocator.TempJob);
             NativeArray<TeamComponent> targetTeamComponentsNativeArray = _targetQuery.ToComponentDataArray<TeamComponent>(Allocator.TempJob);
 
-            int collisionActiveValue = SystemAPI.GetSingleton<CollisionActiveComponent>().CollisionActive;
-            int collisionNoneValue = SystemAPI.GetSingleton<CollisionNoneComponent>().CollisionNone;
+            int collisionActiveValue = SystemAPI.GetSingleton<CollisionActiveComponent>().Value;
+            int collisionNoneValue = SystemAPI.GetSingleton<CollisionNoneComponent>().Value;
 
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
 
             // PROJECTILES (Bullet -> Player/Enemy)
-            // Kills Self (1) + Deals Damage
+            // Kills Self (1) + Deals Entity
             JobHandle projectileJobHandle = new CollisionJob { CollisionActiveValue = collisionActiveValue , CollisionNoneValue = collisionNoneValue , ECB = ecb , KillSelf = collisionActiveValue , TargetEntitiesNativeArray = targetEntitiesNativeArray , TargetPositionsNativeArray = targetPositionsNativeArray , TargetRadiiNativeArray = targetRadiiNativeArray , TargetTeamComponentsNativeArray = targetTeamComponentsNativeArray }.ScheduleParallel(SystemAPI.QueryBuilder().WithAll<CollisionRadiusComponent , DamageComponent , LocalToWorld , ProjectileTag , TeamComponent>().WithNone<DeathTag>().Build() , systemState.Dependency);
 
-            // Kills Self (0) + Deals Damage
+            // Kills Self (0) + Deals Entity
             systemState.Dependency = new CollisionJob { CollisionActiveValue = collisionActiveValue , CollisionNoneValue = collisionNoneValue , ECB = ecb , KillSelf = collisionNoneValue , TargetEntitiesNativeArray = targetEntitiesNativeArray , TargetPositionsNativeArray = targetPositionsNativeArray , TargetRadiiNativeArray = targetRadiiNativeArray , TargetTeamComponentsNativeArray = targetTeamComponentsNativeArray }.ScheduleParallel(SystemAPI.QueryBuilder().WithAll<CanMeleeAttackTag , CollisionRadiusComponent , DamageComponent , EnemyTag , LocalToWorld , TeamComponent>().WithNone<DeathTag>().Build() , projectileJobHandle);
 
             targetEntitiesNativeArray.Dispose(systemState.Dependency);
@@ -71,12 +71,12 @@ namespace Systems
         {
             for(int i = 0 ; i < TargetPositionsNativeArray.Length ; i++)
             {
-                float combinedRadius = collisionRadiusComponent.Radius + TargetRadiiNativeArray[i].Radius;
+                float combinedRadius = collisionRadiusComponent.Value + TargetRadiiNativeArray[i].Value;
                 float hitRadiusSq = combinedRadius * combinedRadius;
-                bool isHit = math.distancesq(localToWorld.Position , TargetPositionsNativeArray[i].Position) <= hitRadiusSq && teamComponent.ID != TargetTeamComponentsNativeArray[i].ID;
+                bool isHit = math.distancesq(localToWorld.Position , TargetPositionsNativeArray[i].Position) <= hitRadiusSq && teamComponent.Value != TargetTeamComponentsNativeArray[i].Value;
 
                 // ADD DAMAGE EVENT
-                for(int k = 0 ; k < math.select(CollisionNoneValue , CollisionActiveValue , isHit) ; k++) { ECB.AddComponent(entityIndexInQuery , TargetEntitiesNativeArray[i] , new DamageEventComponent { Damage = (int)damageComponent.Damage }); }
+                for(int k = 0 ; k < math.select(CollisionNoneValue , CollisionActiveValue , isHit) ; k++) { ECB.AddComponent(entityIndexInQuery , TargetEntitiesNativeArray[i] , new DamageEventComponent { Value = (int)damageComponent.Value }); }
 
                 // KILL SELF (Only if KillSelf is 1)
                 for(int k = 0 ; k < math.select(CollisionNoneValue , CollisionActiveValue , isHit && KillSelf == CollisionActiveValue) ; k++) { ECB.AddComponent<DeathTag>(entityIndexInQuery , entity); }

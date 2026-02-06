@@ -23,9 +23,9 @@ namespace Systems
         {
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
             
-            int doAction = SystemAPI.GetSingleton<DoActionComponent>().DoAction;
-            int noAction = SystemAPI.GetSingleton<NoActionComponent>().NoActionValue;
-            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Expired;
+            int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
+            int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
+            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value;
 
             // 1. Check Readiness (Open the Gate)
             systemState.Dependency = new CanMeleeAttackJob { DoAction = doAction , ECB = ecb , NoAction = noAction , TimerExpired = timerExpired}.ScheduleParallel(systemState.Dependency);
@@ -52,7 +52,7 @@ namespace Systems
 
         private void Execute(in CooldownComponent cooldownComponent , Entity entity , [EntityIndexInQuery] int entityIndexInQuery)
         {
-            for(int i = 0 ; i < math.select(NoAction , DoAction , cooldownComponent.Timer <= TimerExpired) ; i++) { ECB.AddComponent<CanMeleeAttackTag>(entityIndexInQuery , entity); }
+            for(int i = 0 ; i < math.select(NoAction , DoAction , cooldownComponent.Value <= TimerExpired) ; i++) { ECB.AddComponent<CanMeleeAttackTag>(entityIndexInQuery , entity); }
         }
     }
 
@@ -67,7 +67,7 @@ namespace Systems
 
         private void Execute(in CooldownComponent cooldownComponent , Entity entity , [EntityIndexInQuery] int entityIndexInQuery)
         {
-            for(int i = 0 ; i < math.select(NoAction , DoAction , cooldownComponent.Timer > TimerExpired) ; i++) { ECB.RemoveComponent<CanMeleeAttackTag>(entityIndexInQuery , entity); }
+            for(int i = 0 ; i < math.select(NoAction , DoAction , cooldownComponent.Value > TimerExpired) ; i++) { ECB.RemoveComponent<CanMeleeAttackTag>(entityIndexInQuery , entity); }
         }
     }
 
@@ -83,7 +83,7 @@ namespace Systems
 
         private void Execute(in CooldownComponent cooldownComponent , Entity entity , [EntityIndexInQuery] int entityIndexInQuery)
         {
-            for(int i = 0 ; i < math.select(NoAction , DoAction , cooldownComponent.Timer <= TimerExpired) ; i++) { ECB.AddComponent<CanShootTag>(entityIndexInQuery , entity); }
+            for(int i = 0 ; i < math.select(NoAction , DoAction , cooldownComponent.Value <= TimerExpired) ; i++) { ECB.AddComponent<CanShootTag>(entityIndexInQuery , entity); }
         }
     }
 
@@ -98,7 +98,7 @@ namespace Systems
 
         private void Execute(in CooldownComponent cooldownComponent , Entity entity , [EntityIndexInQuery] int entityIndexInQuery)
         {
-            for(int i = 0 ; i < math.select(NoAction , DoAction , cooldownComponent.Timer > TimerExpired) ; i++) { ECB.RemoveComponent<CanShootTag>(entityIndexInQuery , entity); }
+            for(int i = 0 ; i < math.select(NoAction , DoAction , cooldownComponent.Value > TimerExpired) ; i++) { ECB.RemoveComponent<CanShootTag>(entityIndexInQuery , entity); }
         }
     }
 
@@ -110,7 +110,7 @@ namespace Systems
 
         private void Execute(in AttackRateComponent attackRate , Entity entity , [EntityIndexInQuery] int entityIndexInQuery)
         {
-            ECB.AddComponent(entityIndexInQuery , entity , new CooldownComponent { Timer = attackRate.AttackRate });
+            ECB.AddComponent(entityIndexInQuery , entity , new CooldownComponent { Value = attackRate.Value });
             ECB.RemoveComponent<CanMeleeAttackTag>(entityIndexInQuery , entity);
         }
     }
@@ -123,8 +123,8 @@ namespace Systems
 
         private void Execute(in AttackRateComponent attackRate , Entity entity , [EntityIndexInQuery] int entityIndexInQuery)
         {
-            // Reset Timer
-            ECB.AddComponent(entityIndexInQuery , entity , new CooldownComponent { Timer = attackRate.AttackRate });
+            // Reset Entity
+            ECB.AddComponent(entityIndexInQuery , entity , new CooldownComponent { Value = attackRate.Value });
             ECB.RemoveComponent<CanShootTag>(entityIndexInQuery , entity);
         }
     }

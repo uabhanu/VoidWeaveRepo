@@ -22,19 +22,19 @@ namespace Entities
                 // 1. Striker Config (On the Primary Entity)
                 Entity strikerTurretEntityConfig = GetEntity(TransformUsageFlags.None);
                 AddComponent(strikerTurretEntityConfig , new StrikerTurretTag());
-                AddComponent(strikerTurretEntityConfig , new TurretCostComponent { Cost = authoring.strikerTurretCost });
+                AddComponent(strikerTurretEntityConfig , new TurretCostComponent { Value = authoring.strikerTurretCost });
                 AddComponent(strikerTurretEntityConfig , new TurretEntityComponent { Entity = GetEntity(authoring.strikerTurretPrefab , TransformUsageFlags.Dynamic) });
 
                 // 2. Scatter Config (New Entity)
                 Entity scatterTurretEntityConfig = CreateAdditionalEntity(TransformUsageFlags.None);
                 AddComponent(scatterTurretEntityConfig , new ScatterTurretTag());
-                AddComponent(scatterTurretEntityConfig , new TurretCostComponent { Cost = authoring.scatterTurretCost });
+                AddComponent(scatterTurretEntityConfig , new TurretCostComponent { Value = authoring.scatterTurretCost });
                 AddComponent(scatterTurretEntityConfig , new TurretEntityComponent { Entity = GetEntity(authoring.scatterTurretPrefab , TransformUsageFlags.Dynamic) });
 
                 // 3. Beam Config (New Entity)
                 Entity beamTurretEntityConfig = CreateAdditionalEntity(TransformUsageFlags.None);
                 AddComponent(beamTurretEntityConfig , new BeamTurretTag());
-                AddComponent(beamTurretEntityConfig , new TurretCostComponent { Cost = authoring.beamTurretCost });
+                AddComponent(beamTurretEntityConfig , new TurretCostComponent { Value = authoring.beamTurretCost });
                 AddComponent(beamTurretEntityConfig , new TurretEntityComponent { Entity = GetEntity(authoring.beamTurretPrefab , TransformUsageFlags.Dynamic) });
             }
         }
