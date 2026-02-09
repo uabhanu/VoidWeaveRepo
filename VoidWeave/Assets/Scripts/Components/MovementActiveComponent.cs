@@ -1,9 +1,0 @@
-namespace Components
-{
-    using Unity.Entities;
-
-    public struct MovementActiveComponent : IComponentData
-    {
-        public float Value;
-    }
-}

@@ -1,9 +1,0 @@
-namespace Components
-{
-    using Unity.Entities;
-
-    public struct LootMultiplierComponent : IComponentData
-    {
-        public float Value;
-    }
-}
