@@ -1,0 +1,93 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3052477988554019061
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9143082424676216276}
+  - component: {fileID: 2614177821342708005}
+  m_Layer: 0
+  m_Name: GameManagerEntity
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9143082424676216276
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3052477988554019061}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2614177821342708005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3052477988554019061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4440088ea66c3bc43801a02e61b4f762, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Entities.GameConfigEntity
+  beamTurretUnlockLevel: 3
+  boundaryOffset: 0.9
+  bulletRotationOffset: 1.570796
+  cameraOrthographicSize: 5
+  collisionActive: 1
+  collisionNone: 0
+  damageMultiplierPerLevel: 0.05
+  dashCooldownDefault: 1
+  dashDurationDefault: 0.2
+  doAction: 1
+  noAction: 0
+  enemiesToKill: 20
+  enemiesToKillIncrement: 5
+  enemySpawnerEntityPrefab: {fileID: 9071633379703226984, guid: 55c28ec5c3d184f40a1b0224da9a5ea4, type: 3}
+  healthMultiplierPerLevel: 0.3
+  healthValueForDeath: 0
+  inputEntityPrefab: {fileID: 6464459571194226029, guid: 7defc3eb64b3d2e418ff6dbec472138b, type: 3}
+  lineEnemyUnlockLevel: 1
+  lootMultiplierPerLevel: 0.2
+  lootPickupRadius: 0.5
+  minEnemiesToKill: 0
+  minProjectileCount: 1
+  minStartingLevel: 0
+  movementActive: 1
+  movementNone: 0
+  playerEntityPrefab: {fileID: 4043072570545550109, guid: 3cefbfe9652710640b54b28569aed323, type: 3}
+  scalingBase: 1
+  scalingLevelOffset: 3
+  scalingMinLevel: 0
+  scatterTurretUnlockLevel: 2
+  spreadHalfMultiplier: 0
+  spreadZero: 0
+  squareEnemyUnlockLevel: 3
+  startingLevel: 1
+  startingResources: 100
+  targetDefaultPosition: 100000
+  timerExpired: 0
+  triangleEnemyUnlockLevel: 2
+  turretConfigEntityPrefab: {fileID: 1521002163540263446, guid: 64eb09c65643256499a17ec4c8315219, type: 3}
+  unlockedLineEnemy: 1
+  unlockedNone: 0
+  unlockedSquareEnemy: 4
+  unlockedTriangleEnemy: 2
+  upgradeCostBaseMultiplier: 1
+  upgradeCostMultiplier: 1.5
+  waveStateCombat: 1
+  waveStatePrep: 0

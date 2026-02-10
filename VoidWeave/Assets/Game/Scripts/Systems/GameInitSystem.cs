@@ -11,7 +11,7 @@ namespace Game.Scripts.Systems
         public void OnCreate(ref SystemState systemState)
         {
             systemState.RequireForUpdate<BeginInitializationEntityCommandBufferSystem.Singleton>();
-            systemState.RequireForUpdate(SystemAPI.QueryBuilder().WithAll<EnemySpawnerEntityComponent , InitializeGameTag , PlayerEntityComponent , TurretConfigEntityComponent>().Build());
+            systemState.RequireForUpdate(SystemAPI.QueryBuilder().WithAll<EnemySpawnerEntityComponent , GameManagerEntityComponent , InitializeGameTag , PlayerEntityComponent , TurretConfigEntityComponent>().Build());
         }
 
         [BurstCompile]
@@ -21,11 +21,13 @@ namespace Game.Scripts.Systems
             EntityCommandBuffer entityCommandBuffer = SystemAPI.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);
 
             var enemySpawnerEntityComponent = SystemAPI.GetComponent<EnemySpawnerEntityComponent>(entity);
+            var gameManagerEntityComponent = SystemAPI.GetComponent<GameManagerEntityComponent>(entity);
             var inputEntityComponent = SystemAPI.GetComponent<InputEntityComponent>(entity);
             var playerEntityComponent = SystemAPI.GetComponent<PlayerEntityComponent>(entity);
             var turretConfigEntityComponent = SystemAPI.GetComponent<TurretConfigEntityComponent>(entity);
 
             entityCommandBuffer.Instantiate(enemySpawnerEntityComponent.Entity);
+            entityCommandBuffer.Instantiate(gameManagerEntityComponent.Entity);
             entityCommandBuffer.Instantiate(inputEntityComponent.Entity);
             entityCommandBuffer.Instantiate(playerEntityComponent.Entity);
             entityCommandBuffer.Instantiate(turretConfigEntityComponent.Entity);

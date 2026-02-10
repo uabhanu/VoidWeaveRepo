@@ -119,7 +119,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &1220176063
+--- !u!1 &520609772
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,81 +127,109 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1220176065}
-  - component: {fileID: 1220176064}
+  - component: {fileID: 520609775}
+  - component: {fileID: 520609774}
+  - component: {fileID: 520609773}
   m_Layer: 0
-  m_Name: GameManagerEntity
+  m_Name: InGameUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1220176064
+--- !u!114 &520609773
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1220176063}
+  m_GameObject: {fileID: 520609772}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4440088ea66c3bc43801a02e61b4f762, type: 3}
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Entities.GameConfigEntity
-  beamTurretUnlockLevel: 3
-  boundaryOffset: 0.9
-  bulletRotationOffset: 1.570796
-  cameraOrthographicSize: 5
-  collisionActive: 1
-  collisionNone: 0
-  damageMultiplierPerLevel: 0.05
-  dashCooldownDefault: 1
-  dashDurationDefault: 0.2
-  doAction: 1
-  noAction: 0
-  enemiesToKill: 20
-  enemiesToKillIncrement: 5
-  enemySpawnerEntityPrefab: {fileID: 9071633379703226984, guid: 55c28ec5c3d184f40a1b0224da9a5ea4, type: 3}
-  healthMultiplierPerLevel: 0.3
-  healthValueForDeath: 0
-  inputEntityPrefab: {fileID: 6464459571194226029, guid: 7defc3eb64b3d2e418ff6dbec472138b, type: 3}
-  lineEnemyUnlockLevel: 1
-  lootMultiplierPerLevel: 0.2
-  lootPickupRadius: 0.5
-  minEnemiesToKill: 0
-  minProjectileCount: 1
-  minStartingLevel: 0
-  movementActive: 1
-  movementNone: 0
-  playerEntityPrefab: {fileID: 4043072570545550109, guid: 3cefbfe9652710640b54b28569aed323, type: 3}
-  scalingBase: 1
-  scalingLevelOffset: 3
-  scalingMinLevel: 0
-  scatterTurretUnlockLevel: 2
-  spreadHalfMultiplier: 0
-  spreadZero: 0
-  squareEnemyUnlockLevel: 3
-  startingLevel: 1
-  startingResources: 100
-  targetDefaultPosition: 100000
-  timerExpired: 0
-  triangleEnemyUnlockLevel: 2
-  turretConfigEntityPrefab: {fileID: 1521002163540263446, guid: 64eb09c65643256499a17ec4c8315219, type: 3}
-  unlockedLineEnemy: 1
-  unlockedNone: 0
-  unlockedSquareEnemy: 4
-  unlockedTriangleEnemy: 2
-  upgradeCostBaseMultiplier: 1
-  upgradeCostMultiplier: 1.5
-  waveStateCombat: 1
-  waveStatePrep: 0
---- !u!4 &1220176065
+  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
+  m_PanelSettings: {fileID: 11400000, guid: 4d49376d7543f0940b44e75764856686, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: 954f7abb099dec04bac8854a8c97b225, type: 3}
+  m_SortingOrder: 0
+  m_Position: 0
+  m_WorldSpaceSizeMode: 1
+  m_WorldSpaceWidth: 1920
+  m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
+--- !u!114 &520609774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 520609772}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e7a3e84cb19ba24e829216d6da27252, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.InGameUI
+  debugMode: 0
+  uiDocument: {fileID: 520609773}
+--- !u!4 &520609775
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1220176063}
+  m_GameObject: {fileID: 520609772}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &699197063
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 699197065}
+  - component: {fileID: 699197064}
+  m_Layer: 0
+  m_Name: GameInitEntity
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &699197064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 699197063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5bd3fada7fb4d6439f0917b9abd0554, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.GameInitEntity
+  enemySpawnerEntityPrefab: {fileID: 9071633379703226984, guid: 55c28ec5c3d184f40a1b0224da9a5ea4, type: 3}
+  gameManagerEntityPrefab: {fileID: 3052477988554019061, guid: a12e582f6d707334ab5b298bc00a3820, type: 3}
+  inputEntityPrefab: {fileID: 6464459571194226029, guid: 7defc3eb64b3d2e418ff6dbec472138b, type: 3}
+  playerEntityPrefab: {fileID: 4043072570545550109, guid: 3cefbfe9652710640b54b28569aed323, type: 3}
+  turretConfigEntityPrefab: {fileID: 1521002163540263446, guid: 64eb09c65643256499a17ec4c8315219, type: 3}
+--- !u!4 &699197065
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 699197063}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -214,4 +242,5 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1220176065}
+  - {fileID: 520609775}
+  - {fileID: 699197065}

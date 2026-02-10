@@ -1,0 +1,31 @@
+namespace Game.Scripts.Entities
+{
+    using Components;
+    using Unity.Entities;
+    using UnityEngine;
+
+    public class GameInitEntity : MonoBehaviour
+    {
+        [SerializeField] private GameObject enemySpawnerEntityPrefab;
+        [SerializeField] private GameObject gameManagerEntityPrefab;
+        [SerializeField] private GameObject inputEntityPrefab;
+        [SerializeField] private GameObject playerEntityPrefab;
+        [SerializeField] private GameObject turretConfigEntityPrefab;
+
+        private class GameInitEntityBaker : Baker<GameInitEntity>
+        {
+            public override void Bake(GameInitEntity authoring)
+            {
+                var entity = GetEntity(TransformUsageFlags.None);
+
+                AddComponent(entity , new EnemySpawnerEntityComponent { Entity = GetEntity(authoring.enemySpawnerEntityPrefab , TransformUsageFlags.Dynamic) });
+                AddComponent(entity , new GameManagerEntityComponent { Entity = GetEntity(authoring.gameManagerEntityPrefab , TransformUsageFlags.Dynamic) });
+                AddComponent(entity , new InputEntityComponent { Entity = GetEntity(authoring.inputEntityPrefab , TransformUsageFlags.Dynamic) });
+                AddComponent(entity , new PlayerEntityComponent { Entity = GetEntity(authoring.playerEntityPrefab , TransformUsageFlags.Dynamic) });
+                AddComponent(entity , new TurretConfigEntityComponent { Entity = GetEntity(authoring.turretConfigEntityPrefab , TransformUsageFlags.Dynamic) });
+                
+                AddComponent(entity , new InitializeGameTag());
+            }
+        }
+    }
+}
