@@ -18,16 +18,22 @@ namespace Game.Scripts.UI
 
             var rootVisualElement = uiDocument.rootVisualElement;
             
-            var energyLabel = rootVisualElement.Q<Label>("EnergyLabel");
-            var healthLabel = rootVisualElement.Q<Label>("HealthLabel");
+            var energyTextLabel = rootVisualElement.Q<Label>("EnergyTextLabel");
+            var energyValueLabel = rootVisualElement.Q<Label>("EnergyValueLabel");
             
-            energyLabel.style.backgroundColor = energyBarColor;
-            healthLabel.style.backgroundColor = healthBarColor;
+            var healthTextLabel = rootVisualElement.Q<Label>("HealthTextLabel");
+            var healthValueLabel = rootVisualElement.Q<Label>("HealthValueLabel");
+            
+            energyTextLabel.style.backgroundColor = energyBarColor;
+            energyValueLabel.style.backgroundColor = energyBarColor;
+            
+            healthTextLabel.style.backgroundColor = healthBarColor;
+            healthValueLabel.style.backgroundColor = healthBarColor;
 
             var defaultGameObjectInjectionWorld = World.DefaultGameObjectInjectionWorld;
             var inGameUISystem = defaultGameObjectInjectionWorld.GetExistingSystemManaged<InGameUISystem>();
 
-            inGameUISystem.SetReferences(energyLabel , healthLabel);
+            inGameUISystem.SetReferences(energyValueLabel , healthValueLabel);
 
             var entity = defaultGameObjectInjectionWorld.EntityManager.CreateEntity();
             defaultGameObjectInjectionWorld.EntityManager.AddComponentData(entity , new UIReadyComponent { Value = true });
