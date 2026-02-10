@@ -6,34 +6,22 @@ namespace Game.Scripts.Systems
 
     public partial class InGameUISystem : SystemBase
     {
-        private VisualElement _healthBarFill;
+        private Label _energyLabel;
         private Label _healthLabel;
 
-        protected override void OnCreate()
-        {
-            var playerHealthQuery = SystemAPI.QueryBuilder().WithAll<CurrentHealthComponent , MaxHealthComponent , PlayerTag>().Build();
-            
-            RequireForUpdate(playerHealthQuery);
-            RequireForUpdate<UIReadyComponent>();
-        }
+        protected override void OnCreate() { RequireForUpdate<UIReadyComponent>(); }
 
-        public void SetReferences(VisualElement healthBarFillVisualElement , Label healthLabel)
+        public void SetReferences(Label energyLabel , Label healthLabel)
         {
-            _healthBarFill = healthBarFillVisualElement;
+            _energyLabel = energyLabel;
             _healthLabel = healthLabel;
         }
 
         protected override void OnUpdate()
         {
-            var playerEntity = SystemAPI.GetSingletonEntity<PlayerTag>();
-
-            var currentHealthComponent = SystemAPI.GetComponent<CurrentHealthComponent>(playerEntity).Value;
-            var maxHealthComponent = SystemAPI.GetComponent<MaxHealthComponent>(playerEntity).Value;
-
-            float percentage = currentHealthComponent / maxHealthComponent * 100f;
-
-            _healthBarFill.style.width = Length.Percent(percentage);
-            _healthLabel.text = $"{currentHealthComponent:F0}";
+            foreach(var currentEnergyComponent in SystemAPI.Query<RefRO<CurrentEnergyComponent>>()) { _energyLabel.text = $"{currentEnergyComponent.ValueRO.Value:F0}"; }
+            
+            foreach(var currentHealth in SystemAPI.Query<RefRO<CurrentHealthComponent>>().WithAll<PlayerTag>()) { _healthLabel.text = $"{currentHealth.ValueRO.Value:F0}"; }
         }
     }
 }
