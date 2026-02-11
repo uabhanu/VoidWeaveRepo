@@ -1,13 +1,17 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <ui:VisualElement name="RootVisualElement" style="flex-grow: 1;">
-        <ui:VisualElement name="EnergyBarBackgroundVisualElement" style="background-color: rgb(0, 0, 0); border-top-left-radius: 5px; border-top-right-radius: 5px; border-bottom-right-radius: 5px; border-bottom-left-radius: 5px; position: absolute; top: 20px; left: 20px;">
+        <ui:VisualElement name="EnergyUIVisualElement" style="background-color: rgb(0, 0, 0); border-top-left-radius: 5px; border-top-right-radius: 5px; border-bottom-right-radius: 5px; border-bottom-left-radius: 5px; position: absolute; top: 20px; left: 20px;">
             <ui:Label name="EnergyTextLabel" text="Energy" style="-unity-font-style: bold; -unity-text-align: upper-center; font-size: 80px; position: absolute;"/>
             <ui:Label name="EnergyValueLabel" style="-unity-font-style: bold; -unity-text-align: upper-center; font-size: 80px; position: absolute; left: 331px;"/>
         </ui:VisualElement>
-        <ui:VisualElement name="HealthBarBackgroundVisualElement" style="background-color: rgb(0, 0, 0); border-top-left-radius: 5px; border-top-right-radius: 5px; border-bottom-right-radius: 5px; border-bottom-left-radius: 5px; position: absolute; top: 20px; left: 600px;">
+        <ui:VisualElement name="HealthUIVisualElement" style="background-color: rgb(0, 0, 0); border-top-left-radius: 5px; border-top-right-radius: 5px; border-bottom-right-radius: 5px; border-bottom-left-radius: 5px; position: absolute; top: 20px; left: 600px;">
             <ui:Label name="HealthTextLabel" text="Health" style="-unity-font-style: bold; -unity-text-align: upper-center; font-size: 80px; position: absolute;"/>
             <ui:Label name="HealthValueLabel" style="-unity-font-style: bold; -unity-text-align: upper-center; font-size: 80px; position: absolute; left: 331px;"/>
         </ui:VisualElement>
-        <ui:Button text="II" style="align-self: flex-end; top: 20px; right: 20px; aspect-ratio: 1.777778; font-size: 50px; -unity-font-style: bold;"/>
+        <ui:VisualElement name="LevelUIVisualElement" style="background-color: rgb(0, 0, 0); border-top-left-radius: 5px; border-top-right-radius: 5px; border-bottom-right-radius: 5px; border-bottom-left-radius: 5px; position: absolute; top: 20px; left: 1180px;">
+            <ui:Label name="LevelTextLabel" text="Level" style="-unity-font-style: bold; -unity-text-align: upper-center; font-size: 80px; position: absolute;"/>
+            <ui:Label name="LevelValueLabel" style="-unity-font-style: bold; -unity-text-align: upper-center; font-size: 80px; position: absolute; left: 250px;"/>
+        </ui:VisualElement>
+        <ui:Button text="II" name="PauseButton" style="align-self: flex-end; top: 20px; right: 20px; aspect-ratio: 1.777778; font-size: 50px; -unity-font-style: bold;"/>
     </ui:VisualElement>
 </ui:UXML>

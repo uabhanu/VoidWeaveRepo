@@ -7,56 +7,90 @@ namespace Game.Scripts.UI
 
     public class InGameUI : MonoBehaviour
     {
+        #region Variables
+
         private EntityQuery _energyQuery;
         private EntityQuery _healthQuery;
-        
+        private EntityQuery _levelQuery;
+
         private EntityManager _entityManager;
-        
+
+        private Label _energyTextLabel;
         private Label _energyValueLabel;
+        private Label _healthTextLabel;
         private Label _healthValueLabel;
-        
-        [SerializeField] private Color energyBarColor = Color.yellow;
-        [SerializeField] private Color healthBarColor = Color.green;
+        private Label _levelTextLabel;
+        private Label _levelValueLabel;
+
+        [SerializeField] private Color energyLabelColor = Color.yellow;
+        [SerializeField] private Color healthLabelColor = Color.green;
+        [SerializeField] private Color levelLabelColor = Color.orange;
+
         [SerializeField] private UIDocument uiDocument;
+
+        #endregion
+
+        #region Unity Callbacks
 
         private void Start()
         {
             if(!uiDocument) uiDocument = GetComponent<UIDocument>();
-            
+
             var world = World.DefaultGameObjectInjectionWorld;
             _entityManager = world.EntityManager;
-            
+
             _energyQuery = _entityManager.CreateEntityQuery(typeof(CurrentEnergyComponent));
             _healthQuery = _entityManager.CreateEntityQuery(typeof(CurrentHealthComponent) , typeof(PlayerTag));
+            _levelQuery = _entityManager.CreateEntityQuery(typeof(LevelComponent));
 
             var rootVisualElement = uiDocument.rootVisualElement;
 
-            var energyTextLabel = rootVisualElement.Q<Label>("EnergyTextLabel");
+            _energyTextLabel = rootVisualElement.Q<Label>("EnergyTextLabel");
             _energyValueLabel = rootVisualElement.Q<Label>("EnergyValueLabel");
 
-            var healthTextLabel = rootVisualElement.Q<Label>("HealthTextLabel");
+            _healthTextLabel = rootVisualElement.Q<Label>("HealthTextLabel");
             _healthValueLabel = rootVisualElement.Q<Label>("HealthValueLabel");
 
-            if(energyTextLabel != null) energyTextLabel.style.backgroundColor = energyBarColor;
-            if(_energyValueLabel != null) _energyValueLabel.style.backgroundColor = energyBarColor;
+            _levelTextLabel = rootVisualElement.Q<Label>("LevelTextLabel");
+            _levelValueLabel = rootVisualElement.Q<Label>("LevelValueLabel");
 
-            if(healthTextLabel != null) healthTextLabel.style.backgroundColor = healthBarColor;
-            if(_healthValueLabel != null) _healthValueLabel.style.backgroundColor = healthBarColor;
+            _energyTextLabel.style.backgroundColor = energyLabelColor;
+            _energyValueLabel.style.backgroundColor = energyLabelColor;
+
+            _healthTextLabel.style.backgroundColor = healthLabelColor;
+            _healthValueLabel.style.backgroundColor = healthLabelColor;
+
+            _levelTextLabel.style.backgroundColor = levelLabelColor;
+            _levelValueLabel.style.backgroundColor = levelLabelColor;
         }
-        
-        private void Update()
+
+        private void LateUpdate()
         {
-            if(_energyValueLabel != null && !_energyQuery.IsEmptyIgnoreFilter)
+            _entityManager.CompleteDependencyBeforeRO<CurrentEnergyComponent>();
+            
+            if(!_energyQuery.IsEmptyIgnoreFilter)
             {
-                var energy = _energyQuery.GetSingleton<CurrentEnergyComponent>().Value;
-                _energyValueLabel.text = $"{energy:F0}";
+                var currentEnergy = _energyQuery.GetSingleton<CurrentEnergyComponent>().Value;
+                _energyValueLabel.text = $"{currentEnergy:F0}";
             }
 
-            if(_healthValueLabel != null && !_healthQuery.IsEmptyIgnoreFilter)
+            _entityManager.CompleteDependencyBeforeRO<CurrentHealthComponent>();
+            
+            if(!_healthQuery.IsEmptyIgnoreFilter)
             {
-                var health = _healthQuery.GetSingleton<CurrentHealthComponent>().Value;
-                _healthValueLabel.text = $"{health:F0}";
+                var currentHealth = _healthQuery.GetSingleton<CurrentHealthComponent>().Value;
+                _healthValueLabel.text = $"{currentHealth:F0}";
+            }
+
+            _entityManager.CompleteDependencyBeforeRO<LevelComponent>();
+            
+            if(!_levelQuery.IsEmptyIgnoreFilter)
+            {
+                var currentLevel = _levelQuery.GetSingleton<LevelComponent>().Value;
+                _levelValueLabel.text = $"{currentLevel:F0}";
             }
         }
+
+        #endregion
     }
 }
