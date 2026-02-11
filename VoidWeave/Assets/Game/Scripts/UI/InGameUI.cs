@@ -1,6 +1,7 @@
 namespace Game.Scripts.UI
 {
     using Components;
+    using Systems;
     using Unity.Entities;
     using UnityEngine;
     using UnityEngine.UIElements;
@@ -64,33 +65,54 @@ namespace Game.Scripts.UI
             _levelValueLabel.style.backgroundColor = levelLabelColor;
         }
 
-        private void LateUpdate()
+        private void OnEnable()
+        {
+            GameEventsSystem.OnEnergyValueChanged += OnEnergyValueChanged;
+            GameEventsSystem.OnHealthValueChanged += OnHealthValueChanged;
+            GameEventsSystem.OnLevelValueChanged += OnLevelValueChanged;
+        }
+        
+        private void OnDisable()
+        {
+            GameEventsSystem.OnEnergyValueChanged -= OnEnergyValueChanged;
+            GameEventsSystem.OnHealthValueChanged -= OnHealthValueChanged;
+            GameEventsSystem.OnLevelValueChanged -= OnLevelValueChanged;
+        }
+        
+        #endregion
+        
+        #region Event Callbacks
+
+        private void OnEnergyValueChanged(float currentEnergy)
         {
             _entityManager.CompleteDependencyBeforeRO<CurrentEnergyComponent>();
             
             if(!_energyQuery.IsEmptyIgnoreFilter)
             {
-                var currentEnergy = _energyQuery.GetSingleton<CurrentEnergyComponent>().Value;
                 _energyValueLabel.text = $"{currentEnergy:F0}";
             }
-
+        }
+        
+        private void OnHealthValueChanged(float currentHealth)
+        {
             _entityManager.CompleteDependencyBeforeRO<CurrentHealthComponent>();
             
             if(!_healthQuery.IsEmptyIgnoreFilter)
             {
-                var currentHealth = _healthQuery.GetSingleton<CurrentHealthComponent>().Value;
                 _healthValueLabel.text = $"{currentHealth:F0}";
             }
-
+        }
+        
+        private void OnLevelValueChanged(int currentLevel)
+        {
             _entityManager.CompleteDependencyBeforeRO<LevelComponent>();
             
             if(!_levelQuery.IsEmptyIgnoreFilter)
             {
-                var currentLevel = _levelQuery.GetSingleton<LevelComponent>().Value;
                 _levelValueLabel.text = $"{currentLevel:F0}";
             }
         }
-
+        
         #endregion
     }
 }
