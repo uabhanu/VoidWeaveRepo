@@ -12,6 +12,7 @@ namespace Game.Scripts.Systems
         public static event Action<float> OnHealthValueChanged;
         public static event Action<int> OnLevelValueChanged;
         public static event Action<Entity , float , float3> OnTurretCooldownStarted;
+        public static event Action<float , int> OnWavePrepCountdownStarted;
 
         protected override void OnUpdate()
         {
@@ -22,6 +23,8 @@ namespace Game.Scripts.Systems
             foreach(var levelComponent in SystemAPI.Query<RefRO<LevelComponent>>().WithChangeFilter<LevelComponent>()) { OnLevelValueChanged?.Invoke(levelComponent.ValueRO.Value); }
 
             foreach(var (cooldownComponent , transform , turretEntity) in SystemAPI.Query<RefRO<CooldownComponent> , RefRO<LocalTransform>>().WithAny<BeamTurretTag , ScatterTurretTag , StrikerTurretTag>().WithChangeFilter<CooldownComponent>().WithEntityAccess()) { OnTurretCooldownStarted?.Invoke(turretEntity , cooldownComponent.ValueRO.Value , transform.ValueRO.Position); }
+
+            foreach(var (timerComponent , waveStateComponent) in SystemAPI.Query<RefRO<TimerComponent> , RefRO<WaveStateComponent>>()) { OnWavePrepCountdownStarted?.Invoke(timerComponent.ValueRO.Value , waveStateComponent.ValueRO.Value); }
         }
     }
 }

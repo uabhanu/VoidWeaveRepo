@@ -25,8 +25,7 @@ namespace Game.Scripts.UI
         private Label _healthValueLabel;
         private Label _levelTextLabel;
         private Label _levelValueLabel;
-        private Label _timerTextLabel;
-        private Label _timerValueLabel;
+        private Label _timerLabel;
 
         private Camera _mainCamera;
 
@@ -67,8 +66,7 @@ namespace Game.Scripts.UI
             _levelTextLabel = _rootVisualElement.Q<Label>("LevelTextLabel");
             _levelValueLabel = _rootVisualElement.Q<Label>("LevelValueLabel");
 
-            _timerTextLabel = _rootVisualElement.Q<Label>("TimerTextLabel");
-            _timerValueLabel = _rootVisualElement.Q<Label>("TimerValueLabel");
+            _timerLabel = _rootVisualElement.Q<Label>("TimerLabel");
 
             _energyTextLabel.style.backgroundColor = energyLabelColor;
             _energyValueLabel.style.backgroundColor = energyLabelColor;
@@ -78,6 +76,8 @@ namespace Game.Scripts.UI
 
             _levelTextLabel.style.backgroundColor = levelLabelColor;
             _levelValueLabel.style.backgroundColor = levelLabelColor;
+
+            _timerLabel.style.backgroundColor = timerLabelColor;
         }
 
         private void OnEnable()
@@ -86,6 +86,7 @@ namespace Game.Scripts.UI
             GameEventsSystem.OnHealthValueChanged += OnHealthValueChanged;
             GameEventsSystem.OnLevelValueChanged += OnLevelValueChanged;
             GameEventsSystem.OnTurretCooldownStarted += OnTurretCooldownStarted;
+            GameEventsSystem.OnWavePrepCountdownStarted += OnWavePrepCountdownStarted;
         }
 
         private void OnDisable()
@@ -94,6 +95,7 @@ namespace Game.Scripts.UI
             GameEventsSystem.OnHealthValueChanged -= OnHealthValueChanged;
             GameEventsSystem.OnLevelValueChanged -= OnLevelValueChanged;
             GameEventsSystem.OnTurretCooldownStarted -= OnTurretCooldownStarted;
+            GameEventsSystem.OnWavePrepCountdownStarted -= OnWavePrepCountdownStarted;
         }
 
         #endregion
@@ -127,8 +129,7 @@ namespace Game.Scripts.UI
             {
                 if(_trackingEntity == entity)
                 {
-                    _timerValueLabel.style.display = DisplayStyle.None;
-                    _timerTextLabel.style.display = DisplayStyle.None;
+                    _timerLabel.style.display = DisplayStyle.None;
                     _trackingEntity = Entity.Null;
                 }
 
@@ -136,19 +137,31 @@ namespace Game.Scripts.UI
             }
 
             if(timer > 1.0f) { _trackingEntity = entity; }
-            
+
             if(_trackingEntity != entity) return;
-            
-            _timerValueLabel.style.display = DisplayStyle.Flex;
-            _timerValueLabel.text = $"{timer:F1}";
-            _timerTextLabel.style.display = DisplayStyle.Flex;
+
+            _timerLabel.style.display = DisplayStyle.Flex;
+            _timerLabel.text = $"{timer:F1}";
 
             Vector2 screenPos = RuntimePanelUtils.CameraTransformWorldToPanel(_rootVisualElement.panel , worldPosition , _mainCamera);
 
-            _timerValueLabel.style.left = screenPos.x - 25;
-            _timerValueLabel.style.top = screenPos.y - 50;
-            _timerTextLabel.style.left = screenPos.x - 25;
-            _timerTextLabel.style.top = screenPos.y - 70;
+            _timerLabel.style.left = screenPos.x - 25;
+            _timerLabel.style.top = screenPos.y - 50;
+        }
+
+        private void OnWavePrepCountdownStarted(float timer , int waveState)
+        {
+            if(waveState != 0 || timer <= 0)
+            {
+                _timerLabel.style.display = DisplayStyle.None;
+                _timerLabel.text = string.Empty;
+                return;
+            }
+
+            _timerLabel.style.display = DisplayStyle.Flex;
+            _timerLabel.text = $"Next Wave In\n{timer:F0}";
+            
+            _timerLabel.style.translate = new Translate(Length.Percent(120) , Length.Percent(200) , 0);
         }
 
         #endregion
