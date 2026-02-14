@@ -11,6 +11,10 @@ namespace Game.Scripts.UI
     {
         #region Variables
 
+        private Button _pauseButton;
+        private Button _restartButton;
+        private Button _resumeButton;
+
         private Entity _trackingEntity = Entity.Null;
 
         private EntityQuery _energyQuery;
@@ -30,6 +34,7 @@ namespace Game.Scripts.UI
         private Camera _mainCamera;
 
         private VisualElement _rootVisualElement;
+        private VisualElement _pauseMenuVisualElement;
 
         [SerializeField] private Color energyLabelColor = Color.yellow;
         [SerializeField] private Color healthLabelColor = Color.green;
@@ -56,6 +61,14 @@ namespace Game.Scripts.UI
             _levelQuery = _entityManager.CreateEntityQuery(typeof(LevelComponent));
 
             _rootVisualElement = uiDocument.rootVisualElement;
+            
+            _pauseButton = _rootVisualElement.Q<Button>("PauseButton");
+            _restartButton = _rootVisualElement.Q<Button>("RestartButton");
+            _resumeButton = _rootVisualElement.Q<Button>("ResumeButton");
+            
+            _pauseButton.clicked += () => { GameEventsSystem.OnPauseButtonClicked?.Invoke(); };
+            _restartButton.clicked += () => { GameEventsSystem.OnRestartButtonClicked?.Invoke(); };
+            _resumeButton.clicked += () => { GameEventsSystem.OnResumeButtonClicked?.Invoke(); };
 
             _energyTextLabel = _rootVisualElement.Q<Label>("EnergyTextLabel");
             _energyValueLabel = _rootVisualElement.Q<Label>("EnergyValueLabel");
@@ -67,6 +80,9 @@ namespace Game.Scripts.UI
             _levelValueLabel = _rootVisualElement.Q<Label>("LevelValueLabel");
 
             _timerLabel = _rootVisualElement.Q<Label>("TimerLabel");
+
+            _pauseMenuVisualElement = _rootVisualElement.Q<VisualElement>("PauseMenuVisualElement");
+            _pauseMenuVisualElement.style.display = DisplayStyle.None;
 
             _energyTextLabel.style.backgroundColor = energyLabelColor;
             _energyValueLabel.style.backgroundColor = energyLabelColor;
@@ -85,6 +101,9 @@ namespace Game.Scripts.UI
             GameEventsSystem.OnEnergyValueChanged += OnEnergyValueChanged;
             GameEventsSystem.OnHealthValueChanged += OnHealthValueChanged;
             GameEventsSystem.OnLevelValueChanged += OnLevelValueChanged;
+            GameEventsSystem.OnPauseButtonClicked += OnPauseButtonClicked;
+            GameEventsSystem.OnRestartButtonClicked += OnRestartButtonClicked;
+            GameEventsSystem.OnResumeButtonClicked += OnResumeButtonClicked;
             GameEventsSystem.OnTurretCooldownStarted += OnTurretCooldownStarted;
             GameEventsSystem.OnWavePrepCountdownStarted += OnWavePrepCountdownStarted;
         }
@@ -94,10 +113,36 @@ namespace Game.Scripts.UI
             GameEventsSystem.OnEnergyValueChanged -= OnEnergyValueChanged;
             GameEventsSystem.OnHealthValueChanged -= OnHealthValueChanged;
             GameEventsSystem.OnLevelValueChanged -= OnLevelValueChanged;
+            GameEventsSystem.OnPauseButtonClicked -= OnPauseButtonClicked;
+            GameEventsSystem.OnRestartButtonClicked -= OnRestartButtonClicked;
+            GameEventsSystem.OnResumeButtonClicked -= OnResumeButtonClicked;
             GameEventsSystem.OnTurretCooldownStarted -= OnTurretCooldownStarted;
             GameEventsSystem.OnWavePrepCountdownStarted -= OnWavePrepCountdownStarted;
         }
 
+        #endregion
+        
+        #region Button Event Callbacks
+        
+        private void OnPauseButtonClicked()
+        {
+            _entityManager.CreateEntity(typeof(PauseInputTag));
+            _pauseButton.SetEnabled(false);
+            _pauseMenuVisualElement.style.display = DisplayStyle.Flex;
+        }
+
+        private void OnResumeButtonClicked()
+        {
+            _entityManager.CreateEntity(typeof(ResumeInputTag));
+            _pauseButton.SetEnabled(true);
+            _pauseMenuVisualElement.style.display = DisplayStyle.None;
+        }
+
+        private void OnRestartButtonClicked()
+        {
+            _entityManager.CreateEntity(typeof(RestartInputTag));
+        }
+        
         #endregion
 
         #region Event Callbacks
@@ -160,7 +205,7 @@ namespace Game.Scripts.UI
 
             _timerLabel.style.display = DisplayStyle.Flex;
             _timerLabel.text = $"Next Wave In\n{timer:F0}";
-            
+
             _timerLabel.style.translate = new Translate(Length.Percent(120) , Length.Percent(200) , 0);
         }
 

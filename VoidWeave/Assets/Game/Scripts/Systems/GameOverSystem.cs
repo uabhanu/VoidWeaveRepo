@@ -12,7 +12,7 @@ namespace Game.Scripts.Systems
         {
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
             systemState.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
-            systemState.RequireForUpdate(SystemAPI.QueryBuilder().WithAll<DeathTag , PlayerTag>().WithNone<RestartTag>().Build());
+            systemState.RequireForUpdate(SystemAPI.QueryBuilder().WithAll<DeathTag , PlayerTag>().WithNone<GameOverTag>().Build());
         }
 
         [BurstCompile]
@@ -24,7 +24,7 @@ namespace Game.Scripts.Systems
             new CleanupJob { ECBParallelWriter = ecbCleanup.AsParallelWriter() }.ScheduleParallel(SystemAPI.QueryBuilder().WithAny<EnemyTag , ProjectileTag , ScatterTurretTag , StrikerTurretTag>().Build());
 
             Entity restartEntity = ecbRestart.CreateEntity();
-            ecbRestart.AddComponent<RestartTag>(restartEntity);
+            ecbRestart.AddComponent<GameOverTag>(restartEntity);
         }
     }
 
