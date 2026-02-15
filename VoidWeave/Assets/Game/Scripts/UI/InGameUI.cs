@@ -4,6 +4,7 @@ namespace Game.Scripts.UI
     using Systems;
     using Unity.Entities;
     using Unity.Mathematics;
+    using UnityEditor;
     using UnityEngine;
     using UnityEngine.UIElements;
 
@@ -11,7 +12,10 @@ namespace Game.Scripts.UI
     {
         #region Variables
 
+        private readonly System.Collections.Generic.Dictionary<Entity , Label> _turretCooldownLabelsDictionary = new();
+
         private Button _pauseButton;
+        private Button _quitButton;
         private Button _restartButton;
         private Button _resumeButton;
 
@@ -32,24 +36,38 @@ namespace Game.Scripts.UI
         private VisualElement _rootVisualElement;
         private VisualElement _pauseMenuVisualElement;
 
-        [SerializeField] private Color energyLabelColor;
-        [SerializeField] private Color healthLabelColor;
-        [SerializeField] private Color levelLabelColor;
-        [SerializeField] private Color timerLabelBorderColor;
-        [SerializeField] private Color timerLabelColor;
+        [SerializeField] private Color energyLabelColour;
+        [SerializeField] private Color healthLabelColour;
+        [SerializeField] private Color levelLabelColour;
+        [SerializeField] private Color turretCooldownTimerLabelBorderColour;
+        [SerializeField] private Color turretCooldownTimerLabelBgColour;
+        [SerializeField] private Color wavePrepTimerLabelBorderColour;
+        [SerializeField] private Color wavePrepTimerLabelBgColour;
 
-        [SerializeField] private float timerLabelAnchorPercent;
-        [SerializeField] private float timerLabelBorderWidth;
-        [SerializeField] private float timerLabelPadding;
-        [SerializeField] private float timerLabelFontSize;
-        [SerializeField] private float timerLabelHeight;
-        [SerializeField] private float timerLabelOffsetX;
-        [SerializeField] private float timerLabelOffsetY;
-        [SerializeField] private float timerLabelTranslatePercentX;
-        [SerializeField] private float timerLabelTranslatePercentY;
-        [SerializeField] private float timerLabelTranslatePercentZ;
-        [SerializeField] private float timerLabelWidth;
         [SerializeField] private float turretCooldownThreshold;
+
+        [SerializeField] private float turretCooldownTimerLabelAnchorPercent;
+        [SerializeField] private float turretCooldownTimerLabelBorderWidth;
+        [SerializeField] private float turretCooldownTimerLabelPadding;
+        [SerializeField] private float turretCooldownTimerLabelFontSize;
+        [SerializeField] private float turretCooldownTimerLabelHeight;
+        [SerializeField] private float turretCooldownTimerLabelOffsetX;
+        [SerializeField] private float turretCooldownTimerLabelOffsetY;
+        [SerializeField] private float turretCooldownTimerLabelTranslatePercentX;
+        [SerializeField] private float turretCooldownTimerLabelTranslatePercentY;
+        [SerializeField] private float turretCooldownTimerLabelTranslatePercentZ;
+        [SerializeField] private float turretCooldownTimerLabelWidth;
+        [SerializeField] private float wavePrepTimerLabelAnchorPercent;
+        [SerializeField] private float wavePrepTimerLabelBorderWidth;
+        [SerializeField] private float wavePrepTimerLabelPadding;
+        [SerializeField] private float wavePrepTimerLabelFontSize;
+        [SerializeField] private float wavePrepTimerLabelHeight;
+        [SerializeField] private float wavePrepTimerLabelOffsetX;
+        [SerializeField] private float wavePrepTimerLabelOffsetY;
+        [SerializeField] private float wavePrepTimerLabelTranslatePercentX;
+        [SerializeField] private float wavePrepTimerLabelTranslatePercentY;
+        [SerializeField] private float wavePrepTimerLabelTranslatePercentZ;
+        [SerializeField] private float wavePrepTimerLabelWidth;
         [SerializeField] private float zeroThreshold;
 
         [SerializeField] private int waveStateReadyValue;
@@ -74,10 +92,12 @@ namespace Game.Scripts.UI
             _rootVisualElement = uiDocument.rootVisualElement;
 
             _pauseButton = _rootVisualElement.Q<Button>("PauseButton");
+            _quitButton = _rootVisualElement.Q<Button>("QuitButton");
             _restartButton = _rootVisualElement.Q<Button>("RestartButton");
             _resumeButton = _rootVisualElement.Q<Button>("ResumeButton");
 
             _pauseButton.clicked += () => { GameEventsSystem.OnPauseButtonClicked?.Invoke(); };
+            _quitButton.clicked += () => { GameEventsSystem.OnQuitButtonClicked?.Invoke(); };
             _restartButton.clicked += () => { GameEventsSystem.OnRestartButtonClicked?.Invoke(); };
             _resumeButton.clicked += () => { GameEventsSystem.OnResumeButtonClicked?.Invoke(); };
 
@@ -93,14 +113,14 @@ namespace Game.Scripts.UI
             _pauseMenuVisualElement = _rootVisualElement.Q<VisualElement>("PauseMenuVisualElement");
             _pauseMenuVisualElement.style.display = DisplayStyle.None;
 
-            _energyTextLabel.style.backgroundColor = energyLabelColor;
-            _energyValueLabel.style.backgroundColor = energyLabelColor;
+            _energyTextLabel.style.backgroundColor = energyLabelColour;
+            _energyValueLabel.style.backgroundColor = energyLabelColour;
 
-            _healthTextLabel.style.backgroundColor = healthLabelColor;
-            _healthValueLabel.style.backgroundColor = healthLabelColor;
+            _healthTextLabel.style.backgroundColor = healthLabelColour;
+            _healthValueLabel.style.backgroundColor = healthLabelColour;
 
-            _levelTextLabel.style.backgroundColor = levelLabelColor;
-            _levelValueLabel.style.backgroundColor = levelLabelColor;
+            _levelTextLabel.style.backgroundColor = levelLabelColour;
+            _levelValueLabel.style.backgroundColor = levelLabelColour;
         }
 
         private void OnEnable()
@@ -109,6 +129,7 @@ namespace Game.Scripts.UI
             GameEventsSystem.OnHealthValueChanged += OnHealthValueChanged;
             GameEventsSystem.OnLevelValueChanged += OnLevelValueChanged;
             GameEventsSystem.OnPauseButtonClicked += OnPauseButtonClicked;
+            GameEventsSystem.OnQuitButtonClicked += OnQuitButtonClicked;
             GameEventsSystem.OnRestartButtonClicked += OnRestartButtonClicked;
             GameEventsSystem.OnResumeButtonClicked += OnResumeButtonClicked;
             GameEventsSystem.OnTurretCooldownStarted += OnTurretCooldownStarted;
@@ -121,6 +142,7 @@ namespace Game.Scripts.UI
             GameEventsSystem.OnHealthValueChanged -= OnHealthValueChanged;
             GameEventsSystem.OnLevelValueChanged -= OnLevelValueChanged;
             GameEventsSystem.OnPauseButtonClicked -= OnPauseButtonClicked;
+            GameEventsSystem.OnQuitButtonClicked -= OnQuitButtonClicked;
             GameEventsSystem.OnRestartButtonClicked -= OnRestartButtonClicked;
             GameEventsSystem.OnResumeButtonClicked -= OnResumeButtonClicked;
             GameEventsSystem.OnTurretCooldownStarted -= OnTurretCooldownStarted;
@@ -136,6 +158,12 @@ namespace Game.Scripts.UI
             _entityManager.CreateEntity(typeof(PauseInputTag));
             _pauseButton.SetEnabled(false);
             _pauseMenuVisualElement.style.display = DisplayStyle.Flex;
+        }
+
+        private void OnQuitButtonClicked()
+        {
+            if(EditorApplication.isPlaying) { EditorApplication.isPlaying = false; }
+            else { Application.Quit(); }
         }
 
         private void OnResumeButtonClicked()
@@ -172,7 +200,61 @@ namespace Game.Scripts.UI
             if(!_levelQuery.IsEmptyIgnoreFilter) { _levelValueLabel.text = $"{currentLevel:F0}"; }
         }
 
-        private void OnTurretCooldownStarted(Entity entity , float timer , float3 worldPosition) {}
+        private void OnTurretCooldownStarted(Entity entity , float timer , float3 worldPosition)
+        {
+            if(timer <= turretCooldownThreshold)
+            {
+                if(_turretCooldownLabelsDictionary.TryGetValue(entity , out var label))
+                {
+                    _rootVisualElement.Remove(label);
+                    _turretCooldownLabelsDictionary.Remove(entity);
+                }
+
+                return;
+            }
+
+            if(!_turretCooldownLabelsDictionary.TryGetValue(entity , out var cooldownLabel))
+            {
+                cooldownLabel = new Label
+                {
+                    style =
+                    {
+                        backgroundColor = turretCooldownTimerLabelBgColour ,
+                        borderBottomColor = turretCooldownTimerLabelBorderColour ,
+                        borderBottomWidth = turretCooldownTimerLabelBorderWidth ,
+                        borderLeftColor = turretCooldownTimerLabelBorderColour ,
+                        borderLeftWidth = turretCooldownTimerLabelBorderWidth ,
+                        borderRightColor = turretCooldownTimerLabelBorderColour ,
+                        borderRightWidth = turretCooldownTimerLabelBorderWidth ,
+                        borderTopColor = turretCooldownTimerLabelBorderColour ,
+                        borderTopWidth = turretCooldownTimerLabelBorderWidth ,
+                        fontSize = turretCooldownTimerLabelFontSize ,
+                        height = turretCooldownTimerLabelHeight ,
+                        left = Length.Percent(turretCooldownTimerLabelAnchorPercent) ,
+                        paddingBottom = turretCooldownTimerLabelPadding ,
+                        paddingLeft = turretCooldownTimerLabelPadding ,
+                        paddingRight = turretCooldownTimerLabelPadding ,
+                        paddingTop = turretCooldownTimerLabelPadding ,
+                        position = Position.Absolute ,
+                        top = Length.Percent(turretCooldownTimerLabelAnchorPercent) ,
+                        translate = new Translate(Length.Percent(turretCooldownTimerLabelTranslatePercentX) , Length.Percent(turretCooldownTimerLabelTranslatePercentY) , turretCooldownTimerLabelTranslatePercentZ) ,
+                        unityFontStyleAndWeight = FontStyle.Bold ,
+                        unityTextAlign = TextAnchor.MiddleCenter ,
+                        width = turretCooldownTimerLabelWidth
+                    }
+                };
+
+                _rootVisualElement.Add(cooldownLabel);
+                _turretCooldownLabelsDictionary.Add(entity , cooldownLabel);
+            }
+
+            cooldownLabel.text = $"{timer:F0}";
+
+            Vector2 screenPoint = RuntimePanelUtils.CameraTransformWorldToPanel(_rootVisualElement.panel , worldPosition , Camera.main);
+
+            cooldownLabel.style.left = screenPoint.x;
+            cooldownLabel.style.top = screenPoint.y;
+        }
 
         private void OnWavePrepCountdownStarted(float timer , int waveState)
         {
@@ -193,32 +275,34 @@ namespace Game.Scripts.UI
                 {
                     style =
                     {
-                        backgroundColor = timerLabelColor ,
-                        borderBottomColor = timerLabelBorderColor ,
-                        borderBottomWidth = timerLabelBorderWidth ,
-                        borderLeftColor = timerLabelBorderColor ,
-                        borderLeftWidth = timerLabelBorderWidth ,
-                        borderRightColor = timerLabelBorderColor ,
-                        borderRightWidth = timerLabelBorderWidth ,
-                        borderTopColor = timerLabelBorderColor ,
-                        borderTopWidth = timerLabelBorderWidth ,
-                        fontSize = timerLabelFontSize ,
-                        height = timerLabelHeight ,
-                        left = Length.Percent(timerLabelAnchorPercent) ,
-                        paddingBottom = timerLabelPadding ,
-                        paddingLeft = timerLabelPadding ,
-                        paddingRight = timerLabelPadding ,
-                        paddingTop = timerLabelPadding ,
+                        backgroundColor = wavePrepTimerLabelBgColour ,
+                        borderBottomColor = wavePrepTimerLabelBorderColour ,
+                        borderBottomWidth = wavePrepTimerLabelBorderWidth ,
+                        borderLeftColor = wavePrepTimerLabelBorderColour ,
+                        borderLeftWidth = wavePrepTimerLabelBorderWidth ,
+                        borderRightColor = wavePrepTimerLabelBorderColour ,
+                        borderRightWidth = wavePrepTimerLabelBorderWidth ,
+                        borderTopColor = wavePrepTimerLabelBorderColour ,
+                        borderTopWidth = wavePrepTimerLabelBorderWidth ,
+                        fontSize = wavePrepTimerLabelFontSize ,
+                        height = wavePrepTimerLabelHeight ,
+                        left = Length.Percent(wavePrepTimerLabelAnchorPercent) ,
+                        paddingBottom = wavePrepTimerLabelPadding ,
+                        paddingLeft = wavePrepTimerLabelPadding ,
+                        paddingRight = wavePrepTimerLabelPadding ,
+                        paddingTop = wavePrepTimerLabelPadding ,
                         position = Position.Absolute ,
-                        top = Length.Percent(timerLabelAnchorPercent) ,
-                        translate = new Translate(Length.Percent(timerLabelTranslatePercentX) , Length.Percent(timerLabelTranslatePercentY) , timerLabelTranslatePercentZ) ,
+                        top = Length.Percent(wavePrepTimerLabelAnchorPercent) ,
+                        translate = new Translate(Length.Percent(wavePrepTimerLabelTranslatePercentX) , Length.Percent(wavePrepTimerLabelTranslatePercentY) , wavePrepTimerLabelTranslatePercentZ) ,
                         unityFontStyleAndWeight = FontStyle.Bold ,
                         unityTextAlign = TextAnchor.MiddleCenter ,
-                        width = timerLabelWidth
+                        width = wavePrepTimerLabelWidth
                     }
                 };
 
                 _rootVisualElement.Add(_wavePrepLabel);
+                
+                _wavePrepLabel.SendToBack();
             }
 
             _wavePrepLabel.text = $"Next Wave In\n{timer:F0}";

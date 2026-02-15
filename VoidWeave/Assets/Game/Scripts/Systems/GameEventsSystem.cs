@@ -12,6 +12,7 @@ namespace Game.Scripts.Systems
         public static event Action<float> OnHealthValueChanged;
         public static event Action<int> OnLevelValueChanged;
         public static Action OnPauseButtonClicked;
+        public static Action OnQuitButtonClicked;
         public static Action OnRestartButtonClicked;
         public static Action OnResumeButtonClicked;
         public static event Action<Entity , float , float3> OnTurretCooldownStarted;

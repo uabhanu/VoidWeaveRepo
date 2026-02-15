@@ -377,23 +377,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e7a3e84cb19ba24e829216d6da27252, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.InGameUI
-  energyLabelColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  healthLabelColor: {r: 0, g: 1, b: 0, a: 1}
-  levelLabelColor: {r: 1, g: 0.6470588, b: 0, a: 1}
-  timerLabelBorderColor: {r: 0, g: 0, b: 0, a: 1}
-  timerLabelColor: {r: 1, g: 0, b: 0, a: 1}
-  timerLabelAnchorPercent: 50
-  timerLabelBorderWidth: 5.5
-  timerLabelPadding: 6.5
-  timerLabelFontSize: 50
-  timerLabelHeight: 200
-  timerLabelOffsetX: 25
-  timerLabelOffsetY: 50
-  timerLabelTranslatePercentX: -50
-  timerLabelTranslatePercentY: -50
-  timerLabelTranslatePercentZ: 0
-  timerLabelWidth: 400
+  energyLabelColour: {r: 1, g: 1, b: 0, a: 1}
+  healthLabelColour: {r: 0, g: 1, b: 0, a: 1}
+  levelLabelColour: {r: 1, g: 0.49019608, b: 0, a: 1}
+  turretCooldownTimerLabelBorderColour: {r: 0, g: 0, b: 0, a: 1}
+  turretCooldownTimerLabelBgColour: {r: 1, g: 1, b: 1, a: 1}
+  wavePrepTimerLabelBorderColour: {r: 0, g: 0, b: 0, a: 1}
+  wavePrepTimerLabelBgColour: {r: 1, g: 0, b: 0, a: 1}
   turretCooldownThreshold: 1
+  turretCooldownTimerLabelAnchorPercent: 50
+  turretCooldownTimerLabelBorderWidth: 5.5
+  turretCooldownTimerLabelPadding: 6.5
+  turretCooldownTimerLabelFontSize: 50
+  turretCooldownTimerLabelHeight: 100
+  turretCooldownTimerLabelOffsetX: 0
+  turretCooldownTimerLabelOffsetY: 0
+  turretCooldownTimerLabelTranslatePercentX: -50
+  turretCooldownTimerLabelTranslatePercentY: -160
+  turretCooldownTimerLabelTranslatePercentZ: 0
+  turretCooldownTimerLabelWidth: 100
+  wavePrepTimerLabelAnchorPercent: 50
+  wavePrepTimerLabelBorderWidth: 5.5
+  wavePrepTimerLabelPadding: 6.5
+  wavePrepTimerLabelFontSize: 50
+  wavePrepTimerLabelHeight: 200
+  wavePrepTimerLabelOffsetX: 0
+  wavePrepTimerLabelOffsetY: 0
+  wavePrepTimerLabelTranslatePercentX: -50
+  wavePrepTimerLabelTranslatePercentY: -50
+  wavePrepTimerLabelTranslatePercentZ: 0
+  wavePrepTimerLabelWidth: 400
   zeroThreshold: 0
   waveStateReadyValue: 0
   uiDocument: {fileID: 520609773}
