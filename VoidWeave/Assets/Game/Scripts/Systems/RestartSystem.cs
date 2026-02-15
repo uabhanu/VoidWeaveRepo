@@ -1,26 +1,25 @@
 namespace Game.Scripts.Systems
 {
-    using Game.Scripts.Components;
-    using Unity.Collections;
+    using Components;
     using Unity.Entities;
+    using UnityEngine;
     using UnityEngine.SceneManagement;
 
-    public partial class RestartSystem : SystemBase
+    [UpdateInGroup(typeof(InitializationSystemGroup))]
+    public partial struct RestartSystem : ISystem
     {
-        protected override void OnCreate() { RequireForUpdate<RestartTag>(); }
+        public void OnCreate(ref SystemState systemState) { systemState.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>(); }
 
-        protected override void OnUpdate()
+        public void OnUpdate(ref SystemState systemState)
         {
-            // We destroy the entity so this system doesn't run again next frame to prevent infinite restarts
-            var ecb = new EntityCommandBuffer(Allocator.Temp);
+            EntityCommandBuffer ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);
 
-            foreach((RefRO<RestartTag> _ , Entity entity) in SystemAPI.Query<RefRO<RestartTag>>().WithEntityAccess()) ecb.DestroyEntity(entity);
-
-            ecb.Playback(EntityManager);
-            ecb.Dispose();
-
-            int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-            SceneManager.LoadScene(currentSceneIndex);
+            foreach((RefRO<RestartInputTag> _ , Entity entity) in SystemAPI.Query<RefRO<RestartInputTag>>().WithEntityAccess())
+            {
+                ecb.DestroyEntity(entity);
+                Time.timeScale = 1f;
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
         }
     }
 }
