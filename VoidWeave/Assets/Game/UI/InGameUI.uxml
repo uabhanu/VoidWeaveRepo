@@ -13,9 +13,6 @@
             <ui:Label name="LevelTextLabel" text="Level" style="-unity-font-style: bold; -unity-text-align: upper-center; font-size: 80px; position: absolute;"/>
             <ui:Label name="LevelValueLabel" style="-unity-font-style: bold; -unity-text-align: upper-center; font-size: 80px; position: absolute; left: 250px;"/>
         </ui:VisualElement>
-        <ui:VisualElement name="TimerUIVisualElement">
-            <ui:Label name="TimerLabel" style="-unity-font-style: bold; -unity-text-align: upper-center; font-size: 80px; position: absolute;"/>
-        </ui:VisualElement>
         <ui:Button text="II" name="PauseButton" style="align-self: flex-end; top: 20px; right: 20px; -unity-font-style: bold; font-size: 50px; width: 100px;"/>
         <ui:VisualElement name="PauseMenuVisualElement" style="align-self: center; align-content: center; justify-content: space-between; align-items: center; background-color: rgba(0, 0, 0, 0.2);">
             <ui:Button name="ResumeButton" text="Resume" class="pauseMenuButton" style="align-self: flex-end; aspect-ratio: 1.777778; font-size: 50px; -unity-font-style: bold;"/>

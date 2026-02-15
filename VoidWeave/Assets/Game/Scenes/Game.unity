@@ -377,8 +377,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e7a3e84cb19ba24e829216d6da27252, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.InGameUI
+  energyLabelColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  healthLabelColor: {r: 0, g: 1, b: 0, a: 1}
+  levelLabelColor: {r: 1, g: 0.6470588, b: 0, a: 1}
+  timerLabelBorderColor: {r: 0, g: 0, b: 0, a: 1}
+  timerLabelColor: {r: 1, g: 0, b: 0, a: 1}
+  timerLabelAnchorPercent: 50
+  timerLabelBorderWidth: 5.5
+  timerLabelPadding: 6.5
+  timerLabelFontSize: 50
+  timerLabelHeight: 200
+  timerLabelOffsetX: 25
+  timerLabelOffsetY: 50
+  timerLabelTranslatePercentX: -50
+  timerLabelTranslatePercentY: -50
+  timerLabelTranslatePercentZ: 0
+  timerLabelWidth: 400
+  turretCooldownThreshold: 1
+  zeroThreshold: 0
+  waveStateReadyValue: 0
   uiDocument: {fileID: 520609773}
-  healthBarColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
