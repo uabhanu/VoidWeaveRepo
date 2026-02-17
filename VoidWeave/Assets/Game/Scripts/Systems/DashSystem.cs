@@ -35,6 +35,7 @@ namespace Game.Scripts.Systems
     }
 
     [BurstCompile]
+    [WithOptions(EntityQueryOptions.IgnoreComponentEnabledState)]
     public partial struct DashJob : IJobEntity
     {
         public float DashCooldownDefault;
@@ -45,7 +46,7 @@ namespace Game.Scripts.Systems
         public float MovementNone;
         public float TimerExpired;
 
-        private void Execute(in BaseMoveSpeedComponent baseMoveSpeedComponent , ref DashCooldownComponent dashCooldownComponent , ref DashDurationComponent dashDurationComponent , in DashMultiplierComponent dashMultiplierComponent , ref MoveSpeedComponent moveSpeedComponent , in PlayerInputComponent playerInputComponent)
+        private void Execute(in BaseMoveSpeedComponent baseMoveSpeedComponent , ref DashCooldownComponent dashCooldownComponent , ref DashDurationComponent dashDurationComponent , in DashMultiplierComponent dashMultiplierComponent , EnabledRefRW<DashVisualTag> dashVisualTag , ref MoveSpeedComponent moveSpeedComponent , in PlayerInputComponent playerInputComponent)
         {
             bool isDashInputActive = (playerInputComponent.Value & InputDashBit) != (int)MovementNone;
             bool isCooldownReady = dashCooldownComponent.Value <= TimerExpired;
@@ -53,7 +54,10 @@ namespace Game.Scripts.Systems
             dashDurationComponent.Value = math.select(math.max(TimerExpired , dashDurationComponent.Value - DeltaTime) , DashDurationDefault , isDashInputActive && isCooldownReady);
             dashCooldownComponent.Value = math.select(math.max(TimerExpired , dashCooldownComponent.Value - DeltaTime) , DashCooldownDefault , isDashInputActive && isCooldownReady);
 
-            moveSpeedComponent.Value = baseMoveSpeedComponent.Value * math.select(MovementActive , dashMultiplierComponent.Value , dashDurationComponent.Value > TimerExpired);
+            bool isDashing = dashDurationComponent.Value > TimerExpired;
+
+            dashVisualTag.ValueRW = isDashing;
+            moveSpeedComponent.Value = baseMoveSpeedComponent.Value * math.select(MovementActive , dashMultiplierComponent.Value , isDashing);
         }
     }
 }
