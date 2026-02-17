@@ -392,8 +392,8 @@ MonoBehaviour:
   turretCooldownTimerLabelHeight: 100
   turretCooldownTimerLabelOffsetX: 0
   turretCooldownTimerLabelOffsetY: 0
-  turretCooldownTimerLabelTranslatePercentX: -50
-  turretCooldownTimerLabelTranslatePercentY: -160
+  turretCooldownTimerLabelTranslatePercentX: -60
+  turretCooldownTimerLabelTranslatePercentY: -220
   turretCooldownTimerLabelTranslatePercentZ: 0
   turretCooldownTimerLabelWidth: 100
   wavePrepTimerLabelAnchorPercent: 50
