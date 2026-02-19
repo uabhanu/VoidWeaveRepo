@@ -30,7 +30,6 @@ namespace Game.Scripts.Entities
         [SerializeField] private float lootMultiplierPerLevel;
         [SerializeField] private float lootPickupRadius;
         [SerializeField] private int minEnemiesToKill;
-        [SerializeField] private int minProjectileCount = 1;
         [SerializeField] private int minStartingLevel;
         [SerializeField] private float movementActive;
         [SerializeField] private float movementNone;
@@ -99,7 +98,6 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new LevelToUnlockTriangleEnemyComponent { Value = authoring.triangleEnemyUnlockLevel });
                 AddComponent(entity , new LootMultiplierComponent { Value = authoring.lootMultiplierPerLevel });
                 AddComponent(entity , new LootPickupRadiusComponent { Value = authoring.lootPickupRadius });
-                AddComponent(entity , new MinProjectileCountComponent { Value = authoring.minProjectileCount });
                 AddComponent(entity , new MovementActiveComponent { Value = authoring.movementActive });
                 AddComponent(entity , new MovementNoneComponent { Value = authoring.movementNone });
                 AddComponent(entity , new NoActionComponent { Value = authoring.noAction });

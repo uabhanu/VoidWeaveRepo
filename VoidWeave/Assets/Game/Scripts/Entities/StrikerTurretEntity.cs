@@ -1,7 +1,8 @@
 namespace Game.Scripts.Entities
 {
-    using Game.Scripts.Components;
+    using Components;
     using Unity.Entities;
+    using Unity.Mathematics;
     using UnityEngine;
 
     public class StrikerTurretEntity : MonoBehaviour
@@ -12,6 +13,7 @@ namespace Game.Scripts.Entities
         [SerializeField] private float damage;
         [SerializeField] private int projectileCount;
         [SerializeField] private float range;
+        [SerializeField] private Transform spawnPoint;
         [SerializeField] private float spreadDegrees;
         [SerializeField] private int teamID;
 
@@ -25,6 +27,7 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new BulletEntityComponent { Entity = GetEntity(authoring.bulletPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new CooldownComponent { Value = authoring.cooldownTime });
                 AddComponent(entity , new DamageComponent { Value = authoring.damage });
+                AddComponent(entity , new NozzleOffsetComponent { Value = (float3)authoring.spawnPoint.position - (float3)authoring.transform.position });
                 AddComponent(entity , new ProjectileCountComponent { Value = authoring.projectileCount });
                 AddComponent(entity , new RangeComponent { Value = authoring.range });
                 AddComponent(entity , new SpreadComponent { Value = authoring.spreadDegrees });
