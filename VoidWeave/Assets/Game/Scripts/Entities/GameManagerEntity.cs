@@ -24,7 +24,6 @@ namespace Game.Scripts.Entities
                 initialMask |= math.select(authoring.unlockedNone , authoring.unlockedSquareEnemy , startingLevel >= authoring.squareEnemyUnlockLevel);
 
                 AddComponent(entity , new BeamTurretUnlockLevelComponent { Value = authoring.beamTurretUnlockLevel });
-                AddComponent(entity , new BulletRotationOffsetComponent { Value = authoring.bulletRotationOffset });
                 AddComponent(entity , new BoundaryOffsetComponent { Value = authoring.boundaryOffset });
                 AddComponent(entity , new CameraOrthographicSizeComponent { Value = authoring.cameraOrthographicSize });
                 AddComponent(entity , new CollisionActiveComponent { Value = authoring.collisionActive });
