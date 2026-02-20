@@ -1,6 +1,7 @@
 namespace Game.Scripts.UI
 {
     using Components;
+    using System.Collections.Generic;
     using Systems;
     using Unity.Entities;
     using Unity.Mathematics;
@@ -12,7 +13,7 @@ namespace Game.Scripts.UI
     {
         #region Variables
 
-        private readonly System.Collections.Generic.Dictionary<Entity , Label> _turretCooldownLabelsDictionary = new();
+        private readonly Dictionary<Entity , Label> _turretCooldownLabelsDictionary = new();
 
         private Button _pauseButton;
         private Button _quitButton;
@@ -162,8 +163,10 @@ namespace Game.Scripts.UI
 
         private void OnQuitButtonClicked()
         {
-            if(EditorApplication.isPlaying) { EditorApplication.isPlaying = false; }
-            else { Application.Quit(); }
+            if(EditorApplication.isPlaying)
+                EditorApplication.isPlaying = false;
+            else
+                Application.Quit();
         }
 
         private void OnResumeButtonClicked()
@@ -183,28 +186,28 @@ namespace Game.Scripts.UI
         {
             _entityManager.CompleteDependencyBeforeRO<CurrentEnergyComponent>();
 
-            if(!_energyQuery.IsEmptyIgnoreFilter) { _energyValueLabel.text = $"{currentEnergy:F0}"; }
+            if(!_energyQuery.IsEmptyIgnoreFilter) _energyValueLabel.text = $"{currentEnergy:F0}";
         }
 
         private void OnHealthValueChanged(float currentHealth)
         {
             _entityManager.CompleteDependencyBeforeRO<CurrentHealthComponent>();
 
-            if(!_healthQuery.IsEmptyIgnoreFilter) { _healthValueLabel.text = $"{currentHealth:F0}"; }
+            if(!_healthQuery.IsEmptyIgnoreFilter) _healthValueLabel.text = $"{currentHealth:F0}";
         }
 
         private void OnLevelValueChanged(int currentLevel)
         {
             _entityManager.CompleteDependencyBeforeRO<LevelComponent>();
 
-            if(!_levelQuery.IsEmptyIgnoreFilter) { _levelValueLabel.text = $"{currentLevel:F0}"; }
+            if(!_levelQuery.IsEmptyIgnoreFilter) _levelValueLabel.text = $"{currentLevel:F0}";
         }
 
         private void OnTurretCooldownStarted(Entity entity , float timer , float3 worldPosition)
         {
             if(timer <= turretCooldownThreshold)
             {
-                if(_turretCooldownLabelsDictionary.TryGetValue(entity , out var label))
+                if(_turretCooldownLabelsDictionary.TryGetValue(entity , out Label label))
                 {
                     _rootVisualElement.Remove(label);
                     _turretCooldownLabelsDictionary.Remove(entity);
@@ -213,7 +216,7 @@ namespace Game.Scripts.UI
                 return;
             }
 
-            if(!_turretCooldownLabelsDictionary.TryGetValue(entity , out var cooldownLabel))
+            if(!_turretCooldownLabelsDictionary.TryGetValue(entity , out Label cooldownLabel))
             {
                 cooldownLabel = new Label
                 {
@@ -301,7 +304,7 @@ namespace Game.Scripts.UI
                 };
 
                 _rootVisualElement.Add(_wavePrepLabel);
-                
+
                 _wavePrepLabel.SendToBack();
             }
 

@@ -1,13 +1,13 @@
 namespace Game.Scripts.Entities
 {
-    using Game.Scripts.Components;
+    using Components;
     using Unity.Entities;
     using UnityEngine;
 
     public class PlayerEntity : MonoBehaviour
     {
         private static readonly int BASE_COLOR = Shader.PropertyToID("_BaseColor");
-        
+
         [SerializeField] private float collisionRadius; // Defines the radius of the hitbox used for collision detection
         [SerializeField] private Color dashColor;
         [SerializeField] private float dashCooldownTimer; // Time before next dash   
@@ -22,7 +22,7 @@ namespace Game.Scripts.Entities
             public override void Bake(PlayerEntity authoring)
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-                MeshRenderer meshRenderer = authoring.GetComponent<MeshRenderer>();
+                var meshRenderer = authoring.GetComponent<MeshRenderer>();
 
                 AddComponent(entity , new BaseMoveSpeedComponent { Value = authoring.moveSpeed });
                 AddComponent(entity , new CollisionRadiusComponent { Value = authoring.collisionRadius });

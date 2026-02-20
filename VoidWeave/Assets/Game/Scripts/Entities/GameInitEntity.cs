@@ -16,14 +16,14 @@ namespace Game.Scripts.Entities
         {
             public override void Bake(GameInitEntity authoring)
             {
-                var entity = GetEntity(TransformUsageFlags.None);
+                Entity entity = GetEntity(TransformUsageFlags.None);
 
                 AddComponent(entity , new EnemySpawnerEntityComponent { Entity = GetEntity(authoring.enemySpawnerEntityPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new GameManagerEntityComponent { Entity = GetEntity(authoring.gameManagerEntityPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new InputEntityComponent { Entity = GetEntity(authoring.inputEntityPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new PlayerEntityComponent { Entity = GetEntity(authoring.playerEntityPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new TurretConfigEntityComponent { Entity = GetEntity(authoring.turretConfigEntityPrefab , TransformUsageFlags.Dynamic) });
-                
+
                 AddComponent(entity , new InitializeGameTag());
             }
         }
