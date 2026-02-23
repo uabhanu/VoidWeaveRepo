@@ -325,7 +325,8 @@ MonoBehaviour:
   minRotationRequired: 0.999
   projectileCount: 3
   range: 5.5
-  rotationSpeed: 0.1
+  rotationOffset: 90
+  rotationSpeed: 1.6
   spawnPoint: {fileID: 3535178278333309168}
   spreadDegrees: 30
   teamID: 0

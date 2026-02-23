@@ -67,7 +67,7 @@ namespace Game.Scripts.Systems
 
                 // COMBINED ROTATION: Base turret rotation + the spread offset
                 // We removed BulletRotationOffset because it is now handled by the BulletVisual child
-                float currentAngleOffset = -startOffset + (angleStep * i);
+                float currentAngleOffset = -startOffset + angleStep * i;
                 quaternion finalRotation = math.mul(turretRotation , quaternion.RotateZ(currentAngleOffset));
 
                 ECBParallelWriter.SetComponent(entityIndexInQuery , newBullet , new DamageComponent { Value = damageComponent.Value });

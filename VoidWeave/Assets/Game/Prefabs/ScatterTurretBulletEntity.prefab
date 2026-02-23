@@ -104,6 +104,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entities.ProjectileEntity
   collisionRadius: 0.3
-  lifetime: 0.5
+  lifetime: 3.5
   speed: 20.4
   teamID: 0
