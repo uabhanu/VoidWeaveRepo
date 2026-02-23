@@ -14,7 +14,6 @@ namespace Game.Scripts.Entities
         [SerializeField] private float minRotationRequired;
         [SerializeField] private int projectileCount;
         [SerializeField] private float range;
-        [SerializeField] private float rotationSpeed;
         [SerializeField] private Transform spawnPoint;
         [SerializeField] private float spreadDegrees;
         [SerializeField] private int teamID;
@@ -33,12 +32,7 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new NozzleOffsetComponent { Value = (float3)authoring.spawnPoint.position - (float3)authoring.transform.position });
                 AddComponent(entity , new ProjectileCountComponent { Value = authoring.projectileCount });
                 AddComponent(entity , new RangeComponent { Value = authoring.range });
-                AddComponent(entity , new RotationSpeedComponent{ Value = authoring.rotationSpeed });
                 AddComponent(entity , new SpreadComponent { Value = authoring.spreadDegrees });
-                
-                AddComponent<StartRotatingEventTag>(entity);
-                SetComponentEnabled<StartRotatingEventTag>(entity , false);
-
                 AddComponent(entity , new TargetPositionComponent());
                 AddComponent(entity , new TeamComponent { Value = authoring.teamID });
 
