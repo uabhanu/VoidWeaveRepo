@@ -263,8 +263,10 @@ MonoBehaviour:
   bulletPrefab: {fileID: 4819364062000519533, guid: ed783d51270447049abb6fe2f4f0b7d8, type: 3}
   cooldownTime: 1.8
   damage: 24.4
+  minRotationRequired: 0.999
   projectileCount: 1
   range: 5.2
+  rotationSpeed: 0.1
   spawnPoint: {fileID: 5801169038592613888}
   spreadDegrees: 0
   teamID: 0
