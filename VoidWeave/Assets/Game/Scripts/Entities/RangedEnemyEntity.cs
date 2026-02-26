@@ -46,6 +46,7 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new TeamComponent { Value = authoring.teamID });
 
                 AddComponent(entity , new EnemyTag());
+                AddComponent(entity , new SquareEnemyTag());
             }
         }
     }

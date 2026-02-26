@@ -22,7 +22,7 @@ namespace Game.Scripts.Entities
             public override void Bake(PlayerEntity authoring)
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-                var meshRenderer = authoring.GetComponent<MeshRenderer>();
+                var meshRenderer = authoring.GetComponentInChildren<MeshRenderer>();
 
                 AddComponent(entity , new BaseMoveSpeedComponent { Value = authoring.moveSpeed });
                 AddComponent(entity , new CollisionRadiusComponent { Value = authoring.collisionRadius });

@@ -78,31 +78,32 @@ namespace Game.Scripts.Systems
 
     // --- BASIC ENEMY (Standard Chase) ---
     [BurstCompile]
-    [WithAll(typeof(LineEnemyTag))]
     public partial struct BasicEnemyMovementJob : IJobEntity
     {
         public float DeltaTime;
 
-        private void Execute(ref LocalTransform localTransform , in MoveSpeedComponent moveSpeedComponent , in TargetPositionComponent targetPositionComponent)
+        private void Execute(in LineEnemyComponent lineEnemyComponent , ref LocalTransform localTransform , in MoveSpeedComponent moveSpeedComponent , in TargetPositionComponent targetPositionComponent)
         {
             float3 direction = math.normalizesafe(targetPositionComponent.Value - localTransform.Position);
-            localTransform.Position.xy += direction.xy * moveSpeedComponent.Value * DeltaTime;
+            int isLineEnemy = lineEnemyComponent.Value;
+            localTransform.Position.xy += direction.xy * moveSpeedComponent.Value * DeltaTime * isLineEnemy;
         }
     }
 
     // --- FAST ENEMY (Zig-Zag / Evasive) ---
     [BurstCompile]
-    [WithAll(typeof(TriangleEnemyTag))]
     public partial struct FastEnemyMovementJob : IJobEntity
     {
         public float DeltaTime;
         public float ElapsedTime;
         public float MovementNone;
 
-        private void Execute(ref LocalTransform localTransform , in MovementZigZagAmplitudeComponent movementZigZagAmplitudeComponent , in MovementZigZagFrequencyComponent movementZigZagFrequencyComponent , in MoveSpeedComponent moveSpeedComponent , in TargetPositionComponent targetPositionComponent)
+        private void Execute(ref LocalTransform localTransform , in MovementZigZagAmplitudeComponent movementZigZagAmplitudeComponent , in MovementZigZagFrequencyComponent movementZigZagFrequencyComponent , in MoveSpeedComponent moveSpeedComponent , in TargetPositionComponent targetPositionComponent , in TriangleEnemyComponent triangleEnemyComponent)
         {
             // Calculate base direction
             float3 direction = math.normalizesafe(targetPositionComponent.Value - localTransform.Position);
+            
+            int isTriangleEnemy = triangleEnemyComponent.Value;
 
             // Calculate perpendicular vector (Tangent) for the Zig-Zag offset
             // Rotates direction by 90 degrees in 2D: (x, y) -> (-y, x)
@@ -113,7 +114,7 @@ namespace Game.Scripts.Systems
             float sineOffset = math.sin(ElapsedTime * movementZigZagFrequencyComponent.Value) * movementZigZagAmplitudeComponent.Value;
 
             // Combine Forward + Sideways Movement
-            localTransform.Position.xy += (direction.xy + tangent.xy * sineOffset) * moveSpeedComponent.Value * DeltaTime;
+            localTransform.Position.xy += (direction.xy + tangent.xy * sineOffset) * moveSpeedComponent.Value * DeltaTime * isTriangleEnemy;
         }
     }
 
