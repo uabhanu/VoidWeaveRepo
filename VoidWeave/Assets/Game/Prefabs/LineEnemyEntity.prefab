@@ -48,6 +48,7 @@ MonoBehaviour:
   attackRate: 2.5
   collisionRadius: 0.5
   damage: 10
+  deathVfxPrefab: {fileID: 4819364062000519533, guid: 42d4aff6602e65646aa10a712ea79b1d, type: 3}
   isLineEnemy: 1
   isTriangleEnemy: 0
   lootAmount: 5

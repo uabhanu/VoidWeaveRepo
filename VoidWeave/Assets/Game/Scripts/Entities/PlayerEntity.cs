@@ -10,8 +10,9 @@ namespace Game.Scripts.Entities
         [SerializeField] private float collisionRadius; // Defines the radius of the hitbox used for collision detection
         [SerializeField] private float dashCooldownTimer; // Time before next dash   
         [SerializeField] private float dashDuration; // Length of dash   
-        [SerializeField] private Material dashMaterial;   
+        [SerializeField] private Material dashMaterial;
         [SerializeField] private float dashMultiplier; // Speed boost (5 * 5 = 25 units/sec)
+        [SerializeField] private GameObject deathVfxPrefab;
         [SerializeField] private int maxHealth;
         [SerializeField] private float moveSpeed;
         [SerializeField] private int teamID;
@@ -33,13 +34,14 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new DashCooldownComponent { Value = authoring.dashCooldownTimer });
                 AddComponent(entity , new DashDurationComponent { Value = authoring.dashDuration });
                 AddComponent(entity , new DashMultiplierComponent { Value = authoring.dashMultiplier });
+                AddComponent(entity , new DeathVfxComponent { Value = GetEntity(authoring.deathVfxPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new MaxHealthComponent { Value = authoring.maxHealth });
                 AddComponent(entity , new MoveSpeedComponent { Value = authoring.moveSpeed });
                 AddComponent(entity , new PlayerInputComponent());
                 AddComponent(entity , new SelectedTurretCostComponent());
                 AddComponent(entity , new SelectedTurretEntityComponent { Entity = Entity.Null });
                 AddComponent(entity , new TeamComponent { Value = authoring.teamID });
-                
+
                 AddSharedComponentManaged(entity , renderMeshArray);
 
                 AddComponent(entity , new DashVisualTag());

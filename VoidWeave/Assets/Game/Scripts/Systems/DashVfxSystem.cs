@@ -7,7 +7,7 @@ namespace Game.Scripts.Systems
     using UnityEngine.Rendering;
 
     [UpdateInGroup(typeof(PresentationSystemGroup))]
-    public partial struct DashVisualSystem : ISystem
+    public partial struct DashVfxSystem : ISystem
     {
         private const int DefaultMeshIndex = 0;
 

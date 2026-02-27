@@ -2,7 +2,7 @@ namespace Game.Scripts.Components
 {
     using Unity.Entities;
 
-    public struct ProjectileLifetimeComponent : IComponentData
+    public struct LifetimeComponent : IComponentData
     {
         public float Value;
     }
