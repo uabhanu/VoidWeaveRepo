@@ -35,7 +35,7 @@ namespace Game.Scripts.Systems
 
             int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
             int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
-            float targetDefaultPosition = SystemAPI.GetSingleton<TargetDefaultPositionComponent>().Value;
+            float3 targetDefaultPosition = SystemAPI.GetSingleton<TargetDefaultPositionComponent>().Value;
 
             NativeList<LocalToWorld> enemyPositionsNativeList = _enemyTargetQuery.ToComponentDataListAsync<LocalToWorld>(Allocator.TempJob , out JobHandle jobHandle1);
             NativeList<TeamComponent> enemyTeamComponentsNativeList = _enemyTargetQuery.ToComponentDataListAsync<TeamComponent>(Allocator.TempJob , out JobHandle jobHandle2);
@@ -48,7 +48,7 @@ namespace Game.Scripts.Systems
             combinedDependencies = JobHandle.CombineDependencies(combinedDependencies , jobHandle4);
 
             JobHandle enemyTheTargetJobHandle = new EnemyTheTargetJob { DoAction = doAction , ECBParallelWriter = ecbParallelWriter , NoAction = noAction , TargetDefaultPosition = targetDefaultPosition , TargetPositionsNativeList = enemyPositionsNativeList , TargetTeamComponentsNativeList = enemyTeamComponentsNativeList }.ScheduleParallel(combinedDependencies);
-            JobHandle playerTheTargetJobHandle = new PlayerTheTargetJob { DoAction = doAction , ECBParallelWriter = ecbParallelWriter , NoAction = noAction , TargetPositionsNativeList = playerPositionsNativeList , TargetTeamComponentsNativeList = playerTeamComponentsNativeList }.ScheduleParallel(enemyTheTargetJobHandle);
+            JobHandle playerTheTargetJobHandle = new PlayerTheTargetJob { DoAction = doAction , ECBParallelWriter = ecbParallelWriter , NoAction = noAction , TargetDefaultPosition = targetDefaultPosition , TargetPositionsNativeList = playerPositionsNativeList , TargetTeamComponentsNativeList = playerTeamComponentsNativeList }.ScheduleParallel(enemyTheTargetJobHandle);
 
             JobHandle disposeJobHandle1 = enemyPositionsNativeList.Dispose(playerTheTargetJobHandle);
             JobHandle disposeJobHandle2 = enemyTeamComponentsNativeList.Dispose(playerTheTargetJobHandle);
@@ -66,19 +66,20 @@ namespace Game.Scripts.Systems
         public int DoAction;
         public EntityCommandBuffer.ParallelWriter ECBParallelWriter;
         public int NoAction;
-        public float TargetDefaultPosition;
+        public float3 TargetDefaultPosition;
+
         [ReadOnly] public NativeList<LocalToWorld> TargetPositionsNativeList;
         [ReadOnly] public NativeList<TeamComponent> TargetTeamComponentsNativeList;
 
         private void Execute(Entity entity , [EntityIndexInQuery] int entityIndexInQuery , in LocalToWorld localToWorld , in RangeComponent rangeComponent , ref TargetPositionComponent targetPositionComponent , in TeamComponent teamComponent)
         {
-            var targetCurrentPosition = new float4(TargetDefaultPosition , TargetDefaultPosition , 0f , float.MaxValue);
+            var closestTargetPosition = new float4(TargetDefaultPosition , float.MaxValue);
 
-            for(var i = 0 ; i < TargetPositionsNativeList.Length ; i++) targetCurrentPosition = math.select(targetCurrentPosition , new float4(TargetPositionsNativeList[i].Position , math.distancesq(localToWorld.Position , TargetPositionsNativeList[i].Position)) , TargetTeamComponentsNativeList[i].Value != teamComponent.Value && math.distancesq(localToWorld.Position , TargetPositionsNativeList[i].Position) < targetCurrentPosition.w);
+            for(var i = 0 ; i < TargetPositionsNativeList.Length ; i++) closestTargetPosition = math.select(closestTargetPosition , new float4(TargetPositionsNativeList[i].Position , math.distancesq(localToWorld.Position , TargetPositionsNativeList[i].Position)) , TargetTeamComponentsNativeList[i].Value != teamComponent.Value && math.distancesq(localToWorld.Position , TargetPositionsNativeList[i].Position) < closestTargetPosition.w);
 
-            targetPositionComponent.Value = targetCurrentPosition.xyz;
+            targetPositionComponent.Value = closestTargetPosition.xyz;
 
-            bool inRange = targetCurrentPosition.w <= rangeComponent.Value * rangeComponent.Value;
+            bool inRange = closestTargetPosition.w <= rangeComponent.Value * rangeComponent.Value;
 
             for(var i = 0 ; i < math.select(NoAction , DoAction , inRange) ; i++) ECBParallelWriter.AddComponent<HasTargetTag>(entityIndexInQuery , entity);
             for(var i = 0 ; i < math.select(NoAction , DoAction , !inRange) ; i++) ECBParallelWriter.RemoveComponent<HasTargetTag>(entityIndexInQuery , entity);
@@ -92,18 +93,20 @@ namespace Game.Scripts.Systems
         public int DoAction;
         public EntityCommandBuffer.ParallelWriter ECBParallelWriter;
         public int NoAction;
+        public float3 TargetDefaultPosition;
+
         [ReadOnly] public NativeList<LocalToWorld> TargetPositionsNativeList;
         [ReadOnly] public NativeList<TeamComponent> TargetTeamComponentsNativeList;
 
         private void Execute(Entity entity , [EntityIndexInQuery] int entityIndexInQuery , in LocalToWorld localToWorld , in RangeComponent rangeComponent , ref TargetPositionComponent targetPositionComponent , in TeamComponent teamComponent)
         {
-            var target = new float4(localToWorld.Position , float.MaxValue);
+            var closestTargetPosition = new float4(TargetDefaultPosition , float.MaxValue);
 
-            for(var i = 0 ; i < TargetPositionsNativeList.Length ; i++) target = math.select(target , new float4(TargetPositionsNativeList[i].Position , math.distancesq(localToWorld.Position , TargetPositionsNativeList[i].Position)) , TargetTeamComponentsNativeList[i].Value != teamComponent.Value && math.distancesq(localToWorld.Position , TargetPositionsNativeList[i].Position) < target.w);
+            for(var i = 0 ; i < TargetPositionsNativeList.Length ; i++) closestTargetPosition = math.select(closestTargetPosition , new float4(TargetPositionsNativeList[i].Position , math.distancesq(localToWorld.Position , TargetPositionsNativeList[i].Position)) , TargetTeamComponentsNativeList[i].Value != teamComponent.Value && math.distancesq(localToWorld.Position , TargetPositionsNativeList[i].Position) < closestTargetPosition.w);
 
-            targetPositionComponent.Value = target.xyz;
+            targetPositionComponent.Value = closestTargetPosition.xyz;
 
-            bool inRange = target.w <= rangeComponent.Value * rangeComponent.Value;
+            bool inRange = closestTargetPosition.w <= rangeComponent.Value * rangeComponent.Value;
 
             for(var i = 0 ; i < math.select(NoAction , DoAction , inRange) ; i++) ECBParallelWriter.AddComponent<HasTargetTag>(entityIndexInQuery , entity);
             for(var i = 0 ; i < math.select(NoAction , DoAction , !inRange) ; i++) ECBParallelWriter.RemoveComponent<HasTargetTag>(entityIndexInQuery , entity);

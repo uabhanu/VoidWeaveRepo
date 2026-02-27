@@ -8,7 +8,7 @@ namespace Game.Scripts.Systems
 
     [UpdateInGroup(typeof(SimulationSystemGroup))]
     [UpdateAfter(typeof(TargetingSystem))]
-    public partial struct TurretRotationSystem : ISystem
+    public partial struct RotationSystem : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState systemState)
@@ -24,13 +24,13 @@ namespace Game.Scripts.Systems
         {
             EntityCommandBuffer.ParallelWriter ecbParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
 
-            systemState.Dependency = new TurretRotationJob { DeltaTime = SystemAPI.Time.DeltaTime , DoAction = SystemAPI.GetSingleton<DoActionComponent>().Value , ECBParallelWriter = ecbParallelWriter , NoAction = SystemAPI.GetSingleton<NoActionComponent>().Value }.ScheduleParallel(systemState.Dependency);
+            systemState.Dependency = new RotationJob { DeltaTime = SystemAPI.Time.DeltaTime , DoAction = SystemAPI.GetSingleton<DoActionComponent>().Value , ECBParallelWriter = ecbParallelWriter , NoAction = SystemAPI.GetSingleton<NoActionComponent>().Value }.ScheduleParallel(systemState.Dependency);
         }
     }
 
     [BurstCompile]
     [WithAll(typeof(HasTargetTag))]
-    public partial struct TurretRotationJob : IJobEntity
+    public partial struct RotationJob : IJobEntity
     {
         public float DeltaTime;
         public int DoAction;
@@ -48,10 +48,8 @@ namespace Game.Scripts.Systems
             float t = math.select(step / angleDifference , DoAction , angleDifference < step);
 
             localTransform.Rotation = math.slerp(localTransform.Rotation , targetRotation , t);
-
-            float3 currentDir = math.mul(localTransform.Rotation , math.up());
-            float rotationDot = math.dot(currentDir , direction);
-            bool isAligned = rotationDot >= minRotationRequiredComponent.Value;
+            
+            bool isAligned = angleDifference <= math.radians(minRotationRequiredComponent.Value);
 
             for(var i = 0 ; i < math.select(NoAction , DoAction , isAligned) ; i++) ECBParallelWriter.AddComponent<RotationCompleteTag>(entityIndexInQuery , entity);
             for(var i = 0 ; i < math.select(NoAction , DoAction , !isAligned) ; i++) ECBParallelWriter.RemoveComponent<RotationCompleteTag>(entityIndexInQuery , entity);

@@ -56,7 +56,7 @@ MonoBehaviour:
   projectileCount: 1
   range: 10.1
   rotationOffset: 90
-  rotationSpeed: 1.25
+  rotationSpeed: 1.65
   spawnPoint: {fileID: 6080683413176446198}
   spreadDegrees: 0
   teamID: 0
@@ -129,7 +129,7 @@ GameObject:
   - component: {fileID: 1731261242638950999}
   - component: {fileID: 7719841825876532544}
   m_Layer: 0
-  m_Name: TurretVisual
+  m_Name: BodyVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
