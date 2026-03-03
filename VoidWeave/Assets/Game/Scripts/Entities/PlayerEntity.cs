@@ -12,6 +12,7 @@ namespace Game.Scripts.Entities
         [SerializeField] private float dashDuration; // Length of dash   
         [SerializeField] private Material dashMaterial;
         [SerializeField] private float dashMultiplier; // Speed boost (5 * 5 = 25 units/sec)
+        [SerializeField] private GameObject dashVfxPrefab;
         [SerializeField] private GameObject deathVfxPrefab;
         [SerializeField] private int maxHealth;
         [SerializeField] private float moveSpeed;
@@ -34,6 +35,7 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new DashCooldownComponent { Value = authoring.dashCooldownTimer });
                 AddComponent(entity , new DashDurationComponent { Value = authoring.dashDuration });
                 AddComponent(entity , new DashMultiplierComponent { Value = authoring.dashMultiplier });
+                AddComponent(entity , new DashVfxComponent { Value = GetEntity(authoring.dashVfxPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new DeathVfxComponent { Value = GetEntity(authoring.deathVfxPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new MaxHealthComponent { Value = authoring.maxHealth });
                 AddComponent(entity , new MoveSpeedComponent { Value = authoring.moveSpeed });

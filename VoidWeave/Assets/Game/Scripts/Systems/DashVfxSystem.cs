@@ -2,8 +2,8 @@ namespace Game.Scripts.Systems
 {
     using Components;
     using Unity.Entities;
-    using Unity.Mathematics;
     using Unity.Rendering;
+    using Unity.Transforms;
     using UnityEngine.Rendering;
 
     [UpdateInGroup(typeof(PresentationSystemGroup))]
@@ -25,19 +25,25 @@ namespace Game.Scripts.Systems
 
             int movementActive = (int)SystemAPI.GetSingleton<MovementActiveComponent>().Value;
             int movementNone = (int)SystemAPI.GetSingleton<MovementNoneComponent>().Value;
-            
-            float cullBack = (float)CullMode.Back;
-            float cullFront = (float)CullMode.Front;
 
-            foreach(var (materialMeshInfo , entity) in SystemAPI.Query<RefRW<MaterialMeshInfo>>().WithAll<DashVisualTag>().WithEntityAccess().WithOptions(EntityQueryOptions.IgnoreComponentEnabledState))
+            foreach(var (dashVfx , localTransform , materialMeshInfo , entity) in SystemAPI.Query<DashVfxComponent , LocalTransform , RefRW<MaterialMeshInfo>>().WithAll<DashVisualTag>().WithEntityAccess())
             {
-                bool isDashing = SystemAPI.IsComponentEnabled<DashVisualTag>(entity);
-                
-                int targetIndex = math.select(movementNone , movementActive , isDashing);
-                materialMeshInfo.ValueRW = MaterialMeshInfo.FromRenderMeshArrayIndices(targetIndex , DefaultMeshIndex);
-                
-                float cullValue = math.select(cullBack , cullFront , isDashing);
-                ecb.AddComponent(entity , new URPMaterialPropertyCull { Value = cullValue });
+                Entity dashTrail = ecb.Instantiate(dashVfx.Value);
+                ecb.SetComponent(dashTrail , localTransform);
+                ecb.SetComponent(dashTrail , SystemAPI.GetComponent<LifetimeComponent>(dashVfx.Value));
+
+                materialMeshInfo.ValueRW = MaterialMeshInfo.FromRenderMeshArrayIndices(movementActive , DefaultMeshIndex);
+                ecb.AddComponent(entity , new URPMaterialPropertyCull { Value = (float)CullMode.Front });
+
+                var renderMeshArray = systemState.EntityManager.GetSharedComponentManaged<RenderMeshArray>(entity);
+                ecb.SetSharedComponentManaged(entity , renderMeshArray);
+            }
+            
+            //dashVfx variable is a dummy here but needs to stay here
+            foreach(var (dashVfx , materialMeshInfo , entity) in SystemAPI.Query<DashVfxComponent , RefRW<MaterialMeshInfo>>().WithNone<DashVisualTag>().WithEntityAccess())
+            {
+                materialMeshInfo.ValueRW = MaterialMeshInfo.FromRenderMeshArrayIndices(movementNone , DefaultMeshIndex);
+                ecb.AddComponent(entity , new URPMaterialPropertyCull { Value = (float)CullMode.Back });
 
                 var renderMeshArray = systemState.EntityManager.GetSharedComponentManaged<RenderMeshArray>(entity);
                 ecb.SetSharedComponentManaged(entity , renderMeshArray);
