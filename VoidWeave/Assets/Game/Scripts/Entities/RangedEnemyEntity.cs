@@ -18,10 +18,11 @@ namespace Game.Scripts.Entities
         [SerializeField] private float moveSpeed;
         [SerializeField] private int projectileCount;
         [SerializeField] private GameObject projectilePrefab;
+        [SerializeField] private Transform projectileSpawnPoint;
         [SerializeField] private float range;
         [SerializeField] private float rotationOffset;
         [SerializeField] private float rotationSpeed;
-        [SerializeField] private Transform spawnPoint;
+        [SerializeField] private float spawnVfxDuration;
         [SerializeField] private float spreadDegrees;
         [SerializeField] private int teamID;
         [SerializeField] private float zigZagAmplitude;
@@ -47,14 +48,15 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new MovementZigZagAmplitudeComponent { Value = authoring.zigZagAmplitude });
                 AddComponent(entity , new MovementZigZagFrequencyComponent { Value = authoring.zigZagFrequency });
                 AddComponent(entity , new MoveSpeedComponent { Value = authoring.moveSpeed });
-                AddComponent(entity , new NozzleOffsetComponent { Value = (float3)authoring.spawnPoint.position - (float3)authoring.transform.position });
                 AddComponent(entity , new ProjectileCountComponent { Value = authoring.projectileCount });
+                AddComponent(entity , new ProjectileSpawnPointComponent { Value = (float3)authoring.projectileSpawnPoint.position - (float3)authoring.transform.position });
                 AddComponent(entity , new RangeComponent { Value = authoring.range });
                 AddComponent(entity , new RotationOffsetComponent { Value = authoring.rotationOffset });
                 AddComponent(entity , new RotationSpeedComponent { Value = authoring.rotationSpeed });
                 AddComponent(entity , new SpreadComponent { Value = authoring.spreadDegrees });
                 AddComponent(entity , new TargetPositionComponent());
                 AddComponent(entity , new TeamComponent { Value = authoring.teamID });
+                AddComponent(entity , new TimerComponent { Value = authoring.spawnVfxDuration });
 
                 AddComponent(entity , new EnemyTag());
                 AddComponent(entity , new SquareEnemyTag());

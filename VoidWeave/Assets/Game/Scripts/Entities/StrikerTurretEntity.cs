@@ -13,10 +13,10 @@ namespace Game.Scripts.Entities
         [SerializeField] private float damage;
         [SerializeField] private float minRotationRequired;
         [SerializeField] private int projectileCount;
+        [SerializeField] private Transform projectileSpawnPoint;
         [SerializeField] private float range;
         [SerializeField] private float rotationOffset;
         [SerializeField] private float rotationSpeed;
-        [SerializeField] private Transform spawnPoint;
         [SerializeField] private float spreadDegrees;
         [SerializeField] private int teamID;
 
@@ -31,8 +31,8 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new CooldownComponent { Value = authoring.cooldownTime });
                 AddComponent(entity , new DamageComponent { Value = authoring.damage });
                 AddComponent(entity , new MinRotationRequiredComponent{ Value = authoring.minRotationRequired });
-                AddComponent(entity , new NozzleOffsetComponent { Value = (float3)authoring.spawnPoint.position - (float3)authoring.transform.position });
                 AddComponent(entity , new ProjectileCountComponent { Value = authoring.projectileCount });
+                AddComponent(entity , new ProjectileSpawnPointComponent { Value = (float3)authoring.projectileSpawnPoint.position - (float3)authoring.transform.position });
                 AddComponent(entity , new RangeComponent { Value = authoring.range });
                 AddComponent(entity , new RotationOffsetComponent { Value = authoring.rotationOffset });
                 AddComponent(entity , new RotationSpeedComponent { Value = authoring.rotationSpeed });

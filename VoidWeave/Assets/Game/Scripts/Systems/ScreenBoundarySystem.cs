@@ -9,7 +9,7 @@ namespace Game.Scripts.Systems
 
     [UpdateInGroup(typeof(SimulationSystemGroup))]
     [UpdateBefore(typeof(MovementSystem))]
-    public partial struct MovementBoundarySystem : ISystem
+    public partial struct ScreenBoundarySystem : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState systemState)
@@ -21,31 +21,40 @@ namespace Game.Scripts.Systems
             systemState.RequireForUpdate<InputNoneComponent>();
             systemState.RequireForUpdate<InputRightComponent>();
             systemState.RequireForUpdate<InputUpComponent>();
+            systemState.RequireForUpdate<OneScaleComponent>();
+            systemState.RequireForUpdate<ScreenBoundaryXComponent>();
+            systemState.RequireForUpdate<ScreenBoundaryYComponent>();
+            systemState.RequireForUpdate<ZeroScaleComponent>();
         }
 
         public void OnUpdate(ref SystemState systemState)
         {
             float boundaryOffset = SystemAPI.GetSingleton<BoundaryOffsetComponent>().Value;
             float cameraSize = SystemAPI.GetSingleton<CameraOrthographicSizeComponent>().Value;
-
-            // Input Masks
+            
             uint inputDown = SystemAPI.GetSingleton<InputDownComponent>().Value;
             uint inputLeft = SystemAPI.GetSingleton<InputLeftComponent>().Value;
             uint inputNone = SystemAPI.GetSingleton<InputNoneComponent>().Value;
             uint inputRight = SystemAPI.GetSingleton<InputRightComponent>().Value;
             uint inputUp = SystemAPI.GetSingleton<InputUpComponent>().Value;
 
-            // Screen Calculation
-            float aspect = (float)Screen.width / Screen.height;
-            float boundaryX = cameraSize * aspect - boundaryOffset;
+            float oneScale = SystemAPI.GetSingleton<OneScaleComponent>().Value;
+            float zeroScale = SystemAPI.GetSingleton<ZeroScaleComponent>().Value;
+            
+            float aspectRatio = math.select(Screen.width / math.max(oneScale , Screen.height) , oneScale , Screen.height <= zeroScale);
+            
+            float boundaryX = cameraSize * aspectRatio - boundaryOffset;
             float boundaryY = cameraSize - boundaryOffset;
 
-            new MovementBoundaryJob { BoundaryX = boundaryX , BoundaryY = boundaryY , InputDown = inputDown , InputLeft = inputLeft , InputNone = inputNone , InputRight = inputRight , InputUp = inputUp }.ScheduleParallel();
+            SystemAPI.SetSingleton(new ScreenBoundaryXComponent { Value = boundaryX });
+            SystemAPI.SetSingleton(new ScreenBoundaryYComponent { Value = boundaryY });
+
+            new ScreenBoundaryJob { BoundaryX = boundaryX , BoundaryY = boundaryY , InputDown = inputDown , InputLeft = inputLeft , InputNone = inputNone , InputRight = inputRight , InputUp = inputUp }.ScheduleParallel();
         }
     }
 
     [BurstCompile]
-    public partial struct MovementBoundaryJob : IJobEntity
+    public partial struct ScreenBoundaryJob : IJobEntity
     {
         public float BoundaryX;
         public float BoundaryY;

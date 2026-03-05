@@ -44,7 +44,7 @@ namespace Game.Scripts.Systems
         public float SpreadZero;
         public float TimerExpired;
 
-        private void Execute(in AttackRateComponent attackRateComponent , in BulletEntityComponent bulletEntityComponent , RefRW<CooldownComponent> cooldownComponent , in DamageComponent damageComponent , [EntityIndexInQuery] int entityIndexInQuery , in LocalToWorld localToWorld , in NozzleOffsetComponent nozzleOffsetComponent , in ProjectileCountComponent projectileCountComponent , in SpreadComponent spreadComponent)
+        private void Execute(in AttackRateComponent attackRateComponent , in BulletEntityComponent bulletEntityComponent , RefRW<CooldownComponent> cooldownComponent , in DamageComponent damageComponent , [EntityIndexInQuery] int entityIndexInQuery , in LocalToWorld localToWorld , in ProjectileCountComponent projectileCountComponent , in ProjectileSpawnPointComponent projectileSpawnPointComponent , in SpreadComponent spreadComponent)
         {
             bool isReady = cooldownComponent.ValueRO.Value <= TimerExpired;
             cooldownComponent.ValueRW.Value = math.select(cooldownComponent.ValueRO.Value , attackRateComponent.Value , isReady);
@@ -53,7 +53,7 @@ namespace Game.Scripts.Systems
 
             // Get the actual world-space rotation of the turret nozzle
             quaternion turretRotation = localToWorld.Rotation;
-            float3 spawnWorldPos = math.transform(localToWorld.Value , nozzleOffsetComponent.Value);
+            float3 spawnWorldPos = math.transform(localToWorld.Value , projectileSpawnPointComponent.Value);
 
             for(var i = 0 ; i < spawnCount ; i++)
             {

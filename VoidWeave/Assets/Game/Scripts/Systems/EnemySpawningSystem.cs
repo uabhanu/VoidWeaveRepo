@@ -15,8 +15,10 @@ namespace Game.Scripts.Systems
         [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
-            systemState.RequireForUpdate<ActiveWaveStateComponent>();
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
+
+            systemState.RequireForUpdate<ActiveWaveStateComponent>();
+            systemState.RequireForUpdate<CameraOrthographicSizeComponent>();
             systemState.RequireForUpdate<DoActionComponent>();
             systemState.RequireForUpdate(SystemAPI.QueryBuilder().WithAll<EnemySpawnerTag>().Build());
             systemState.RequireForUpdate<EnemyTypesCountComponent>();
@@ -25,16 +27,21 @@ namespace Game.Scripts.Systems
             systemState.RequireForUpdate<MovementNoneComponent>();
             systemState.RequireForUpdate<NoActionComponent>();
             systemState.RequireForUpdate<RandomRangeStartComponent>();
+            systemState.RequireForUpdate<ScreenBoundaryXComponent>();
+            systemState.RequireForUpdate<ScreenBoundaryYComponent>();
             systemState.RequireForUpdate<SquareEnemyIndexComponent>();
             systemState.RequireForUpdate<TimerExpiredComponent>();
             systemState.RequireForUpdate<TriangleEnemyIndexComponent>();
             systemState.RequireForUpdate<UnlockedEnemiesComponent>();
+            systemState.RequireForUpdate<ZeroScaleComponent>();
         }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
             int activeWaveState = SystemAPI.GetSingleton<ActiveWaveStateComponent>().Value;
+            float boundaryX = SystemAPI.GetSingleton<ScreenBoundaryXComponent>().Value;
+            float boundaryY = SystemAPI.GetSingleton<ScreenBoundaryYComponent>().Value;
             int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
             int enemyTypesCount = SystemAPI.GetSingleton<EnemyTypesCountComponent>().Value;
             uint initialBitmask = SystemAPI.GetSingleton<InitialBitmaskComponent>().Value;
@@ -44,6 +51,7 @@ namespace Game.Scripts.Systems
             float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value;
             uint unlockedEnemiesBitmask = SystemAPI.GetSingleton<UnlockedEnemiesComponent>().Value;
             Entity spawnerEntity = SystemAPI.GetSingletonEntity<EnemySpawnerTag>();
+            float zeroScale = SystemAPI.GetSingleton<ZeroScaleComponent>().Value;
 
             Entity lineEnemyEntity = SystemAPI.GetComponent<LineEnemyEntityComponent>(spawnerEntity).Entity;
             int lineEnemyIndex = SystemAPI.GetSingleton<LineEnemyIndexComponent>().Value;
@@ -57,6 +65,8 @@ namespace Game.Scripts.Systems
             systemState.Dependency = new EnemySpawnJob
             {
                 ActiveWaveState = activeWaveState ,
+                BoundaryX = boundaryX ,
+                BoundaryY = boundaryY ,
                 DoAction = doAction ,
                 EnemyTypesCount = enemyTypesCount ,
                 EntityCommandBufferParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() ,
@@ -72,7 +82,8 @@ namespace Game.Scripts.Systems
                 TimerExpired = timerExpired ,
                 TriangleEnemyEntity = triangleEnemyEntity ,
                 TriangleEnemyIndex = triangleEnemyIndex ,
-                UnlockedEnemiesBitmask = unlockedEnemiesBitmask
+                UnlockedEnemiesBitmask = unlockedEnemiesBitmask ,
+                ZeroScale = zeroScale
             }.ScheduleParallel(systemState.Dependency);
         }
     }
@@ -81,6 +92,8 @@ namespace Game.Scripts.Systems
     public partial struct EnemySpawnJob : IJobEntity
     {
         public int ActiveWaveState;
+        public float BoundaryX;
+        public float BoundaryY;
         public int DoAction;
         public int EnemyTypesCount;
         public EntityCommandBuffer.ParallelWriter EntityCommandBufferParallelWriter;
@@ -97,8 +110,9 @@ namespace Game.Scripts.Systems
         public Entity TriangleEnemyEntity;
         public int TriangleEnemyIndex;
         public uint UnlockedEnemiesBitmask;
+        public float ZeroScale;
 
-        private void Execute([EntityIndexInQuery] int entityInQueryIndex , in LocalTransform localTransform , ref RandomSeedComponent randomSeedComponent , in SpawnRadiusComponent spawnRadiusComponent , in SpawnRateComponent spawnRateComponent , ref TimerComponent timerComponent , in WaveStateComponent waveStateComponent , ref WaveStockComponent waveStockComponent)
+        private void Execute([EntityIndexInQuery] int entityInQueryIndex , in LocalTransform localTransform , ref RandomSeedComponent randomSeedComponent , in SpawnRateComponent spawnRateComponent , ref TimerComponent timerComponent , in WaveStateComponent waveStateComponent , ref WaveStockComponent waveStockComponent)
         {
             bool canSpawn = timerComponent.Value <= TimerExpired && PlayerCount > NoAction && waveStateComponent.Value == ActiveWaveState && waveStockComponent.Value > NoAction;
 
@@ -111,8 +125,15 @@ namespace Game.Scripts.Systems
                 Entity enemyEntityToSpawn = enemyTypeIndex == LineEnemyIndex ? LineEnemyEntity : enemyTypeIndex == SquareEnemyIndex ? SquareEnemyEntity : TriangleEnemyEntity;
                 Entity newEnemyEntity = EntityCommandBufferParallelWriter.Instantiate(entityInQueryIndex , enemyEntityToSpawn);
 
-                EntityCommandBufferParallelWriter.SetComponent(entityInQueryIndex , newEnemyEntity , LocalTransform.FromPosition(localTransform.Position + new float3(randomSeedComponent.Value.NextFloat2Direction() * spawnRadiusComponent.Value , MovementNone)));
+                EntityCommandBufferParallelWriter.AddComponent<SpawningTag>(entityInQueryIndex , newEnemyEntity);
+                EntityCommandBufferParallelWriter.SetComponentEnabled<SpawningTag>(entityInQueryIndex , newEnemyEntity , true);
+
+                float randomX = randomSeedComponent.Value.NextFloat(-BoundaryX , BoundaryX);
+                float randomY = randomSeedComponent.Value.NextFloat(-BoundaryY , BoundaryY);
+                float3 spawnPosition = new float3(randomX , randomY , MovementNone);
+
                 EntityCommandBufferParallelWriter.AddComponent<EnemyJustSpawnedTag>(entityInQueryIndex , newEnemyEntity);
+                EntityCommandBufferParallelWriter.SetComponent(entityInQueryIndex , newEnemyEntity , LocalTransform.FromPosition(spawnPosition).WithScale(ZeroScale));
 
                 for(var k = 0 ; k < math.select(NoAction , DoAction , enemyTypeIndex == LineEnemyIndex) ; k++) EntityCommandBufferParallelWriter.AddComponent<LineEnemyTag>(entityInQueryIndex , newEnemyEntity);
 

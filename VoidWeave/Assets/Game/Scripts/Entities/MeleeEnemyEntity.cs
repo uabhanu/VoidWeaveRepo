@@ -16,6 +16,7 @@ namespace Game.Scripts.Entities
         [SerializeField] private GameObject lootPrefab;
         [SerializeField] private int maxHealth;
         [SerializeField] private float moveSpeed;
+        [SerializeField] private float spawnVfxDuration;
         [SerializeField] private int teamID;
         [SerializeField] private float zigZagAmplitude;
         [SerializeField] private float zigZagFrequency;
@@ -42,6 +43,7 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new RangeComponent());
                 AddComponent(entity , new TargetPositionComponent());
                 AddComponent(entity , new TeamComponent { Value = authoring.teamID });
+                AddComponent(entity , new TimerComponent { Value = authoring.spawnVfxDuration });
                 AddComponent(entity , new TriangleEnemyComponent { Value = authoring.isTriangleEnemy });
 
                 AddComponent(entity , new EnemyTag());

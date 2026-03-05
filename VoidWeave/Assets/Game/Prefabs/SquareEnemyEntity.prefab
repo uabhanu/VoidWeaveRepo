@@ -178,10 +178,11 @@ MonoBehaviour:
   moveSpeed: 0.9
   projectileCount: 1
   projectilePrefab: {fileID: 2547401122998454103, guid: d15cb9f62da5b1c4f8a5e85226bb4df7, type: 3}
+  projectileSpawnPoint: {fileID: 7396077109586674539}
   range: 3.2
   rotationOffset: 90
   rotationSpeed: 1.5
-  spawnPoint: {fileID: 7396077109586674539}
+  spawnVfxDuration: 0.75
   spreadDegrees: 0
   teamID: 1
   zigZagAmplitude: 0

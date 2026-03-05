@@ -2,7 +2,7 @@ namespace Game.Scripts.Components
 {
     using Unity.Entities;
 
-    public struct SpawnRadiusComponent : IComponentData
+    public struct OneScaleComponent : IComponentData
     {
         public float Value;
     }

@@ -11,7 +11,6 @@ namespace Game.Scripts.Entities
         [SerializeField] private int activeWaveState;
         [SerializeField] private int baseEnemies;
         [SerializeField] private int enemyIncrement;
-        [SerializeField] private float enemySpawnRadius;
         [SerializeField] private float enemySpawnRate;
         [SerializeField] private int enemyTypesCount;
         [SerializeField] private uint initialBitmask;
@@ -45,7 +44,8 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new LineEnemyIndexComponent { Value = authoring.lineEnemyIndex });
                 AddComponent(entity , new RandomRangeStartComponent { Value = authoring.randomRangeStartValue });
                 AddComponent(entity , new RandomSeedComponent { Value = new Random(seed) });
-                AddComponent(entity , new SpawnRadiusComponent { Value = authoring.enemySpawnRadius });
+                AddComponent(entity , new ScreenBoundaryXComponent());
+                AddComponent(entity , new ScreenBoundaryYComponent());
                 AddComponent(entity , new SpawnRateComponent { Value = authoring.enemySpawnRate });
                 AddComponent(entity , new SquareEnemyEntityComponent { Entity = GetEntity(authoring.squareEnemyPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new SquareEnemyIndexComponent { Value = authoring.squareEnemyIndex });
