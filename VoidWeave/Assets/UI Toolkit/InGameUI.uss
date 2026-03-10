@@ -2,13 +2,31 @@
 }
 
 .pauseMenuButton {
-    font-size: 50px;
-    -unity-font-style: bold;
     margin-top: 100px;
-    height: 125px;
+    height: 128px;
     margin-bottom: 100px;
     align-self: center;
     justify-content: space-between;
     align-items: center;
     align-content: center;
+    background-color: rgba(0, 0, 0, 0);
+    width: 128px;
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+}
+
+.pauseButton {
+    top: 20px;
+    right: 20px;
+    align-self: flex-end;
+    width: 128px;
+    height: 128px;
+    background-image: url("project://database/Assets/Game/Textures/PauseButton.png?fileID=2800000&guid=2a5e5a6c46a9dfd4fb138eb33316ba1d&type=3#PauseButton");
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    background-color: rgba(0, 0, 0, 0);
 }
