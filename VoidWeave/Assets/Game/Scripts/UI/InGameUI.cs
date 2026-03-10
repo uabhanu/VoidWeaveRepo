@@ -25,10 +25,8 @@ namespace Game.Scripts.UI
         private EntityQuery _levelQuery;
 
         private EntityManager _entityManager;
-
-        private Label _energyTextLabel;
+        
         private Label _energyValueLabel;
-        private Label _healthTextLabel;
         private Label _healthValueLabel;
         private Label _levelTextLabel;
         private Label _levelValueLabel;
@@ -101,11 +99,8 @@ namespace Game.Scripts.UI
             _quitButton.clicked += () => { GameEventsSystem.OnQuitButtonClicked?.Invoke(); };
             _restartButton.clicked += () => { GameEventsSystem.OnRestartButtonClicked?.Invoke(); };
             _resumeButton.clicked += () => { GameEventsSystem.OnResumeButtonClicked?.Invoke(); };
-
-            _energyTextLabel = _rootVisualElement.Q<Label>("EnergyTextLabel");
+            
             _energyValueLabel = _rootVisualElement.Q<Label>("EnergyValueLabel");
-
-            _healthTextLabel = _rootVisualElement.Q<Label>("HealthTextLabel");
             _healthValueLabel = _rootVisualElement.Q<Label>("HealthValueLabel");
 
             _levelTextLabel = _rootVisualElement.Q<Label>("LevelTextLabel");
@@ -113,11 +108,8 @@ namespace Game.Scripts.UI
 
             _pauseMenuVisualElement = _rootVisualElement.Q<VisualElement>("PauseMenuVisualElement");
             _pauseMenuVisualElement.style.display = DisplayStyle.None;
-
-            _energyTextLabel.style.backgroundColor = energyLabelColour;
+            
             _energyValueLabel.style.backgroundColor = energyLabelColour;
-
-            _healthTextLabel.style.backgroundColor = healthLabelColour;
             _healthValueLabel.style.backgroundColor = healthLabelColour;
 
             _levelTextLabel.style.backgroundColor = levelLabelColour;

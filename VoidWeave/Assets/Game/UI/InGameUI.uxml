@@ -1,35 +1,23 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
-         editor-extension-mode="False">
+<ui:UXML xmlns:ui="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/UI%20Toolkit/InGameUI.uss?fileID=7433441132597879392&amp;guid=952ff6fa0b051a941b52d0526b6f0ada&amp;type=3#InGameUI"/>
     <ui:VisualElement name="RootVisualElement" style="flex-grow: 1; width: 100%; height: 100%;">
         <ui:VisualElement name="EnergyUIVisualElement" style="position: absolute; top: 20px; left: 20px;">
-            <ui:Label name="EnergyTextLabel" text="Energy"
-                      style="-unity-font-style: bold; -unity-text-align: upper-center; font-size: 80px; position: absolute;"/>
-            <ui:Label name="EnergyValueLabel"
-                      style="-unity-font-style: bold; -unity-text-align: upper-center; font-size: 80px; position: absolute; left: 331px;"/>
+            <ui:VisualElement name="EnergyImageVisualElement" style="background-image: url(&quot;project://database/Assets/Game/Textures/Loot.png?fileID=2800000&amp;guid=2fcf57f452a38344ea4e787898474191&amp;type=3#Loot&quot;); position: absolute; width: 100px; height: 100px; display: flex; aspect-ratio: 1.777778;"/>
+            <ui:Label name="EnergyValueLabel" style="-unity-font-style: bold; -unity-text-align: upper-center; font-size: 80px; position: absolute; left: 100px;"/>
         </ui:VisualElement>
-        <ui:VisualElement name="HealthUIVisualElement" style="position: absolute; top: 20px; left: 600px;">
-            <ui:Label name="HealthTextLabel" text="Health"
-                      style="-unity-font-style: bold; -unity-text-align: upper-center; font-size: 80px; position: absolute;"/>
-            <ui:Label name="HealthValueLabel"
-                      style="-unity-font-style: bold; -unity-text-align: upper-center; font-size: 80px; position: absolute; left: 331px;"/>
+        <ui:VisualElement name="HealthUIVisualElement" style="position: absolute; top: 20px; left: 300px;">
+            <ui:VisualElement name="HealthImageVisualElement" style="background-image: url(&quot;project://database/Assets/Game/Textures/Player.png?fileID=2800000&amp;guid=927b34c6aa8243b468163e6e7bdfe903&amp;type=3#Player&quot;); position: absolute; width: 100px; height: 100px;"/>
+            <ui:Label name="HealthValueLabel" style="-unity-font-style: bold; -unity-text-align: upper-center; font-size: 80px; position: absolute; left: 100px;"/>
         </ui:VisualElement>
-        <ui:VisualElement name="LevelUIVisualElement" style="position: absolute; top: 20px; left: 1180px;">
-            <ui:Label name="LevelTextLabel" text="Level"
-                      style="-unity-font-style: bold; -unity-text-align: upper-center; font-size: 80px; position: absolute;"/>
-            <ui:Label name="LevelValueLabel"
-                      style="-unity-font-style: bold; -unity-text-align: upper-center; font-size: 80px; position: absolute; left: 250px;"/>
+        <ui:VisualElement name="LevelUIVisualElement" style="position: absolute; top: 20px; align-self: center;">
+            <ui:Label name="LevelTextLabel" text="Level" style="-unity-font-style: bold; -unity-text-align: upper-center; font-size: 80px; position: absolute;"/>
+            <ui:Label name="LevelValueLabel" style="-unity-font-style: bold; -unity-text-align: upper-center; font-size: 80px; position: absolute; left: 250px;"/>
         </ui:VisualElement>
-        <ui:Button text="II" name="PauseButton"
-                   style="align-self: flex-end; top: 20px; right: 20px; -unity-font-style: bold; font-size: 50px; width: 100px;"/>
-        <ui:VisualElement name="PauseMenuVisualElement"
-                          style="background-color: rgb(0, 0, 0); align-self: center; justify-content: space-between; align-content: center; align-items: center; width: 100%; height: 100%; position: absolute;">
-            <ui:Button name="ResumeButton" text="Resume" class="pauseMenuButton"
-                       style="aspect-ratio: 1.777778; font-size: 50px; -unity-font-style: bold;"/>
-            <ui:Button name="RestartButton" text="Restart" class="pauseMenuButton"
-                       style="aspect-ratio: 1.777778; font-size: 50px; -unity-font-style: bold;"/>
-            <ui:Button name="QuitButton" text="Quit" class="pauseMenuButton"
-                       style="aspect-ratio: 1.777778; font-size: 50px; -unity-font-style: bold;"/>
+        <ui:Button text="II" name="PauseButton" style="align-self: flex-end; top: 20px; right: 20px; -unity-font-style: bold; font-size: 50px; width: 100px;"/>
+        <ui:VisualElement name="PauseMenuVisualElement" style="background-color: rgb(0, 0, 0); align-self: center; justify-content: space-between; align-content: center; align-items: center; width: 100%; height: 100%; position: absolute;">
+            <ui:Button name="ResumeButton" text="Resume" class="pauseMenuButton" style="aspect-ratio: 1.777778; font-size: 50px; -unity-font-style: bold;"/>
+            <ui:Button name="RestartButton" text="Restart" class="pauseMenuButton" style="aspect-ratio: 1.777778; font-size: 50px; -unity-font-style: bold;"/>
+            <ui:Button name="QuitButton" text="Quit" class="pauseMenuButton" style="aspect-ratio: 1.777778; font-size: 50px; -unity-font-style: bold;"/>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
