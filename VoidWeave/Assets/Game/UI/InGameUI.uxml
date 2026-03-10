@@ -13,11 +13,11 @@
             <ui:Label name="LevelTextLabel" text="Level" style="-unity-font-style: bold; -unity-text-align: upper-center; font-size: 80px; position: absolute;"/>
             <ui:Label name="LevelValueLabel" style="-unity-font-style: bold; -unity-text-align: upper-center; font-size: 80px; position: absolute; left: 250px;"/>
         </ui:VisualElement>
-        <ui:Button name="PauseButton" class="pauseButton"/>
-        <ui:VisualElement name="PauseMenuVisualElement" style="align-self: center; justify-content: space-between; align-content: center; align-items: center; width: 100%; height: 100%; position: absolute; background-image: url(&quot;project://database/Assets/Game/Textures/PauseMenuBackground.png?fileID=2800000&amp;guid=4c0ecce5c0fcaaa4e80257c63b14d8b5&amp;type=3#PauseMenuBackground&quot;);">
-            <ui:Button name="ResumeButton" class="pauseMenuButton" style="background-image: url(&quot;project://database/Assets/Game/Textures/PlayButton.png?fileID=2800000&amp;guid=95ba62513ba74154fb54f373e3943753&amp;type=3#PlayButton&quot;);"/>
-            <ui:Button name="RestartButton" class="pauseMenuButton" style="background-image: url(&quot;project://database/Assets/Game/Textures/RestartButton.png?fileID=2800000&amp;guid=48763cc690d4ecf44b9057bcb7fe3a6a&amp;type=3#RestartButton&quot;);"/>
-            <ui:Button name="QuitButton" class="pauseMenuButton" style="background-image: url(&quot;project://database/Assets/Game/Textures/QuitButton.png?fileID=2800000&amp;guid=ef5050dc75a40094c95627380543ec94&amp;type=3#QuitButton&quot;);"/>
+        <ui:VisualElement name="PauseMenuVisualElement" style="align-self: center; justify-content: space-between; align-content: center; align-items: center; width: 100%; height: 100%; position: absolute; background-image: url(&quot;project://database/Assets/Game/Textures/PauseMenuBackground.png?fileID=2800000&amp;guid=4c0ecce5c0fcaaa4e80257c63b14d8b5&amp;type=3#PauseMenuBackground&quot;); display: flex;">
+            <ui:Button name="ResumeButton" class="pauseMenuButton uiButton" style="background-image: url(&quot;project://database/Assets/Game/Textures/PlayButton.png?fileID=2800000&amp;guid=95ba62513ba74154fb54f373e3943753&amp;type=3#PlayButton&quot;);"/>
+            <ui:Button name="RestartButton" class="pauseMenuButton uiButton" style="background-image: url(&quot;project://database/Assets/Game/Textures/RestartButton.png?fileID=2800000&amp;guid=48763cc690d4ecf44b9057bcb7fe3a6a&amp;type=3#RestartButton&quot;);"/>
+            <ui:Button name="QuitButton" class="pauseMenuButton uiButton" style="background-image: url(&quot;project://database/Assets/Game/Textures/QuitButton.png?fileID=2800000&amp;guid=ef5050dc75a40094c95627380543ec94&amp;type=3#QuitButton&quot;);"/>
         </ui:VisualElement>
+        <ui:Button name="PauseButton" class="pauseButton uiButton"/>
     </ui:VisualElement>
 </ui:UXML>

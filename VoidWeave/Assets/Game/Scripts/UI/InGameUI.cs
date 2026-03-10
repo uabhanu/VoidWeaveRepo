@@ -14,6 +14,7 @@ namespace Game.Scripts.UI
         #region Variables
 
         private readonly Dictionary<Entity , Label> _turretCooldownLabelsDictionary = new();
+        private List<Button> _uiButtons = new();
 
         private Button _pauseButton;
         private Button _quitButton;
@@ -25,7 +26,7 @@ namespace Game.Scripts.UI
         private EntityQuery _levelQuery;
 
         private EntityManager _entityManager;
-        
+
         private Label _energyValueLabel;
         private Label _healthValueLabel;
         private Label _levelTextLabel;
@@ -43,8 +44,12 @@ namespace Game.Scripts.UI
         [SerializeField] private Color wavePrepTimerLabelBorderColour;
         [SerializeField] private Color wavePrepTimerLabelBgColour;
 
+        [SerializeField] private float maxOpacity;
+        [SerializeField] private float minOpacity;
+        [SerializeField] private float pulseSpeed;
+        [SerializeField] private float sineDivisor;
+        [SerializeField] private float sineOffset;
         [SerializeField] private float turretCooldownThreshold;
-
         [SerializeField] private float turretCooldownTimerLabelAnchorPercent;
         [SerializeField] private float turretCooldownTimerLabelBorderWidth;
         [SerializeField] private float turretCooldownTimerLabelPadding;
@@ -67,6 +72,7 @@ namespace Game.Scripts.UI
         [SerializeField] private float wavePrepTimerLabelTranslatePercentY;
         [SerializeField] private float wavePrepTimerLabelTranslatePercentZ;
         [SerializeField] private float wavePrepTimerLabelWidth;
+        [SerializeField] private float zeroOpacity;
         [SerializeField] private float zeroThreshold;
 
         [SerializeField] private int waveStateReadyValue;
@@ -95,11 +101,13 @@ namespace Game.Scripts.UI
             _restartButton = _rootVisualElement.Q<Button>("RestartButton");
             _resumeButton = _rootVisualElement.Q<Button>("ResumeButton");
 
+            _uiButtons = _rootVisualElement.Query<Button>(null , "unity-button").ToList();
+
             _pauseButton.clicked += () => { GameEventsSystem.OnPauseButtonClicked?.Invoke(); };
             _quitButton.clicked += () => { GameEventsSystem.OnQuitButtonClicked?.Invoke(); };
             _restartButton.clicked += () => { GameEventsSystem.OnRestartButtonClicked?.Invoke(); };
             _resumeButton.clicked += () => { GameEventsSystem.OnResumeButtonClicked?.Invoke(); };
-            
+
             _energyValueLabel = _rootVisualElement.Q<Label>("EnergyValueLabel");
             _healthValueLabel = _rootVisualElement.Q<Label>("HealthValueLabel");
 
@@ -108,7 +116,7 @@ namespace Game.Scripts.UI
 
             _pauseMenuVisualElement = _rootVisualElement.Q<VisualElement>("PauseMenuVisualElement");
             _pauseMenuVisualElement.style.display = DisplayStyle.None;
-            
+
             _energyValueLabel.style.backgroundColor = energyLabelColour;
             _healthValueLabel.style.backgroundColor = healthLabelColour;
 
@@ -140,6 +148,26 @@ namespace Game.Scripts.UI
             GameEventsSystem.OnResumeButtonClicked -= OnResumeButtonClicked;
             GameEventsSystem.OnTurretCooldownStarted -= OnTurretCooldownStarted;
             GameEventsSystem.OnWavePrepCountdownStarted -= OnWavePrepCountdownStarted;
+        }
+
+        private void Update()
+        {
+            float pulse = (Mathf.Sin(Time.unscaledTime * pulseSpeed) + sineOffset) / sineDivisor;
+            float alpha = Mathf.Lerp(minOpacity , maxOpacity , pulse);
+
+            foreach(var button in _uiButtons)
+            {
+                if(button != null)
+                {
+                    if(!button.enabledSelf)
+                    {
+                        button.style.opacity = zeroOpacity;
+                        continue;
+                    }
+                    
+                    button.style.opacity = alpha;
+                }
+            }
         }
 
         #endregion

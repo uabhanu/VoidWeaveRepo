@@ -15,11 +15,12 @@
     border-right-width: 0;
     border-top-width: 0;
     border-bottom-width: 0;
+    -unity-background-scale-mode: scale-to-fit;
 }
 
 .pauseButton {
-    top: 20px;
-    right: 20px;
+    top: 40px;
+    right: 40px;
     align-self: flex-end;
     width: 128px;
     height: 128px;
@@ -29,4 +30,14 @@
     border-top-width: 0;
     border-bottom-width: 0;
     background-color: rgba(0, 0, 0, 0);
+    -unity-background-scale-mode: scale-to-fit;
+    transition-duration: 0.1s;
+    transition-timing-function: ease-in-out;
+}
+
+.uiButton:hover {
+    scale: 1.5 1.5;
+    transition-property: scale;
+    transition-timing-function: ease-in;
+    transition-duration: 0.5s;
 }

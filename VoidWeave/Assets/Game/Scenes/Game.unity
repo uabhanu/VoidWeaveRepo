@@ -384,6 +384,11 @@ MonoBehaviour:
   turretCooldownTimerLabelBgColour: {r: 1, g: 1, b: 1, a: 1}
   wavePrepTimerLabelBorderColour: {r: 0, g: 0, b: 0, a: 1}
   wavePrepTimerLabelBgColour: {r: 1, g: 0, b: 0, a: 1}
+  maxOpacity: 1
+  minOpacity: 0.1
+  pulseSpeed: 3.5
+  sineDivisor: 2
+  sineOffset: 1
   turretCooldownThreshold: 1
   turretCooldownTimerLabelAnchorPercent: 50
   turretCooldownTimerLabelBorderWidth: 5.5
@@ -407,6 +412,7 @@ MonoBehaviour:
   wavePrepTimerLabelTranslatePercentY: -50
   wavePrepTimerLabelTranslatePercentZ: 0
   wavePrepTimerLabelWidth: 400
+  zeroOpacity: 0
   zeroThreshold: 0
   waveStateReadyValue: 0
   uiDocument: {fileID: 520609773}
