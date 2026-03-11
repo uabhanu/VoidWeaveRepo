@@ -9,6 +9,7 @@ namespace Game.Scripts.Entities
         [SerializeField] private float attackRate;
         [SerializeField] private float collisionRadius; // Defines the radius of the hitbox used for collision detection
         [SerializeField] private int damage;
+        [SerializeField] private GameObject damageVfxPrefab;
         [SerializeField] private GameObject deathVfxPrefab;
         [SerializeField] private int isLineEnemy;
         [SerializeField] private int isTriangleEnemy;
@@ -32,6 +33,7 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new CooldownComponent());
                 AddComponent(entity , new CurrentHealthComponent { Value = authoring.maxHealth });
                 AddComponent(entity , new DamageComponent { Value = authoring.damage });
+                AddComponent(entity , new DamageVfxComponent { Value = GetEntity(authoring.damageVfxPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new DeathVfxComponent { Value = GetEntity(authoring.deathVfxPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new LineEnemyComponent { Value = authoring.isLineEnemy });
                 AddComponent(entity , new LootAmountComponent { Value = authoring.lootAmount });

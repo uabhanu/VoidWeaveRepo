@@ -170,6 +170,7 @@ MonoBehaviour:
   attackRate: 3.1
   collisionRadius: 0.5
   damage: 15
+  damageVfxPrefab: {fileID: 1368701968718810599, guid: 8dc44daca9daa1f438266e873fee7c24, type: 3}
   deathVfxPrefab: {fileID: 4819364062000519533, guid: 42d4aff6602e65646aa10a712ea79b1d, type: 3}
   lootAmount: 25
   lootPrefab: {fileID: 6983080911018168034, guid: 29b5c2b76e555c84c9ae88bcb6766676, type: 3}

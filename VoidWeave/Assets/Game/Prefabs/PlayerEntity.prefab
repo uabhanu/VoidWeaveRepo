@@ -100,6 +100,7 @@ MonoBehaviour:
   dashDuration: 0.2
   dashMaterial: {fileID: 2100000, guid: 55186f41bde4c43499b14e050a7f3c4a, type: 2}
   dashMultiplier: 4.9
+  damageVfxPrefab: {fileID: 1368701968718810599, guid: 8dc44daca9daa1f438266e873fee7c24, type: 3}
   dashVfxPrefab: {fileID: 5996436315431693226, guid: 126f537ccfc91ce4296565f6e3fdc714, type: 3}
   deathVfxPrefab: {fileID: 4819364062000519533, guid: 42d4aff6602e65646aa10a712ea79b1d, type: 3}
   maxHealth: 80
