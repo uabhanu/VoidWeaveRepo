@@ -15,6 +15,7 @@ namespace Game.Scripts.Entities
         [SerializeField] private GameObject dashVfxPrefab;
         [SerializeField] private GameObject deathVfxPrefab;
         [SerializeField] private int maxHealth;
+        [SerializeField] private GameObject movementVfxPrefab;
         [SerializeField] private float moveSpeed;
         [SerializeField] private int teamID;
 
@@ -38,6 +39,7 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new DashVfxComponent { Value = GetEntity(authoring.dashVfxPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new DeathVfxComponent { Value = GetEntity(authoring.deathVfxPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new MaxHealthComponent { Value = authoring.maxHealth });
+                AddComponent(entity , new MovementVfxComponent { Value = GetEntity(authoring.movementVfxPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new MoveSpeedComponent { Value = authoring.moveSpeed });
                 AddComponent(entity , new PlayerInputComponent());
                 AddComponent(entity , new SelectedTurretCostComponent());

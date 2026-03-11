@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &5996436315431693226
+--- !u!1 &2206811786914892953
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,24 +8,24 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6560621408382000492}
-  - component: {fileID: -1126919673591974216}
-  - component: {fileID: 1782749496057590462}
-  - component: {fileID: 2832399678100326520}
+  - component: {fileID: 8269929412924889508}
+  - component: {fileID: 3536322901654313358}
+  - component: {fileID: 809242377761015069}
+  - component: {fileID: 164968637924220084}
   m_Layer: 0
-  m_Name: DashVfx
+  m_Name: MovementVfxEntity
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6560621408382000492
+--- !u!4 &8269929412924889508
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5996436315431693226}
+  m_GameObject: {fileID: 2206811786914892953}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -34,27 +34,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-1126919673591974216
+--- !u!114 &3536322901654313358
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5996436315431693226}
+  m_GameObject: {fileID: 2206811786914892953}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 73b71ae964b17564ea4ccc219e3d40bb, type: 3}
+  m_Script: {fileID: 11500000, guid: effeeab17074d4d4bafb6f77cac8925f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.DashVfxEntity
-  lifetime: 0.2
---- !u!73398921 &1782749496057590462
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.MovementVfxEntity
+  lifetime: 0.3
+--- !u!73398921 &809242377761015069
 VFXRenderer:
   serializedVersion: 1
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5996436315431693226}
+  m_GameObject: {fileID: 2206811786914892953}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -94,15 +94,15 @@ VFXRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
---- !u!2083052967 &2832399678100326520
+--- !u!2083052967 &164968637924220084
 VisualEffect:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5996436315431693226}
+  m_GameObject: {fileID: 2206811786914892953}
   m_Enabled: 1
-  m_Asset: {fileID: 8926484042661614526, guid: 0e433edc2894ac440867bbe3ce75693a, type: 3}
+  m_Asset: {fileID: 8926484042661614526, guid: 53286a703d1df544e9285a5e38c1ab91, type: 3}
   m_InitialEventName: OnPlay
   m_InitialEventNameOverriden: 0
   m_StartSeed: 0
