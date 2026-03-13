@@ -20,7 +20,7 @@ namespace Game.Scripts.Entities
         [SerializeField] private float spreadDegrees;
         [SerializeField] private int teamID;
 
-        private class StrikerBaker : Baker<StrikerTurretEntity>
+        private class StrikerTurretBaker : Baker<StrikerTurretEntity>
         {
             public override void Bake(StrikerTurretEntity authoring)
             {
