@@ -26,6 +26,8 @@ namespace Game.Scripts.Entities
         [SerializeField] private float spawnVfxDuration;
         [SerializeField] private float spreadDegrees;
         [SerializeField] private int teamID;
+        [SerializeField] private Color vfxColor;
+        [SerializeField] private float vfxSize;
         [SerializeField] private float zigZagAmplitude;
         [SerializeField] private float zigZagFrequency;
 
@@ -59,6 +61,8 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new TargetPositionComponent());
                 AddComponent(entity , new TeamComponent { Value = authoring.teamID });
                 AddComponent(entity , new TimerComponent { Value = authoring.spawnVfxDuration });
+                AddComponent(entity , new VfxColorComponent { Value = new float3(authoring.vfxColor.r , authoring.vfxColor.g , authoring.vfxColor.b) });
+                AddComponent(entity , new VfxSizeComponent { Value = authoring.vfxSize });
 
                 AddComponent(entity , new EnemyTag());
                 AddComponent(entity , new SquareEnemyTag());

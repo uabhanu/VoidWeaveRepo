@@ -2,7 +2,7 @@ namespace Game.Scripts.Entities
 {
     using Components;
     using Unity.Entities;
-    using Unity.Rendering;
+    using Unity.Mathematics;
     using UnityEngine;
 
     public class PlayerEntity : MonoBehaviour
@@ -18,6 +18,8 @@ namespace Game.Scripts.Entities
         [SerializeField] private GameObject movementVfxPrefab;
         [SerializeField] private float moveSpeed;
         [SerializeField] private int teamID;
+        [SerializeField] private Color vfxColor;
+        [SerializeField] private float vfxSize;
 
         private class PlayerBaker : Baker<PlayerEntity>
         {
@@ -41,6 +43,8 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new SelectedTurretCostComponent());
                 AddComponent(entity , new SelectedTurretEntityComponent { Entity = Entity.Null });
                 AddComponent(entity , new TeamComponent { Value = authoring.teamID });
+                AddComponent(entity , new VfxColorComponent { Value = new float3(authoring.vfxColor.r , authoring.vfxColor.g , authoring.vfxColor.b) });
+                AddComponent(entity , new VfxSizeComponent { Value = authoring.vfxSize });
 
                 AddComponent(entity , new DashVisualTag());
                 AddComponent(entity , new PlayerTag());

@@ -2,6 +2,7 @@ namespace Game.Scripts.Entities
 {
     using Components;
     using Unity.Entities;
+    using Unity.Mathematics;
     using UnityEngine;
 
     public class MeleeEnemyEntity : MonoBehaviour
@@ -19,6 +20,8 @@ namespace Game.Scripts.Entities
         [SerializeField] private float moveSpeed;
         [SerializeField] private float spawnVfxDuration;
         [SerializeField] private int teamID;
+        [SerializeField] private Color vfxColor;
+        [SerializeField] private float vfxSize;
         [SerializeField] private float zigZagAmplitude;
         [SerializeField] private float zigZagFrequency;
 
@@ -47,6 +50,8 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new TeamComponent { Value = authoring.teamID });
                 AddComponent(entity , new TimerComponent { Value = authoring.spawnVfxDuration });
                 AddComponent(entity , new TriangleEnemyComponent { Value = authoring.isTriangleEnemy });
+                AddComponent(entity , new VfxColorComponent { Value = new float3(authoring.vfxColor.r , authoring.vfxColor.g , authoring.vfxColor.b) });
+                AddComponent(entity , new VfxSizeComponent { Value = authoring.vfxSize });
 
                 AddComponent(entity , new EnemyTag());
             }

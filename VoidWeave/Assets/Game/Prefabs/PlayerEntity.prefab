@@ -98,7 +98,6 @@ MonoBehaviour:
   collisionRadius: 0.5
   dashCooldownTimer: 1.1
   dashDuration: 0.2
-  dashMaterial: {fileID: 2100000, guid: 55186f41bde4c43499b14e050a7f3c4a, type: 2}
   dashMultiplier: 4.9
   damageVfxPrefab: {fileID: 1368701968718810599, guid: 8dc44daca9daa1f438266e873fee7c24, type: 3}
   dashVfxPrefab: {fileID: 5996436315431693226, guid: 126f537ccfc91ce4296565f6e3fdc714, type: 3}
@@ -107,6 +106,8 @@ MonoBehaviour:
   movementVfxPrefab: {fileID: 2206811786914892953, guid: c6ef17b4db270ef4cb3ec9ba76ae7312, type: 3}
   moveSpeed: 4.5
   teamID: 0
+  vfxColor: {r: 0, g: 1, b: 1, a: 1}
+  vfxSize: 2.5
 --- !u!33 &7724367789620693190
 MeshFilter:
   m_ObjectHideFlags: 0
