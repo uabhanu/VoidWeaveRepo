@@ -10,7 +10,6 @@ namespace Game.Scripts.Entities
         [SerializeField] private float collisionRadius; // Defines the radius of the hitbox used for collision detection
         [SerializeField] private float dashCooldownTimer; // Time before next dash   
         [SerializeField] private float dashDuration; // Length of dash   
-        [SerializeField] private Material dashMaterial;
         [SerializeField] private float dashMultiplier; // Speed boost (5 * 5 = 25 units/sec)
         [SerializeField] private GameObject damageVfxPrefab;
         [SerializeField] private GameObject dashVfxPrefab;
@@ -25,11 +24,6 @@ namespace Game.Scripts.Entities
             public override void Bake(PlayerEntity authoring)
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-
-                var meshFilter = authoring.GetComponent<MeshFilter>();
-                var meshRenderer = authoring.GetComponent<MeshRenderer>();
-
-                var renderMeshArray = new RenderMeshArray(new[] { meshRenderer.sharedMaterial , authoring.dashMaterial } , new[] { meshFilter.sharedMesh });
 
                 AddComponent(entity , new BaseMoveSpeedComponent { Value = authoring.moveSpeed });
                 AddComponent(entity , new CollisionRadiusComponent { Value = authoring.collisionRadius });
@@ -47,8 +41,6 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new SelectedTurretCostComponent());
                 AddComponent(entity , new SelectedTurretEntityComponent { Entity = Entity.Null });
                 AddComponent(entity , new TeamComponent { Value = authoring.teamID });
-
-                AddSharedComponentManaged(entity , renderMeshArray);
 
                 AddComponent(entity , new DashVisualTag());
                 AddComponent(entity , new PlayerTag());
