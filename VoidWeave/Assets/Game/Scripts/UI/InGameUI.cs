@@ -183,10 +183,11 @@ namespace Game.Scripts.UI
 
         private void OnQuitButtonClicked()
         {
-            if(EditorApplication.isPlaying)
-                EditorApplication.isPlaying = false;
-            else
-                Application.Quit();
+            #if UNITY_EDITOR
+				UnityEditor.EditorApplication.isPlaying = false;
+			#else
+				UnityEngine.Application.Quit();
+			#endif
         }
 
         private void OnResumeButtonClicked()

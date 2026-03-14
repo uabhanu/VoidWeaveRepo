@@ -32,7 +32,7 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new CooldownComponent { Value = authoring.cooldownTime });
                 AddComponent(entity , new MinRotationRequiredComponent{ Value = authoring.minRotationRequired });
                 AddComponent(entity , new ProjectileCountComponent { Value = authoring.projectileCount });
-                AddComponent(entity , new ProjectileSpawnPointComponent { Value = (float3)authoring.projectileSpawnPoint.position - (float3)authoring.transform.position });
+                AddComponent(entity , new ProjectileSpawnPointComponent { Value = authoring.projectileSpawnPoint.localPosition });
                 AddComponent(entity , new RangeComponent { Value = authoring.range });
                 AddComponent(entity , new RotationOffsetComponent { Value = authoring.rotationOffset });
                 AddComponent(entity , new RotationSpeedComponent { Value = authoring.rotationSpeed });
