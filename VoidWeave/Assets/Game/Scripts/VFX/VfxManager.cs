@@ -16,7 +16,7 @@ namespace Game.Scripts.VFX
             var world = World.DefaultGameObjectInjectionWorld;
             _entityManager = world.EntityManager;
 
-            _vfxQuery = _entityManager.CreateEntityQuery(typeof(VfxColorComponent) , typeof(VfxSizeComponent) , typeof(VfxUpdateTag));
+            _vfxQuery = _entityManager.CreateEntityQuery(typeof(VfxColorComponent) , typeof(VfxMeshComponent) , typeof(VfxScaleComponent) , typeof(VfxSizeComponent) , typeof(VfxTextureComponent) , typeof(VfxUpdateTag));
         }
 
         private void Update()
@@ -24,7 +24,10 @@ namespace Game.Scripts.VFX
             if(_vfxQuery.IsEmptyIgnoreFilter) return;
 
             _entityManager.CompleteDependencyBeforeRO<VfxColorComponent>();
+            _entityManager.CompleteDependencyBeforeRO<VfxMeshComponent>();
+            _entityManager.CompleteDependencyBeforeRO<VfxScaleComponent>();
             _entityManager.CompleteDependencyBeforeRO<VfxSizeComponent>();
+            _entityManager.CompleteDependencyBeforeRO<VfxTextureComponent>();
             _entityManager.CompleteDependencyBeforeRO<VfxUpdateTag>();
 
             var entities = _vfxQuery.ToEntityArray(Unity.Collections.Allocator.Temp);
@@ -33,12 +36,18 @@ namespace Game.Scripts.VFX
             {
                 if(_entityManager.HasComponent<VisualEffect>(entity))
                 {
-                    var visualEffect = _entityManager.GetComponentObject<VisualEffect>(entity);
                     float3 colorValue = _entityManager.GetComponentData<VfxColorComponent>(entity).Value;
+                    Mesh meshValue = _entityManager.GetComponentData<VfxMeshComponent>(entity).Value;
+                    float3 scaleValue = _entityManager.GetComponentData<VfxScaleComponent>(entity).Value;
                     float sizeValue = _entityManager.GetComponentData<VfxSizeComponent>(entity).Value;
+                    Texture2D textureValue = _entityManager.GetComponentObject<VfxTextureComponent>(entity).Value;
+                    var visualEffect = _entityManager.GetComponentObject<VisualEffect>(entity);
 
                     visualEffect.SetVector3("Color" , colorValue);
+                    visualEffect.SetVector3("MainScale" , scaleValue);
+                    visualEffect.SetMesh("MainMesh" , meshValue);
                     visualEffect.SetFloat("Size" , sizeValue);
+                    visualEffect.SetTexture("MainTexture" , textureValue);
                 }
 
                 _entityManager.RemoveComponent<VfxUpdateTag>(entity);

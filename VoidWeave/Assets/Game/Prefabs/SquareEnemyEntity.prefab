@@ -187,6 +187,6 @@ MonoBehaviour:
   spreadDegrees: 0
   teamID: 1
   vfxColor: {r: 1, g: 0, b: 0, a: 1}
-  vfxSize: 2.5
+  vfxSize: 1.5
   zigZagAmplitude: 0
   zigZagFrequency: 0

@@ -7,6 +7,8 @@ namespace Game.Scripts.Entities
 
     public class PlayerEntity : MonoBehaviour
     {
+        #region Variables
+        
         [SerializeField] private float collisionRadius; // Defines the radius of the hitbox used for collision detection
         [SerializeField] private float dashCooldownTimer; // Time before next dash   
         [SerializeField] private float dashDuration; // Length of dash   
@@ -20,12 +22,22 @@ namespace Game.Scripts.Entities
         [SerializeField] private int teamID;
         [SerializeField] private Color vfxColor;
         [SerializeField] private float vfxSize;
+        
+        #endregion
+        
+        #region Baker
 
         private class PlayerBaker : Baker<PlayerEntity>
         {
             public override void Bake(PlayerEntity authoring)
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
+
+                var bodyVisual = authoring.transform.Find("BodyVisual");
+                float3 bodyVisualScale = bodyVisual ? bodyVisual.localScale : (float3)authoring.transform.localScale;
+                var meshFilter = authoring.GetComponentInChildren<MeshFilter>();
+                var meshRenderer = authoring.GetComponentInChildren<MeshRenderer>();
+                Texture2D mainTexture = meshRenderer.sharedMaterial.mainTexture as Texture2D;
 
                 AddComponent(entity , new BaseMoveSpeedComponent { Value = authoring.moveSpeed });
                 AddComponent(entity , new CollisionRadiusComponent { Value = authoring.collisionRadius });
@@ -44,11 +56,17 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new SelectedTurretEntityComponent { Entity = Entity.Null });
                 AddComponent(entity , new TeamComponent { Value = authoring.teamID });
                 AddComponent(entity , new VfxColorComponent { Value = new float3(authoring.vfxColor.r , authoring.vfxColor.g , authoring.vfxColor.b) });
+                AddComponent(entity , new VfxScaleComponent { Value = bodyVisualScale });
                 AddComponent(entity , new VfxSizeComponent { Value = authoring.vfxSize });
+
+                AddComponentObject(entity , new VfxMeshComponent { Value = meshFilter.sharedMesh });
+                AddComponentObject(entity , new VfxTextureComponent { Value = mainTexture });
 
                 AddComponent(entity , new DashVisualTag());
                 AddComponent(entity , new PlayerTag());
             }
         }
+        
+        #endregion
     }
 }

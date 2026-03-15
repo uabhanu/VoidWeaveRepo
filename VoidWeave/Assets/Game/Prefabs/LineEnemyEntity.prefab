@@ -59,7 +59,7 @@ MonoBehaviour:
   spawnVfxDuration: 0.75
   teamID: 1
   vfxColor: {r: 1, g: 0, b: 0, a: 1}
-  vfxSize: 2.5
+  vfxSize: 1.5
   zigZagAmplitude: 0
   zigZagFrequency: 0
 --- !u!1 &7292214093426870739

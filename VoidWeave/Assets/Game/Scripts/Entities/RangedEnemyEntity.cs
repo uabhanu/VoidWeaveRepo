@@ -7,6 +7,8 @@ namespace Game.Scripts.Entities
 
     public class RangedEnemyEntity : MonoBehaviour
     {
+        #region Variables
+        
         [SerializeField] private float attackRate;
         [SerializeField] private float collisionRadius; // Defines the radius of the hitbox used for collision detection
         [SerializeField] private int damage;
@@ -30,12 +32,22 @@ namespace Game.Scripts.Entities
         [SerializeField] private float vfxSize;
         [SerializeField] private float zigZagAmplitude;
         [SerializeField] private float zigZagFrequency;
+        
+        #endregion
+        
+        #region Baker
 
         private class RangedEnemyBaker : Baker<RangedEnemyEntity>
         {
             public override void Bake(RangedEnemyEntity authoring)
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
+                
+                var bodyVisual = authoring.transform.Find("BodyVisual");
+                float3 bodyVisualScale = bodyVisual ? bodyVisual.localScale : (float3)authoring.transform.localScale;
+                var meshFilter = authoring.GetComponentInChildren<MeshFilter>();
+                var meshRenderer = authoring.GetComponentInChildren<MeshRenderer>();
+                Texture2D mainTexture = meshRenderer.sharedMaterial.mainTexture as Texture2D;
 
                 AddComponent(entity , new AttackRateComponent { Value = authoring.attackRate });
                 AddComponent(entity , new BulletEntityComponent { Entity = GetEntity(authoring.projectilePrefab , TransformUsageFlags.Dynamic) });
@@ -62,11 +74,17 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new TeamComponent { Value = authoring.teamID });
                 AddComponent(entity , new TimerComponent { Value = authoring.spawnVfxDuration });
                 AddComponent(entity , new VfxColorComponent { Value = new float3(authoring.vfxColor.r , authoring.vfxColor.g , authoring.vfxColor.b) });
+                AddComponent(entity , new VfxScaleComponent { Value = bodyVisualScale });
                 AddComponent(entity , new VfxSizeComponent { Value = authoring.vfxSize });
+                
+                AddComponentObject(entity , new VfxMeshComponent { Value = meshFilter.sharedMesh });
+                AddComponentObject(entity , new VfxTextureComponent { Value = mainTexture });
 
                 AddComponent(entity , new EnemyTag());
                 AddComponent(entity , new SquareEnemyTag());
             }
         }
+        
+        #endregion
     }
 }
