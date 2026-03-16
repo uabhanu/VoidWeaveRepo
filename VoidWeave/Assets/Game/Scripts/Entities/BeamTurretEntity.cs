@@ -1,7 +1,8 @@
 namespace Game.Scripts.Entities
 {
-    using Game.Scripts.Components;
+    using Components;
     using Unity.Entities;
+    using Unity.Mathematics;
     using UnityEngine;
 
     public class BeamTurretEntity : MonoBehaviour
@@ -10,8 +11,12 @@ namespace Game.Scripts.Entities
         [SerializeField] private GameObject bulletPrefab;
         [SerializeField] private float cooldownTime;
         [SerializeField] private float damage;
+        [SerializeField] private float minRotationRequired;
         [SerializeField] private int projectileCount;
+        [SerializeField] private Transform projectileSpawnPoint;
         [SerializeField] private float range;
+        [SerializeField] private float rotationOffset;
+        [SerializeField] private float rotationSpeed;
         [SerializeField] private float spreadDegrees;
         [SerializeField] private int teamID;
 
@@ -25,8 +30,12 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new BulletEntityComponent { Entity = GetEntity(authoring.bulletPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new CooldownComponent { Value = authoring.cooldownTime });
                 AddComponent(entity , new DamageComponent { Value = authoring.damage });
+                AddComponent(entity , new MinRotationRequiredComponent { Value = authoring.minRotationRequired });
                 AddComponent(entity , new ProjectileCountComponent { Value = authoring.projectileCount });
+                AddComponent(entity , new ProjectileSpawnPointComponent { Value = authoring.projectileSpawnPoint.localPosition });
                 AddComponent(entity , new RangeComponent { Value = authoring.range });
+                AddComponent(entity , new RotationOffsetComponent { Value = authoring.rotationOffset });
+                AddComponent(entity , new RotationSpeedComponent { Value = authoring.rotationSpeed });
                 AddComponent(entity , new SpreadComponent { Value = authoring.spreadDegrees });
                 AddComponent(entity , new TargetPositionComponent());
                 AddComponent(entity , new TeamComponent { Value = authoring.teamID });

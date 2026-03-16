@@ -1,6 +1,6 @@
 namespace Game.Scripts.Systems
 {
-    using Game.Scripts.Components;
+    using Components;
     using Unity.Burst;
     using Unity.Entities;
     using Unity.Mathematics;
@@ -72,8 +72,7 @@ namespace Game.Scripts.Systems
     }
 
     [BurstCompile]
-    [WithAll(typeof(AttackRateComponent) , typeof(HasTargetTag))]
-    [WithNone(typeof(CanShootTag))]
+    [WithAll(typeof(AttackRateComponent) , typeof(HasTargetTag) , typeof(RotationCompleteTag))]
     public partial struct CanRangeAttackJob : IJobEntity
     {
         public int DoAction;
@@ -88,7 +87,7 @@ namespace Game.Scripts.Systems
     }
 
     [BurstCompile]
-    [WithAll(typeof(AttackRateComponent) , typeof(CanShootTag))]
+    [WithAll(typeof(AttackRateComponent))]
     public partial struct CannotRangeAttackJob : IJobEntity
     {
         public int DoAction;

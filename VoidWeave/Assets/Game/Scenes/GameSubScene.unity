@@ -149,6 +149,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.GameInitEntity
   enemySpawnerEntityPrefab: {fileID: 9071633379703226984, guid: 55c28ec5c3d184f40a1b0224da9a5ea4, type: 3}
+  gameBackgroundEntityPrefab: {fileID: 723377330199262015, guid: 4ce61640a2e8643469e792888957c1f2, type: 3}
   gameManagerEntityPrefab: {fileID: 3052477988554019061, guid: a12e582f6d707334ab5b298bc00a3820, type: 3}
   inputEntityPrefab: {fileID: 6464459571194226029, guid: 7defc3eb64b3d2e418ff6dbec472138b, type: 3}
   playerEntityPrefab: {fileID: 4043072570545550109, guid: 3cefbfe9652710640b54b28569aed323, type: 3}

@@ -65,10 +65,10 @@ MonoBehaviour:
   lootMultiplierPerLevel: 0.2
   lootPickupRadius: 0.5
   minEnemiesToKill: 0
-  minProjectileCount: 1
   minStartingLevel: 0
   movementActive: 1
   movementNone: 0
+  oneScale: 1
   playerEntityPrefab: {fileID: 4043072570545550109, guid: 3cefbfe9652710640b54b28569aed323, type: 3}
   scalingBase: 1
   scalingLevelOffset: 3
@@ -91,3 +91,4 @@ MonoBehaviour:
   upgradeCostMultiplier: 1.5
   waveStateCombat: 1
   waveStatePrep: 0
+  zeroScale: 0

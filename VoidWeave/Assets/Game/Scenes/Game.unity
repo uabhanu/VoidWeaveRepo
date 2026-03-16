@@ -377,13 +377,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e7a3e84cb19ba24e829216d6da27252, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.InGameUI
-  energyLabelColour: {r: 1, g: 1, b: 0, a: 1}
-  healthLabelColour: {r: 0, g: 1, b: 0, a: 1}
-  levelLabelColour: {r: 1, g: 0.49019608, b: 0, a: 1}
   turretCooldownTimerLabelBorderColour: {r: 0, g: 0, b: 0, a: 1}
   turretCooldownTimerLabelBgColour: {r: 1, g: 1, b: 1, a: 1}
-  wavePrepTimerLabelBorderColour: {r: 0, g: 0, b: 0, a: 1}
-  wavePrepTimerLabelBgColour: {r: 1, g: 0, b: 0, a: 1}
+  wavePrepTimerLabelSpriteTintColour: {r: 1, g: 0, b: 0, a: 1}
+  maxOpacity: 1
+  minOpacity: 0.1
+  pulseSpeed: 3.5
+  sineDivisor: 2
+  sineOffset: 1
   turretCooldownThreshold: 1
   turretCooldownTimerLabelAnchorPercent: 50
   turretCooldownTimerLabelBorderWidth: 5.5
@@ -392,13 +393,12 @@ MonoBehaviour:
   turretCooldownTimerLabelHeight: 100
   turretCooldownTimerLabelOffsetX: 0
   turretCooldownTimerLabelOffsetY: 0
-  turretCooldownTimerLabelTranslatePercentX: -50
-  turretCooldownTimerLabelTranslatePercentY: -160
+  turretCooldownTimerLabelTranslatePercentX: -60
+  turretCooldownTimerLabelTranslatePercentY: -220
   turretCooldownTimerLabelTranslatePercentZ: 0
   turretCooldownTimerLabelWidth: 100
   wavePrepTimerLabelAnchorPercent: 50
   wavePrepTimerLabelBorderWidth: 5.5
-  wavePrepTimerLabelPadding: 6.5
   wavePrepTimerLabelFontSize: 50
   wavePrepTimerLabelHeight: 200
   wavePrepTimerLabelOffsetX: 0
@@ -406,9 +406,12 @@ MonoBehaviour:
   wavePrepTimerLabelTranslatePercentX: -50
   wavePrepTimerLabelTranslatePercentY: -50
   wavePrepTimerLabelTranslatePercentZ: 0
-  wavePrepTimerLabelWidth: 400
+  wavePrepTimerLabelWidth: 600
+  zeroOpacity: 0
   zeroThreshold: 0
+  wavePrepLabelPaddingLeft: 40
   waveStateReadyValue: 0
+  hudPanelSprite: {fileID: 21300000, guid: d673b2ca11fb9d447910e14d3f666f64, type: 3}
   uiDocument: {fileID: 520609773}
 --- !u!1 &619394800
 GameObject:
@@ -494,6 +497,50 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1806323542
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1806323544}
+  - component: {fileID: 1806323543}
+  m_Layer: 0
+  m_Name: VfxManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1806323543
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1806323542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c9f04f3837493149bb28fd5081c09ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.VFX.VfxManager
+--- !u!4 &1806323544
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1806323542}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -502,3 +549,4 @@ SceneRoots:
   - {fileID: 171126799}
   - {fileID: 519420032}
   - {fileID: 520609775}
+  - {fileID: 1806323544}

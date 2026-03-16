@@ -1,6 +1,6 @@
 namespace Game.Scripts.Systems
 {
-    using Game.Scripts.Components;
+    using Components;
     using Unity.Burst;
     using Unity.Entities;
     using Unity.Mathematics;
@@ -42,9 +42,11 @@ namespace Game.Scripts.Systems
         private void Execute(in DamageEventComponent damageEventComponent , Entity entity , [EntityIndexInQuery] int entityIndexInQuery , ref CurrentHealthComponent currentHealthComponent)
         {
             currentHealthComponent.Value -= damageEventComponent.Value;
+            
+            ECBParallelWriter.AddComponent<DamageTag>(entityIndexInQuery , entity);
 
             for(var i = 0 ; i < math.select(NoAction , DoAction , currentHealthComponent.Value <= HealthValueForDeath) ; i++) ECBParallelWriter.AddComponent<DeathTag>(entityIndexInQuery , entity);
-
+            
             ECBParallelWriter.RemoveComponent<DamageEventComponent>(entityIndexInQuery , entity);
         }
     }

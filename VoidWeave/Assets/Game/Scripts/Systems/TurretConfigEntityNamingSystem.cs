@@ -1,6 +1,6 @@
 namespace Game.Scripts.Systems
 {
-    using Game.Scripts.Components;
+    using Components;
     using Unity.Collections;
     using Unity.Entities;
 

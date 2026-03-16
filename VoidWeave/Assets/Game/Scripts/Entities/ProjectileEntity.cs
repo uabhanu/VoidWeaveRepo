@@ -1,6 +1,6 @@
 namespace Game.Scripts.Entities
 {
-    using Game.Scripts.Components;
+    using Components;
     using Unity.Entities;
     using UnityEngine;
 
@@ -19,8 +19,8 @@ namespace Game.Scripts.Entities
 
                 AddComponent(entity , new CollisionRadiusComponent { Value = authoring.collisionRadius });
                 AddComponent(entity , new DamageComponent());
+                AddComponent(entity , new LifetimeComponent { Value = authoring.lifetime });
                 AddComponent(entity , new MoveSpeedComponent { Value = authoring.speed });
-                AddComponent(entity , new ProjectileLifetimeComponent { Value = authoring.lifetime });
                 AddComponent(entity , new TeamComponent { Value = authoring.teamID });
                 AddComponent(entity , new VelocityComponent());
 

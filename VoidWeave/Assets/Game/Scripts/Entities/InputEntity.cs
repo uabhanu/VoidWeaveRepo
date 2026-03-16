@@ -1,6 +1,6 @@
 namespace Game.Scripts.Entities
 {
-    using Game.Scripts.Components;
+    using Components;
     using Unity.Entities;
     using UnityEngine;
     using UnityEngine.InputSystem;

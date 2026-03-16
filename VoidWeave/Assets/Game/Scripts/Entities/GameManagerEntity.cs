@@ -30,10 +30,10 @@ namespace Game.Scripts.Entities
         [SerializeField] private float lootMultiplierPerLevel;
         [SerializeField] private float lootPickupRadius;
         [SerializeField] private int minEnemiesToKill;
-        [SerializeField] private int minProjectileCount = 1;
         [SerializeField] private int minStartingLevel;
         [SerializeField] private float movementActive;
         [SerializeField] private float movementNone;
+        [SerializeField] private int oneScale;
         [SerializeField] private GameObject playerEntityPrefab;
         [SerializeField] private float scalingBase;
         [SerializeField] private int scalingLevelOffset;
@@ -56,6 +56,7 @@ namespace Game.Scripts.Entities
         [SerializeField] private float upgradeCostMultiplier;
         [SerializeField] private int waveStateCombat;
         [SerializeField] private int waveStatePrep;
+        [SerializeField] private int zeroScale;
 
         #endregion
         
@@ -76,7 +77,6 @@ namespace Game.Scripts.Entities
                 initialMask |= math.select(authoring.unlockedNone , authoring.unlockedSquareEnemy , startingLevel >= authoring.squareEnemyUnlockLevel);
 
                 AddComponent(entity , new BeamTurretUnlockLevelComponent { Value = authoring.beamTurretUnlockLevel });
-                AddComponent(entity , new BulletRotationOffsetComponent { Value = authoring.bulletRotationOffset });
                 AddComponent(entity , new BoundaryOffsetComponent { Value = authoring.boundaryOffset });
                 AddComponent(entity , new CameraOrthographicSizeComponent { Value = authoring.cameraOrthographicSize });
                 AddComponent(entity , new CollisionActiveComponent { Value = authoring.collisionActive });
@@ -99,10 +99,10 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new LevelToUnlockTriangleEnemyComponent { Value = authoring.triangleEnemyUnlockLevel });
                 AddComponent(entity , new LootMultiplierComponent { Value = authoring.lootMultiplierPerLevel });
                 AddComponent(entity , new LootPickupRadiusComponent { Value = authoring.lootPickupRadius });
-                AddComponent(entity , new MinProjectileCountComponent { Value = authoring.minProjectileCount });
                 AddComponent(entity , new MovementActiveComponent { Value = authoring.movementActive });
                 AddComponent(entity , new MovementNoneComponent { Value = authoring.movementNone });
                 AddComponent(entity , new NoActionComponent { Value = authoring.noAction });
+                AddComponent(entity , new OneScaleComponent { Value = authoring.oneScale });
                 AddComponent(entity , new PlayerEntityComponent { Entity = GetEntity(authoring.playerEntityPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new ScalingBaseComponent { Value = authoring.scalingBase });
                 AddComponent(entity , new ScalingLevelOffsetComponent { Value = authoring.scalingLevelOffset });
@@ -122,6 +122,7 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new UpgradeCostMultiplierComponent { Value = authoring.upgradeCostMultiplier });
                 AddComponent(entity , new WaveStateCombatComponent { Value = authoring.waveStateCombat });
                 AddComponent(entity , new WaveStatePrepComponent { Value = authoring.waveStatePrep });
+                AddComponent(entity , new ZeroScaleComponent { Value = authoring.zeroScale });
             }
         }
 
