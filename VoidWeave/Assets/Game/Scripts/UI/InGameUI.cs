@@ -29,20 +29,15 @@ namespace Game.Scripts.UI
 
         private Label _energyValueLabel;
         private Label _healthValueLabel;
-        private Label _levelTextLabel;
         private Label _levelValueLabel;
         private Label _wavePrepLabel;
 
         private VisualElement _rootVisualElement;
         private VisualElement _pauseMenuVisualElement;
 
-        [SerializeField] private Color energyLabelColour;
-        [SerializeField] private Color healthLabelColour;
-        [SerializeField] private Color levelLabelColour;
         [SerializeField] private Color turretCooldownTimerLabelBorderColour;
         [SerializeField] private Color turretCooldownTimerLabelBgColour;
-        [SerializeField] private Color wavePrepTimerLabelBorderColour;
-        [SerializeField] private Color wavePrepTimerLabelBgColour;
+        [SerializeField] private Color wavePrepTimerLabelSpriteTintColour;
 
         [SerializeField] private float maxOpacity;
         [SerializeField] private float minOpacity;
@@ -63,7 +58,6 @@ namespace Game.Scripts.UI
         [SerializeField] private float turretCooldownTimerLabelWidth;
         [SerializeField] private float wavePrepTimerLabelAnchorPercent;
         [SerializeField] private float wavePrepTimerLabelBorderWidth;
-        [SerializeField] private float wavePrepTimerLabelPadding;
         [SerializeField] private float wavePrepTimerLabelFontSize;
         [SerializeField] private float wavePrepTimerLabelHeight;
         [SerializeField] private float wavePrepTimerLabelOffsetX;
@@ -75,7 +69,10 @@ namespace Game.Scripts.UI
         [SerializeField] private float zeroOpacity;
         [SerializeField] private float zeroThreshold;
 
+        [SerializeField] private int wavePrepLabelPaddingLeft;
         [SerializeField] private int waveStateReadyValue;
+
+        [SerializeField] private Sprite hudPanelSprite;
 
         [SerializeField] private UIDocument uiDocument;
 
@@ -111,17 +108,10 @@ namespace Game.Scripts.UI
             _energyValueLabel = _rootVisualElement.Q<Label>("EnergyValueLabel");
             _healthValueLabel = _rootVisualElement.Q<Label>("HealthValueLabel");
 
-            _levelTextLabel = _rootVisualElement.Q<Label>("LevelTextLabel");
             _levelValueLabel = _rootVisualElement.Q<Label>("LevelValueLabel");
 
             _pauseMenuVisualElement = _rootVisualElement.Q<VisualElement>("PauseMenuVisualElement");
             _pauseMenuVisualElement.style.display = DisplayStyle.None;
-
-            _energyValueLabel.style.backgroundColor = energyLabelColour;
-            _healthValueLabel.style.backgroundColor = healthLabelColour;
-
-            _levelTextLabel.style.backgroundColor = levelLabelColour;
-            _levelValueLabel.style.backgroundColor = levelLabelColour;
         }
 
         private void OnEnable()
@@ -164,7 +154,7 @@ namespace Game.Scripts.UI
                         button.style.opacity = zeroOpacity;
                         continue;
                     }
-                    
+
                     button.style.opacity = alpha;
                 }
             }
@@ -184,10 +174,10 @@ namespace Game.Scripts.UI
         private void OnQuitButtonClicked()
         {
             #if UNITY_EDITOR
-				UnityEditor.EditorApplication.isPlaying = false;
-			#else
-				UnityEngine.Application.Quit();
-			#endif
+            EditorApplication.isPlaying = false;
+            #else
+				Application.Quit();
+            #endif
         }
 
         private void OnResumeButtonClicked()
@@ -299,28 +289,20 @@ namespace Game.Scripts.UI
                 {
                     style =
                     {
-                        backgroundColor = wavePrepTimerLabelBgColour ,
-                        borderBottomColor = wavePrepTimerLabelBorderColour ,
-                        borderBottomWidth = wavePrepTimerLabelBorderWidth ,
-                        borderLeftColor = wavePrepTimerLabelBorderColour ,
-                        borderLeftWidth = wavePrepTimerLabelBorderWidth ,
-                        borderRightColor = wavePrepTimerLabelBorderColour ,
-                        borderRightWidth = wavePrepTimerLabelBorderWidth ,
-                        borderTopColor = wavePrepTimerLabelBorderColour ,
-                        borderTopWidth = wavePrepTimerLabelBorderWidth ,
+                        backgroundImage = new StyleBackground(hudPanelSprite) ,
+                        unityBackgroundImageTintColor = wavePrepTimerLabelSpriteTintColour ,
+                        backgroundColor = Color.clear ,
                         fontSize = wavePrepTimerLabelFontSize ,
                         height = wavePrepTimerLabelHeight ,
-                        left = Length.Percent(wavePrepTimerLabelAnchorPercent) ,
-                        paddingBottom = wavePrepTimerLabelPadding ,
-                        paddingLeft = wavePrepTimerLabelPadding ,
-                        paddingRight = wavePrepTimerLabelPadding ,
-                        paddingTop = wavePrepTimerLabelPadding ,
+                        width = wavePrepTimerLabelWidth ,
                         position = Position.Absolute ,
+                        paddingLeft = wavePrepLabelPaddingLeft ,
+                        left = Length.Percent(wavePrepTimerLabelAnchorPercent) ,
                         top = Length.Percent(wavePrepTimerLabelAnchorPercent) ,
                         translate = new Translate(Length.Percent(wavePrepTimerLabelTranslatePercentX) , Length.Percent(wavePrepTimerLabelTranslatePercentY) , wavePrepTimerLabelTranslatePercentZ) ,
                         unityFontStyleAndWeight = FontStyle.Bold ,
                         unityTextAlign = TextAnchor.MiddleCenter ,
-                        width = wavePrepTimerLabelWidth
+                        color = Color.white
                     }
                 };
 

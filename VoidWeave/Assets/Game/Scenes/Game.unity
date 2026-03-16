@@ -377,13 +377,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e7a3e84cb19ba24e829216d6da27252, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.InGameUI
-  energyLabelColour: {r: 1, g: 1, b: 0, a: 1}
-  healthLabelColour: {r: 0, g: 1, b: 0, a: 1}
-  levelLabelColour: {r: 1, g: 0.49019608, b: 0, a: 1}
   turretCooldownTimerLabelBorderColour: {r: 0, g: 0, b: 0, a: 1}
   turretCooldownTimerLabelBgColour: {r: 1, g: 1, b: 1, a: 1}
-  wavePrepTimerLabelBorderColour: {r: 0, g: 0, b: 0, a: 1}
-  wavePrepTimerLabelBgColour: {r: 1, g: 0, b: 0, a: 1}
+  wavePrepTimerLabelSpriteTintColour: {r: 1, g: 0, b: 0, a: 1}
   maxOpacity: 1
   minOpacity: 0.1
   pulseSpeed: 3.5
@@ -403,7 +399,6 @@ MonoBehaviour:
   turretCooldownTimerLabelWidth: 100
   wavePrepTimerLabelAnchorPercent: 50
   wavePrepTimerLabelBorderWidth: 5.5
-  wavePrepTimerLabelPadding: 6.5
   wavePrepTimerLabelFontSize: 50
   wavePrepTimerLabelHeight: 200
   wavePrepTimerLabelOffsetX: 0
@@ -411,10 +406,12 @@ MonoBehaviour:
   wavePrepTimerLabelTranslatePercentX: -50
   wavePrepTimerLabelTranslatePercentY: -50
   wavePrepTimerLabelTranslatePercentZ: 0
-  wavePrepTimerLabelWidth: 400
+  wavePrepTimerLabelWidth: 600
   zeroOpacity: 0
   zeroThreshold: 0
+  wavePrepLabelPaddingLeft: 40
   waveStateReadyValue: 0
+  hudPanelSprite: {fileID: 21300000, guid: d673b2ca11fb9d447910e14d3f666f64, type: 3}
   uiDocument: {fileID: 520609773}
 --- !u!1 &619394800
 GameObject:
