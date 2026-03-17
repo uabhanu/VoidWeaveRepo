@@ -10,9 +10,13 @@ namespace Game.Scripts.Systems
     [UpdateBefore(typeof(EnemySpawningSystem))]
     public partial struct LevelProgressionSystem : ISystem
     {
+        private EntityQuery _enemyEntityInTheSceneQuery;
+        
         [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
+            _enemyEntityInTheSceneQuery = systemState.GetEntityQuery(ComponentType.ReadOnly<EnemyTag>());
+            
             systemState.RequireForUpdate<DoActionComponent>();
             systemState.RequireForUpdate<EnemiesKilledComponent>();
             systemState.RequireForUpdate<EnemiesToKillComponent>();
@@ -37,6 +41,7 @@ namespace Game.Scripts.Systems
             systemState.Dependency.Complete();
 
             int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
+            int enemyEntitiesCount = _enemyEntityInTheSceneQuery.CalculateEntityCount();
             int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
             int levelToUnlockLineEnemy = SystemAPI.GetSingleton<LevelToUnlockLineEnemyComponent>().Value;
             int levelToUnlockSquareEnemy = SystemAPI.GetSingleton<LevelToUnlockSquareEnemyComponent>().Value;
@@ -53,8 +58,11 @@ namespace Game.Scripts.Systems
             RefRW<UnlockedEnemiesComponent> unlockedEnemiesComponent = SystemAPI.GetSingletonRW<UnlockedEnemiesComponent>();
             RefRW<WaveIndexComponent> waveIndexComponent = SystemAPI.GetSingletonRW<WaveIndexComponent>();
 
+            bool killsReached = enemiesKilledComponent.ValueRO.Value >= enemiesToKillComponent.ValueRW.Value;
+            bool noEnemiesLeft = enemyEntitiesCount == 0;
+            
             // Check if Kill Value meets the Entity Threshold
-            bool isLevelComplete = enemiesKilledComponent.ValueRO.Value >= enemiesToKillComponent.ValueRW.Value;
+            bool isLevelComplete = killsReached && noEnemiesLeft;
 
             // Reset Kill Value for the new level
             enemiesKilledComponent.ValueRW.Value = math.select(enemiesKilledComponent.ValueRO.Value , noAction , isLevelComplete);
