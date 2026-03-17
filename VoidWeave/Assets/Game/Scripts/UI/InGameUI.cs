@@ -14,6 +14,7 @@ namespace Game.Scripts.UI
         #region Variables
 
         private readonly Dictionary<Entity , Label> _turretCooldownLabelsDictionary = new();
+        private EntityQuery _boundaryYQuery;
         private List<Button> _uiButtons = new();
 
         private Button _pauseButton;
@@ -47,11 +48,12 @@ namespace Game.Scripts.UI
         [SerializeField] private float turretCooldownThreshold;
         [SerializeField] private float turretCooldownTimerLabelAnchorPercent;
         [SerializeField] private float turretCooldownTimerLabelBorderWidth;
-        [SerializeField] private float turretCooldownTimerLabelPadding;
+        [SerializeField] private float turretCooldownTimerLabelFlipThreshold;
         [SerializeField] private float turretCooldownTimerLabelFontSize;
         [SerializeField] private float turretCooldownTimerLabelHeight;
         [SerializeField] private float turretCooldownTimerLabelOffsetX;
         [SerializeField] private float turretCooldownTimerLabelOffsetY;
+        [SerializeField] private float turretCooldownTimerLabelPadding;
         [SerializeField] private float turretCooldownTimerLabelTranslatePercentX;
         [SerializeField] private float turretCooldownTimerLabelTranslatePercentY;
         [SerializeField] private float turretCooldownTimerLabelTranslatePercentZ;
@@ -86,6 +88,8 @@ namespace Game.Scripts.UI
 
             var world = World.DefaultGameObjectInjectionWorld;
             _entityManager = world.EntityManager;
+
+            _boundaryYQuery = _entityManager.CreateEntityQuery(typeof(ScreenBoundaryYComponent));
 
             _energyQuery = _entityManager.CreateEntityQuery(typeof(CurrentEnergyComponent));
             _healthQuery = _entityManager.CreateEntityQuery(typeof(CurrentHealthComponent) , typeof(PlayerTag));
@@ -266,8 +270,19 @@ namespace Game.Scripts.UI
 
             Vector2 screenPoint = RuntimePanelUtils.CameraTransformWorldToPanel(_rootVisualElement.panel , worldPosition , Camera.main);
 
+            _entityManager.CompleteDependencyBeforeRO<ScreenBoundaryYComponent>();
+            float boundaryY = _boundaryYQuery.GetSingleton<ScreenBoundaryYComponent>().Value;
+
+            if(worldPosition.y >= boundaryY - turretCooldownTimerLabelFlipThreshold)
+            {
+                cooldownLabel.style.top = screenPoint.y + turretCooldownTimerLabelOffsetY;
+            }
+            else
+            {
+                cooldownLabel.style.top = screenPoint.y;
+            }
+
             cooldownLabel.style.left = screenPoint.x;
-            cooldownLabel.style.top = screenPoint.y;
         }
 
         private void OnWavePrepCountdownStarted(float timer , int waveState)

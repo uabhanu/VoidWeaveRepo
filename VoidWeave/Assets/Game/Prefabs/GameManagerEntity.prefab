@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entities.GameConfigEntity
   beamTurretUnlockLevel: 3
-  boundaryOffset: 0.9
+  boundaryOffset: 1.4
   bulletRotationOffset: 1.570796
   cameraOrthographicSize: 5
   collisionActive: 1

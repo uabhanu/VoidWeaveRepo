@@ -388,11 +388,12 @@ MonoBehaviour:
   turretCooldownThreshold: 1
   turretCooldownTimerLabelAnchorPercent: 50
   turretCooldownTimerLabelBorderWidth: 5.5
-  turretCooldownTimerLabelPadding: 6.5
+  turretCooldownTimerLabelFlipThreshold: 0
   turretCooldownTimerLabelFontSize: 50
   turretCooldownTimerLabelHeight: 100
   turretCooldownTimerLabelOffsetX: 0
-  turretCooldownTimerLabelOffsetY: 0
+  turretCooldownTimerLabelOffsetY: 330.5
+  turretCooldownTimerLabelPadding: 6.5
   turretCooldownTimerLabelTranslatePercentX: -60
   turretCooldownTimerLabelTranslatePercentY: -220
   turretCooldownTimerLabelTranslatePercentZ: 0
