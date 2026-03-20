@@ -7,6 +7,7 @@ namespace Game.Scripts.UI
     using Unity.Mathematics;
     using UnityEditor;
     using UnityEngine;
+    using UnityEngine.SceneManagement;
     using UnityEngine.UIElements;
 
     public class InGameUI : MonoBehaviour
@@ -87,6 +88,7 @@ namespace Game.Scripts.UI
             if(!uiDocument) uiDocument = GetComponent<UIDocument>();
 
             var world = World.DefaultGameObjectInjectionWorld;
+            if(world == null) return;
             _entityManager = world.EntityManager;
 
             _boundaryYQuery = _entityManager.CreateEntityQuery(typeof(ScreenBoundaryYComponent));
@@ -146,6 +148,11 @@ namespace Game.Scripts.UI
 
         private void Update()
         {
+            var world = World.DefaultGameObjectInjectionWorld;
+
+            if(world == null || !world.IsCreated) return;
+            if(_entityManager == null || _entityManager.World != world) { RefreshEcsReferences(); }
+
             float pulse = (Mathf.Sin(Time.unscaledTime * pulseSpeed) + sineOffset) / sineDivisor;
             float alpha = Mathf.Lerp(minOpacity , maxOpacity , pulse);
 
@@ -191,7 +198,28 @@ namespace Game.Scripts.UI
             _pauseMenuVisualElement.style.display = DisplayStyle.None;
         }
 
-        private void OnRestartButtonClicked() { _entityManager.CreateEntity(typeof(RestartInputTag)); }
+        private void OnRestartButtonClicked()
+        {
+            foreach(var label in _turretCooldownLabelsDictionary.Values)
+            {
+                if(label != null && label.parent == _rootVisualElement) _rootVisualElement.Remove(label);
+            }
+
+            _turretCooldownLabelsDictionary.Clear();
+
+            if(_wavePrepLabel != null)
+            {
+                if(_wavePrepLabel.parent == _rootVisualElement) _rootVisualElement.Remove(_wavePrepLabel);
+                _wavePrepLabel = null;
+            }
+
+            var world = World.DefaultGameObjectInjectionWorld;
+
+            if(world != null && world.IsCreated) { world.EntityManager.CompleteAllTrackedJobs(); }
+
+            Time.timeScale = 1f;
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
 
         #endregion
 
@@ -199,22 +227,22 @@ namespace Game.Scripts.UI
 
         private void OnEnergyValueChanged(float currentEnergy)
         {
+            if(_entityManager == null || !_entityManager.World.IsCreated) return;
             _entityManager.CompleteDependencyBeforeRO<CurrentEnergyComponent>();
-
             if(!_energyQuery.IsEmptyIgnoreFilter) _energyValueLabel.text = $"{currentEnergy:F0}";
         }
 
         private void OnHealthValueChanged(float currentHealth)
         {
+            if(_entityManager == null || !_entityManager.World.IsCreated) return;
             _entityManager.CompleteDependencyBeforeRO<CurrentHealthComponent>();
-
             if(!_healthQuery.IsEmptyIgnoreFilter) _healthValueLabel.text = $"{currentHealth:F0}";
         }
 
         private void OnLevelValueChanged(int currentLevel)
         {
+            if(_entityManager == null || !_entityManager.World.IsCreated) return;
             _entityManager.CompleteDependencyBeforeRO<LevelComponent>();
-
             if(!_levelQuery.IsEmptyIgnoreFilter) _levelValueLabel.text = $"{currentLevel:F0}";
         }
 
@@ -273,14 +301,8 @@ namespace Game.Scripts.UI
             _entityManager.CompleteDependencyBeforeRO<ScreenBoundaryYComponent>();
             float boundaryY = _boundaryYQuery.GetSingleton<ScreenBoundaryYComponent>().Value;
 
-            if(worldPosition.y >= boundaryY - turretCooldownTimerLabelFlipThreshold)
-            {
-                cooldownLabel.style.top = screenPoint.y + turretCooldownTimerLabelOffsetY;
-            }
-            else
-            {
-                cooldownLabel.style.top = screenPoint.y;
-            }
+            if(worldPosition.y >= boundaryY - turretCooldownTimerLabelFlipThreshold) { cooldownLabel.style.top = screenPoint.y + turretCooldownTimerLabelOffsetY; }
+            else { cooldownLabel.style.top = screenPoint.y; }
 
             cooldownLabel.style.left = screenPoint.x;
         }
@@ -327,6 +349,24 @@ namespace Game.Scripts.UI
             }
 
             _wavePrepLabel.text = $"Next Wave In\n{timer:F0}";
+        }
+
+        #endregion
+
+        #region Custom Functions
+
+        private void RefreshEcsReferences()
+        {
+            var world = World.DefaultGameObjectInjectionWorld;
+
+            if(world == null || !world.IsCreated) return;
+
+            _entityManager = world.EntityManager;
+
+            _boundaryYQuery = _entityManager.CreateEntityQuery(typeof(ScreenBoundaryYComponent));
+            _energyQuery = _entityManager.CreateEntityQuery(typeof(CurrentEnergyComponent));
+            _healthQuery = _entityManager.CreateEntityQuery(typeof(CurrentHealthComponent) , typeof(PlayerTag));
+            _levelQuery = _entityManager.CreateEntityQuery(typeof(LevelComponent));
         }
 
         #endregion
