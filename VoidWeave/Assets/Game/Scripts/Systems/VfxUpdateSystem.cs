@@ -21,10 +21,10 @@ namespace Game.Scripts.Systems
                 var visualEffect = systemState.EntityManager.GetComponentObject<VisualEffect>(entity);
 
                 visualEffect.SetVector3("Color" , vfxColor.ValueRO.Value);
-                visualEffect.SetMesh("MainMesh" , vfxMeshComponent.Value);
-                visualEffect.SetVector3("MainScale" , vfxScale.ValueRO.Value);
-                visualEffect.SetTexture("MainTexture" , vfxTextureComponent.Value);
+                visualEffect.SetMesh("Mesh" , vfxMeshComponent.Value);
+                visualEffect.SetVector3("Scale" , vfxScale.ValueRO.Value);
                 visualEffect.SetFloat("Size" , vfxSize.ValueRO.Value);
+                visualEffect.SetTexture("Texture" , vfxTextureComponent.Value);
 
                 entityCommandBuffer.RemoveComponent<VfxUpdateTag>(entity);
             }

@@ -200,23 +200,6 @@ namespace Game.Scripts.UI
 
         private void OnRestartButtonClicked()
         {
-            foreach(var label in _turretCooldownLabelsDictionary.Values)
-            {
-                if(label != null && label.parent == _rootVisualElement) _rootVisualElement.Remove(label);
-            }
-
-            _turretCooldownLabelsDictionary.Clear();
-
-            if(_wavePrepLabel != null)
-            {
-                if(_wavePrepLabel.parent == _rootVisualElement) _rootVisualElement.Remove(_wavePrepLabel);
-                _wavePrepLabel = null;
-            }
-
-            var world = World.DefaultGameObjectInjectionWorld;
-
-            if(world != null && world.IsCreated) { world.EntityManager.CompleteAllTrackedJobs(); }
-
             Time.timeScale = 1f;
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }

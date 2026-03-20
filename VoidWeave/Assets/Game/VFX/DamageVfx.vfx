@@ -81,8 +81,8 @@ MonoBehaviour:
     max: Infinity
     enumValues: []
     descendantCount: 0
-  - name: MainMesh
-    path: MainMesh
+  - name: Mesh
+    path: Mesh
     tooltip: 
     space: -1
     spaceable: 0
@@ -97,8 +97,8 @@ MonoBehaviour:
     max: Infinity
     enumValues: []
     descendantCount: 0
-  - name: MainScale
-    path: MainScale
+  - name: Scale
+    path: Scale
     tooltip: 
     space: -1
     spaceable: 0
@@ -113,8 +113,8 @@ MonoBehaviour:
     max: Infinity
     enumValues: []
     descendantCount: 0
-  - name: MainTexture
-    path: MainTexture
+  - name: Texture
+    path: Texture
     tooltip: 
     space: -1
     spaceable: 0
@@ -1120,7 +1120,7 @@ MonoBehaviour:
   m_InputSlots: []
   m_OutputSlots:
   - {fileID: 114350483966675060}
-  m_ExposedName: MainMesh
+  m_ExposedName: Mesh
   m_Exposed: 1
   m_Order: 2
   m_Category: 
@@ -1890,7 +1890,7 @@ MonoBehaviour:
   m_InputSlots: []
   m_OutputSlots:
   - {fileID: 114350483966675089}
-  m_ExposedName: MainScale
+  m_ExposedName: Scale
   m_Exposed: 1
   m_Order: 3
   m_Category: 
@@ -2073,7 +2073,7 @@ MonoBehaviour:
   m_InputSlots: []
   m_OutputSlots:
   - {fileID: 114350483966675094}
-  m_ExposedName: MainTexture
+  m_ExposedName: Texture
   m_Exposed: 1
   m_Order: 4
   m_Category: 
