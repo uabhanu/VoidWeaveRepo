@@ -145,6 +145,8 @@ MonoBehaviour:
   maxHealth: 80
   movementVfxPrefab: {fileID: 2206811786914892953, guid: c6ef17b4db270ef4cb3ec9ba76ae7312, type: 3}
   moveSpeed: 4.5
+  rotationOffset: -90
+  rotationSpeed: 4.5
   teamID: 0
   vfxColor: {r: 0, g: 1, b: 1, a: 1}
   vfxSize: 1.5

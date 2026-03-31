@@ -59,7 +59,7 @@ namespace Game.Scripts.Systems
         public float MovementActive;
         public float MovementNone;
 
-        private void Execute(ref LocalTransform localTransform , in MoveSpeedComponent moveSpeedComponent , in PlayerInputComponent playerInputComponent)
+        private void Execute(ref LocalTransform localTransform , ref MoveDirectionComponent moveDirectionComponent , in MoveSpeedComponent moveSpeedComponent , in PlayerInputComponent playerInputComponent)
         {
             uint selectedInput = playerInputComponent.Value;
 
@@ -70,6 +70,8 @@ namespace Game.Scripts.Systems
 
             // Construct Vector
             var input = new float2(right - left , up - down);
+
+            moveDirectionComponent.Value = math.select(new float3(input.x , input.y , 0) , moveDirectionComponent.Value , math.lengthsq(input) < 0.001f);
 
             // Apply Movement
             localTransform.Position.xy += input * moveSpeedComponent.Value * DeltaTime;
@@ -82,9 +84,10 @@ namespace Game.Scripts.Systems
     {
         public float DeltaTime;
 
-        private void Execute(in LineEnemyComponent lineEnemyComponent , ref LocalTransform localTransform , in MoveSpeedComponent moveSpeedComponent , in TargetPositionComponent targetPositionComponent)
+        private void Execute(in LineEnemyComponent lineEnemyComponent , ref LocalTransform localTransform , ref MoveDirectionComponent moveDirectionComponent , in MoveSpeedComponent moveSpeedComponent , in TargetPositionComponent targetPositionComponent)
         {
             float3 direction = math.normalizesafe(targetPositionComponent.Value - localTransform.Position);
+            moveDirectionComponent.Value = direction;
             int isLineEnemy = lineEnemyComponent.Value;
             localTransform.Position.xy += direction.xy * moveSpeedComponent.Value * DeltaTime * isLineEnemy;
         }
@@ -98,11 +101,11 @@ namespace Game.Scripts.Systems
         public float ElapsedTime;
         public float MovementNone;
 
-        private void Execute(ref LocalTransform localTransform , in MovementZigZagAmplitudeComponent movementZigZagAmplitudeComponent , in MovementZigZagFrequencyComponent movementZigZagFrequencyComponent , in MoveSpeedComponent moveSpeedComponent , in TargetPositionComponent targetPositionComponent , in TriangleEnemyComponent triangleEnemyComponent)
+        private void Execute(ref LocalTransform localTransform , ref MoveDirectionComponent moveDirectionComponent , in MovementZigZagAmplitudeComponent movementZigZagAmplitudeComponent , in MovementZigZagFrequencyComponent movementZigZagFrequencyComponent , in MoveSpeedComponent moveSpeedComponent , in TargetPositionComponent targetPositionComponent , in TriangleEnemyComponent triangleEnemyComponent)
         {
             // Calculate base direction
             float3 direction = math.normalizesafe(targetPositionComponent.Value - localTransform.Position);
-            
+
             int isTriangleEnemy = triangleEnemyComponent.Value;
 
             // Calculate perpendicular vector (Tangent) for the Zig-Zag offset
@@ -112,6 +115,10 @@ namespace Game.Scripts.Systems
             // Apply Sine Wave to Tangent
             // Frequency = 10f (Speed of wiggle), Amplitude = 2.0f (Width of wiggle)
             float sineOffset = math.sin(ElapsedTime * movementZigZagFrequencyComponent.Value) * movementZigZagAmplitudeComponent.Value;
+
+            float2 velocity2D = direction.xy + tangent.xy * sineOffset;
+            float3 velocity = new float3(velocity2D , MovementNone);
+            moveDirectionComponent.Value = math.normalizesafe(velocity);
 
             // Combine Forward + Sideways Movement
             localTransform.Position.xy += (direction.xy + tangent.xy * sineOffset) * moveSpeedComponent.Value * DeltaTime * isTriangleEnemy;
@@ -136,7 +143,7 @@ namespace Game.Scripts.Systems
         public float MovementActive;
         public float MovementNone;
 
-        private void Execute(ref LocalTransform localTransform , in MoveSpeedComponent moveSpeedComponent , in RangeComponent rangeComponent , in TargetPositionComponent targetPositionComponent)
+        private void Execute(ref LocalTransform localTransform , ref MoveDirectionComponent moveDirectionComponent , in MoveSpeedComponent moveSpeedComponent , in RangeComponent rangeComponent , in TargetPositionComponent targetPositionComponent)
         {
             float distanceSq = math.distancesq(localTransform.Position , targetPositionComponent.Value);
             float rangeSq = rangeComponent.Value * rangeComponent.Value;
@@ -146,6 +153,7 @@ namespace Game.Scripts.Systems
             float shouldMove = math.select(MovementActive , MovementNone , distanceSq <= rangeSq);
 
             float3 direction = math.normalizesafe(targetPositionComponent.Value - localTransform.Position);
+            moveDirectionComponent.Value = direction;
             localTransform.Position.xy += direction.xy * moveSpeedComponent.Value * DeltaTime * shouldMove;
         }
     }

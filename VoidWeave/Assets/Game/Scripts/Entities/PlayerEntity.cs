@@ -19,6 +19,8 @@ namespace Game.Scripts.Entities
         [SerializeField] private int maxHealth;
         [SerializeField] private GameObject movementVfxPrefab;
         [SerializeField] private float moveSpeed;
+        [SerializeField] private float rotationOffset;
+        [SerializeField] private float rotationSpeed;
         [SerializeField] private int teamID;
         [SerializeField] private Color vfxColor;
         [SerializeField] private float vfxSize;
@@ -50,9 +52,12 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new DeathVfxComponent { Value = GetEntity(authoring.deathVfxPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new LastSpawnPositionComponent { Value = new float3(float.MaxValue) });
                 AddComponent(entity , new MaxHealthComponent { Value = authoring.maxHealth });
+                AddComponent(entity , new MoveDirectionComponent());
                 AddComponent(entity , new MovementVfxEntityComponent { Value = GetEntity(authoring.movementVfxPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new MoveSpeedComponent { Value = authoring.moveSpeed });
                 AddComponent(entity , new PlayerInputComponent());
+                AddComponent(entity , new RotationOffsetComponent { Value = authoring.rotationOffset });
+                AddComponent(entity , new RotationSpeedComponent { Value = authoring.rotationSpeed });
                 AddComponent(entity , new SelectedTurretCostComponent());
                 AddComponent(entity , new SelectedTurretEntityComponent { Entity = Entity.Null });
                 AddComponent(entity , new TeamComponent { Value = authoring.teamID });
