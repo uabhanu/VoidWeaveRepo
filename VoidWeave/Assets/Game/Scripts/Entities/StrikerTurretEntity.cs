@@ -10,6 +10,7 @@ namespace Game.Scripts.Entities
         [SerializeField] private float attackRate;
         [SerializeField] private GameObject bulletPrefab;
         [SerializeField] private float cooldownTime;
+        [SerializeField] private float collisionRadius;
         [SerializeField] private float damage;
         [SerializeField] private float minRotationRequired;
         [SerializeField] private int projectileCount;
@@ -29,6 +30,7 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new AttackRateComponent { Value = authoring.attackRate });
                 AddComponent(entity , new BulletEntityComponent { Entity = GetEntity(authoring.bulletPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new CooldownComponent { Value = authoring.cooldownTime });
+                AddComponent(entity , new CollisionRadiusComponent { Value = authoring.collisionRadius });
                 AddComponent(entity , new DamageComponent { Value = authoring.damage });
                 AddComponent(entity , new MinRotationRequiredComponent { Value = authoring.minRotationRequired });
                 AddComponent(entity , new ProjectileCountComponent { Value = authoring.projectileCount });
@@ -41,6 +43,7 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new TeamComponent { Value = authoring.teamID });
 
                 AddComponent(entity , new StrikerTurretTag());
+                AddComponent(entity , new TurretTag());
             }
         }
     }

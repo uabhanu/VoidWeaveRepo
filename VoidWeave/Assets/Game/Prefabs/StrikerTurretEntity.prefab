@@ -139,6 +139,7 @@ MonoBehaviour:
   attackRate: 0.6
   bulletPrefab: {fileID: 4819364062000519533, guid: ed783d51270447049abb6fe2f4f0b7d8, type: 3}
   cooldownTime: 1.8
+  collisionRadius: 0.8
   damage: 24.4
   minRotationRequired: 0.999
   projectileCount: 1
