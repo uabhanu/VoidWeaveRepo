@@ -75,7 +75,7 @@ MonoBehaviour:
   scalingLevelOffset: 3
   scalingMinLevel: 0
   scatterTurretUnlockLevel: 2
-  separationDistance: 2.2
+  separationDistance: 1.6
   separationVelocity: 25.5
   spreadHalfMultiplier: 0
   spreadZero: 0
