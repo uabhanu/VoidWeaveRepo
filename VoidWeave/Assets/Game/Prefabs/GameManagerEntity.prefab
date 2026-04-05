@@ -65,6 +65,7 @@ MonoBehaviour:
   lootMultiplierPerLevel: 0.2
   lootPickupRadius: 0.5
   minEnemiesToKill: 0
+  minOverlapDistance: 0.01
   minStartingLevel: 0
   movementActive: 1
   movementNone: 0
@@ -74,6 +75,8 @@ MonoBehaviour:
   scalingLevelOffset: 3
   scalingMinLevel: 0
   scatterTurretUnlockLevel: 2
+  separationDistance: 2.2
+  separationVelocity: 25.5
   spreadHalfMultiplier: 0
   spreadZero: 0
   squareEnemyUnlockLevel: 3

@@ -4,6 +4,6 @@ namespace Game.Scripts.Components
 
     public struct MovementActiveComponent : IComponentData
     {
-        public float Value;
+        public int Value;
     }
 }
