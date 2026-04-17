@@ -150,6 +150,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.GameTestingEntity
   currentEnergyWhileTesting: 1000
   isTesting: 0
+  levelWhileTesting: 3
+  timerWhileTesting: 0
+  waveStateWhileTesting: 1
+  waveStockWhileTesting: 1
 --- !u!4 &64175127
 Transform:
   m_ObjectHideFlags: 0

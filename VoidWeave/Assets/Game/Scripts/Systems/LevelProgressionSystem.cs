@@ -21,6 +21,7 @@ namespace Game.Scripts.Systems
             systemState.RequireForUpdate<EnemiesKilledComponent>();
             systemState.RequireForUpdate<EnemiesToKillComponent>();
             systemState.RequireForUpdate<EnemiesToKillIncrementComponent>();
+            systemState.RequireForUpdate<IsTestingComponent>();
             systemState.RequireForUpdate<LevelComponent>();
             systemState.RequireForUpdate<LevelToUnlockLineEnemyComponent>();
             systemState.RequireForUpdate<NoActionComponent>();
@@ -63,6 +64,7 @@ namespace Game.Scripts.Systems
             
             // Check if Kill Value meets the Entity Threshold
             bool isLevelComplete = killsReached && noEnemiesLeft;
+            bool isTesting = SystemAPI.GetSingleton<IsTestingComponent>().Value;
 
             // Reset Kill Value for the new level
             enemiesKilledComponent.ValueRW.Value = math.select(enemiesKilledComponent.ValueRO.Value , noAction , isLevelComplete);
@@ -83,7 +85,8 @@ namespace Game.Scripts.Systems
             bitMask |= (uint)math.select(noAction , unlockedTriangleEnemy , levelComponent.ValueRO.Value >= levelToUnlockTriangleEnemy);
             bitMask |= (uint)math.select(noAction , unlockedSquareEnemy , levelComponent.ValueRO.Value >= levelToUnlockSquareEnemy);
 
-            unlockedEnemiesComponent.ValueRW.Value = math.select(unlockedEnemiesComponent.ValueRO.Value , bitMask , isLevelComplete);
+            bool shouldUpdateMask = isLevelComplete || isTesting;
+            unlockedEnemiesComponent.ValueRW.Value = math.select(unlockedEnemiesComponent.ValueRO.Value , bitMask , shouldUpdateMask);
             waveIndexComponent.ValueRW.Value = math.select(waveIndexComponent.ValueRO.Value , noAction , isLevelComplete);
         }
     }
