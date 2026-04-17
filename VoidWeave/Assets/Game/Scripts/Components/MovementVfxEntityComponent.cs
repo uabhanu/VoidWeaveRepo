@@ -2,7 +2,7 @@ namespace Game.Scripts.Components
 {
     using Unity.Entities;
 
-    public struct MovementVfxComponent : IComponentData
+    public struct MovementVfxEntityComponent : IComponentData
     {
         public Entity Value;
     }

@@ -30,15 +30,18 @@ namespace Game.Scripts.Entities
         [SerializeField] private float lootMultiplierPerLevel;
         [SerializeField] private float lootPickupRadius;
         [SerializeField] private int minEnemiesToKill;
+        [SerializeField] private float minOverlapDistance;
         [SerializeField] private int minStartingLevel;
-        [SerializeField] private float movementActive;
-        [SerializeField] private float movementNone;
+        [SerializeField] private int movementActive;
+        [SerializeField] private int movementNone;
         [SerializeField] private int oneScale;
         [SerializeField] private GameObject playerEntityPrefab;
         [SerializeField] private float scalingBase;
         [SerializeField] private int scalingLevelOffset;
         [SerializeField] private int scalingMinLevel;
         [SerializeField] private int scatterTurretUnlockLevel;
+        [SerializeField] private float separationDistance;
+        [SerializeField] private float separationVelocity;
         [SerializeField] private float spreadHalfMultiplier;
         [SerializeField] private float spreadZero;
         [SerializeField] private int squareEnemyUnlockLevel; //The When
@@ -99,6 +102,7 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new LevelToUnlockTriangleEnemyComponent { Value = authoring.triangleEnemyUnlockLevel });
                 AddComponent(entity , new LootMultiplierComponent { Value = authoring.lootMultiplierPerLevel });
                 AddComponent(entity , new LootPickupRadiusComponent { Value = authoring.lootPickupRadius });
+                AddComponent(entity , new MinOverlapDistanceComponent { Value = authoring.minOverlapDistance });
                 AddComponent(entity , new MovementActiveComponent { Value = authoring.movementActive });
                 AddComponent(entity , new MovementNoneComponent { Value = authoring.movementNone });
                 AddComponent(entity , new NoActionComponent { Value = authoring.noAction });
@@ -108,6 +112,8 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new ScalingLevelOffsetComponent { Value = authoring.scalingLevelOffset });
                 AddComponent(entity , new ScalingMinLevelComponent { Value = authoring.scalingMinLevel });
                 AddComponent(entity , new ScatterTurretUnlockLevelComponent { Value = authoring.scatterTurretUnlockLevel });
+                AddComponent(entity , new SeparationDistanceComponent { Value = authoring.separationDistance });
+                AddComponent(entity , new SeparationVelocityComponent { Value = authoring.separationVelocity });
                 AddComponent(entity , new SpreadHalfMultiplierComponent { Value = authoring.spreadHalfMultiplier });
                 AddComponent(entity , new SpreadZeroComponent { Value = authoring.spreadZero });
                 AddComponent(entity , new TargetDefaultPositionComponent { Value = authoring.targetDefaultPosition });

@@ -61,6 +61,7 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new LootEntityComponent { Entity = GetEntity(authoring.lootPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new MaxHealthComponent { Value = authoring.maxHealth });
                 AddComponent(entity , new MinRotationRequiredComponent { Value = authoring.minRotationRequired });
+                AddComponent(entity , new MoveDirectionComponent());
                 AddComponent(entity , new MovementZigZagAmplitudeComponent { Value = authoring.zigZagAmplitude });
                 AddComponent(entity , new MovementZigZagFrequencyComponent { Value = authoring.zigZagFrequency });
                 AddComponent(entity , new MoveSpeedComponent { Value = authoring.moveSpeed });

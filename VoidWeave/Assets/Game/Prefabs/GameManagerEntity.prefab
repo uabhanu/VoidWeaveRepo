@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entities.GameConfigEntity
   beamTurretUnlockLevel: 3
-  boundaryOffset: 0.9
+  boundaryOffset: 1.4
   bulletRotationOffset: 1.570796
   cameraOrthographicSize: 5
   collisionActive: 1
@@ -65,6 +65,7 @@ MonoBehaviour:
   lootMultiplierPerLevel: 0.2
   lootPickupRadius: 0.5
   minEnemiesToKill: 0
+  minOverlapDistance: 0.01
   minStartingLevel: 0
   movementActive: 1
   movementNone: 0
@@ -74,6 +75,8 @@ MonoBehaviour:
   scalingLevelOffset: 3
   scalingMinLevel: 0
   scatterTurretUnlockLevel: 2
+  separationDistance: 1.6
+  separationVelocity: 25.5
   spreadHalfMultiplier: 0
   spreadZero: 0
   squareEnemyUnlockLevel: 3

@@ -4,15 +4,15 @@
         <ui:VisualElement name="ScoresVisualElement" style="flex-direction: row; position: absolute; align-self: center;">
             <ui:VisualElement name="EnergyUIVisualElement" style="background-image: url(&quot;project://database/Assets/Game/UI/UIPanel.png?fileID=2800000&amp;guid=d673b2ca11fb9d447910e14d3f666f64&amp;type=3#UIPanel&quot;); flex-direction: row; min-width: 450px; min-height: 120px; padding-top: 20px; padding-left: 80px;">
                 <ui:VisualElement name="EnergyImageVisualElement" style="background-image: url(&quot;project://database/Assets/Game/Textures/Loot.png?fileID=2800000&amp;guid=2fcf57f452a38344ea4e787898474191&amp;type=3#Loot&quot;); position: absolute; width: 100px; height: 100px; display: flex; aspect-ratio: 1.777778;"/>
-                <ui:Label name="EnergyValueLabel" style="-unity-font-style: bold; -unity-text-align: upper-center; font-size: 80px; color: rgb(255, 255, 255); left: 100px;"/>
+                <ui:Label name="EnergyValueLabel" text="0" style="-unity-font-style: bold; -unity-text-align: upper-center; font-size: 80px; color: rgb(255, 255, 255); left: 100px;"/>
             </ui:VisualElement>
             <ui:VisualElement name="HealthUIVisualElement" style="min-width: 450px; min-height: 120px; background-image: url(&quot;project://database/Assets/Game/UI/UIPanel.png?fileID=2800000&amp;guid=d673b2ca11fb9d447910e14d3f666f64&amp;type=3#UIPanel&quot;); -unity-background-image-tint-color: rgb(0, 255, 0); padding-top: 20px; padding-left: 80px; flex-direction: row;">
                 <ui:VisualElement name="HealthImageVisualElement" style="background-image: url(&quot;project://database/Assets/Game/Textures/Player.png?fileID=2800000&amp;guid=927b34c6aa8243b468163e6e7bdfe903&amp;type=3#Player&quot;); position: absolute; width: 100px; height: 100px;"/>
-                <ui:Label name="HealthValueLabel" style="-unity-font-style: bold; -unity-text-align: upper-center; font-size: 80px; left: 100px; color: rgb(255, 255, 255);"/>
+                <ui:Label name="HealthValueLabel" text="0" style="-unity-font-style: bold; -unity-text-align: upper-center; font-size: 80px; left: 100px; color: rgb(255, 255, 255);"/>
             </ui:VisualElement>
             <ui:VisualElement name="LevelUIVisualElement" style="align-self: center; min-width: 600px; min-height: 120px; padding-top: 20px; padding-left: 140px; background-image: url(&quot;project://database/Assets/Game/UI/UIPanel.png?fileID=2800000&amp;guid=d673b2ca11fb9d447910e14d3f666f64&amp;type=3#UIPanel&quot;); -unity-background-image-tint-color: rgb(255, 125, 0); padding-right: 100px;">
                 <ui:Label name="LevelTextLabel" text="Level" style="-unity-font-style: bold; -unity-text-align: upper-center; font-size: 80px; position: absolute; color: rgb(255, 255, 255);"/>
-                <ui:Label name="LevelValueLabel" style="-unity-font-style: bold; -unity-text-align: upper-center; font-size: 80px; left: 100px; color: rgb(255, 255, 255);"/>
+                <ui:Label name="LevelValueLabel" text="0" style="-unity-font-style: bold; -unity-text-align: upper-center; font-size: 80px; left: 100px; color: rgb(255, 255, 255);"/>
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:Button name="PauseButton" class="pauseButton uiButton"/>

@@ -10,13 +10,18 @@ namespace Game.Scripts.Systems
     [UpdateBefore(typeof(EnemySpawningSystem))]
     public partial struct LevelProgressionSystem : ISystem
     {
+        private EntityQuery _enemyEntityInTheSceneQuery;
+        
         [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
+            _enemyEntityInTheSceneQuery = systemState.GetEntityQuery(ComponentType.ReadOnly<EnemyTag>());
+            
             systemState.RequireForUpdate<DoActionComponent>();
             systemState.RequireForUpdate<EnemiesKilledComponent>();
             systemState.RequireForUpdate<EnemiesToKillComponent>();
             systemState.RequireForUpdate<EnemiesToKillIncrementComponent>();
+            systemState.RequireForUpdate<IsTestingComponent>();
             systemState.RequireForUpdate<LevelComponent>();
             systemState.RequireForUpdate<LevelToUnlockLineEnemyComponent>();
             systemState.RequireForUpdate<NoActionComponent>();
@@ -37,6 +42,7 @@ namespace Game.Scripts.Systems
             systemState.Dependency.Complete();
 
             int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
+            int enemyEntitiesCount = _enemyEntityInTheSceneQuery.CalculateEntityCount();
             int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
             int levelToUnlockLineEnemy = SystemAPI.GetSingleton<LevelToUnlockLineEnemyComponent>().Value;
             int levelToUnlockSquareEnemy = SystemAPI.GetSingleton<LevelToUnlockSquareEnemyComponent>().Value;
@@ -53,8 +59,12 @@ namespace Game.Scripts.Systems
             RefRW<UnlockedEnemiesComponent> unlockedEnemiesComponent = SystemAPI.GetSingletonRW<UnlockedEnemiesComponent>();
             RefRW<WaveIndexComponent> waveIndexComponent = SystemAPI.GetSingletonRW<WaveIndexComponent>();
 
+            bool killsReached = enemiesKilledComponent.ValueRO.Value >= enemiesToKillComponent.ValueRW.Value;
+            bool noEnemiesLeft = enemyEntitiesCount == 0;
+            
             // Check if Kill Value meets the Entity Threshold
-            bool isLevelComplete = enemiesKilledComponent.ValueRO.Value >= enemiesToKillComponent.ValueRW.Value;
+            bool isLevelComplete = killsReached && noEnemiesLeft;
+            bool isTesting = SystemAPI.GetSingleton<IsTestingComponent>().Value;
 
             // Reset Kill Value for the new level
             enemiesKilledComponent.ValueRW.Value = math.select(enemiesKilledComponent.ValueRO.Value , noAction , isLevelComplete);
@@ -75,7 +85,8 @@ namespace Game.Scripts.Systems
             bitMask |= (uint)math.select(noAction , unlockedTriangleEnemy , levelComponent.ValueRO.Value >= levelToUnlockTriangleEnemy);
             bitMask |= (uint)math.select(noAction , unlockedSquareEnemy , levelComponent.ValueRO.Value >= levelToUnlockSquareEnemy);
 
-            unlockedEnemiesComponent.ValueRW.Value = math.select(unlockedEnemiesComponent.ValueRO.Value , bitMask , isLevelComplete);
+            bool shouldUpdateMask = isLevelComplete || isTesting;
+            unlockedEnemiesComponent.ValueRW.Value = math.select(unlockedEnemiesComponent.ValueRO.Value , bitMask , shouldUpdateMask);
             waveIndexComponent.ValueRW.Value = math.select(waveIndexComponent.ValueRO.Value , noAction , isLevelComplete);
         }
     }

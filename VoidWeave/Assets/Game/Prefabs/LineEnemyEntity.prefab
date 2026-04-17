@@ -56,6 +56,8 @@ MonoBehaviour:
   lootPrefab: {fileID: 6983080911018168034, guid: 29b5c2b76e555c84c9ae88bcb6766676, type: 3}
   maxHealth: 100
   moveSpeed: 1.15
+  rotationOffset: 0
+  rotationSpeed: 1.5
   spawnVfxDuration: 0.75
   teamID: 1
   vfxColor: {r: 1, g: 0, b: 0, a: 1}

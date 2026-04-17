@@ -20,6 +20,8 @@ namespace Game.Scripts.Entities
         [SerializeField] private GameObject lootPrefab;
         [SerializeField] private int maxHealth;
         [SerializeField] private float moveSpeed;
+        [SerializeField] private float rotationOffset;
+        [SerializeField] private float rotationSpeed;
         [SerializeField] private float spawnVfxDuration;
         [SerializeField] private int teamID;
         [SerializeField] private Color vfxColor;
@@ -54,10 +56,13 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new LootAmountComponent { Value = authoring.lootAmount });
                 AddComponent(entity , new LootEntityComponent { Entity = GetEntity(authoring.lootPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new MaxHealthComponent { Value = authoring.maxHealth });
+                AddComponent(entity , new MoveDirectionComponent());
                 AddComponent(entity , new MovementZigZagAmplitudeComponent { Value = authoring.zigZagAmplitude });
                 AddComponent(entity , new MovementZigZagFrequencyComponent { Value = authoring.zigZagFrequency });
                 AddComponent(entity , new MoveSpeedComponent { Value = authoring.moveSpeed });
                 AddComponent(entity , new RangeComponent());
+                AddComponent(entity , new RotationOffsetComponent { Value = authoring.rotationOffset });
+                AddComponent(entity , new RotationSpeedComponent { Value = authoring.rotationSpeed });
                 AddComponent(entity , new TargetPositionComponent());
                 AddComponent(entity , new TeamComponent { Value = authoring.teamID });
                 AddComponent(entity , new TimerComponent { Value = authoring.spawnVfxDuration });
