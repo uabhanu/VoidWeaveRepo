@@ -10,11 +10,11 @@
     align-items: center;
     align-content: center;
     background-color: rgba(0, 0, 0, 0);
-    width: 128px;
     border-left-width: 0;
     border-right-width: 0;
     border-top-width: 0;
     border-bottom-width: 0;
+    width: 128px;
     -unity-background-scale-mode: scale-to-fit;
 }
 
@@ -40,4 +40,21 @@
     transition-property: scale;
     transition-timing-function: ease-in;
     transition-duration: 0.5s;
+}
+
+.mainMenuButton {
+    align-items: center;
+    justify-content: space-between;
+    align-self: center;
+    align-content: center;
+    background-color: rgba(0, 0, 0, 0);
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    width: 128px;
+    height: 128px;
+    margin-top: 200px;
+    margin-bottom: 200px;
+    -unity-background-scale-mode: scale-to-fit;
 }

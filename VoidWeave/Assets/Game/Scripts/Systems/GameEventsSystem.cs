@@ -12,6 +12,7 @@ namespace Game.Scripts.Systems
         public static Action OnQuitButtonClicked;
         public static Action OnRestartButtonClicked;
         public static Action OnResumeButtonClicked;
+        public static Action OnStartButtonClicked;
         public static event Action<float> OnEnergyValueChanged;
         public static event Action<float> OnHealthValueChanged;
         public static event Action<int> OnLevelValueChanged;

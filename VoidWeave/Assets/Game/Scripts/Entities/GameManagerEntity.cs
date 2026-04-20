@@ -29,6 +29,7 @@ namespace Game.Scripts.Entities
         [SerializeField] private int lineEnemyUnlockLevel; //The When
         [SerializeField] private float lootMultiplierPerLevel;
         [SerializeField] private float lootPickupRadius;
+        [SerializeField] private int mainMenuState;
         [SerializeField] private int minEnemiesToKill;
         [SerializeField] private float minOverlapDistance;
         [SerializeField] private int minStartingLevel;
@@ -36,6 +37,7 @@ namespace Game.Scripts.Entities
         [SerializeField] private int movementNone;
         [SerializeField] private int oneScale;
         [SerializeField] private GameObject playerEntityPrefab;
+        [SerializeField] private int playingState;
         [SerializeField] private float scalingBase;
         [SerializeField] private int scalingLevelOffset;
         [SerializeField] private int scalingMinLevel;
@@ -93,6 +95,7 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new EnemiesKilledComponent());
                 AddComponent(entity , new EnemiesToKillIncrementComponent { Value = authoring.enemiesToKillIncrement });
                 AddComponent(entity , new EnemySpawnerEntityComponent { Entity = GetEntity(authoring.enemySpawnerEntityPrefab , TransformUsageFlags.Dynamic) });
+                AddComponent(entity , new GameStateComponent { Value = authoring.mainMenuState });
                 AddComponent(entity , new HealthMultiplierComponent { Value = authoring.healthMultiplierPerLevel });
                 AddComponent(entity , new HealthValueForDeathComponent { Value = authoring.healthValueForDeath });
                 AddComponent(entity , new InputEntityComponent { Entity = GetEntity(authoring.inputEntityPrefab , TransformUsageFlags.Dynamic) });
@@ -102,12 +105,14 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new LevelToUnlockTriangleEnemyComponent { Value = authoring.triangleEnemyUnlockLevel });
                 AddComponent(entity , new LootMultiplierComponent { Value = authoring.lootMultiplierPerLevel });
                 AddComponent(entity , new LootPickupRadiusComponent { Value = authoring.lootPickupRadius });
+                AddComponent(entity , new MainMenuStateComponent { Value = authoring.mainMenuState });
                 AddComponent(entity , new MinOverlapDistanceComponent { Value = authoring.minOverlapDistance });
                 AddComponent(entity , new MovementActiveComponent { Value = authoring.movementActive });
                 AddComponent(entity , new MovementNoneComponent { Value = authoring.movementNone });
                 AddComponent(entity , new NoActionComponent { Value = authoring.noAction });
                 AddComponent(entity , new OneScaleComponent { Value = authoring.oneScale });
                 AddComponent(entity , new PlayerEntityComponent { Entity = GetEntity(authoring.playerEntityPrefab , TransformUsageFlags.Dynamic) });
+                AddComponent(entity , new PlayingStateComponent { Value = authoring.playingState });
                 AddComponent(entity , new ScalingBaseComponent { Value = authoring.scalingBase });
                 AddComponent(entity , new ScalingLevelOffsetComponent { Value = authoring.scalingLevelOffset });
                 AddComponent(entity , new ScalingMinLevelComponent { Value = authoring.scalingMinLevel });
