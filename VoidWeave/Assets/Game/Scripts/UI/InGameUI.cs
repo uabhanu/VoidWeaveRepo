@@ -5,7 +5,6 @@ namespace Game.Scripts.UI
     using Systems;
     using Unity.Entities;
     using Unity.Mathematics;
-    using UnityEditor;
     using UnityEngine;
     using UnityEngine.SceneManagement;
     using UnityEngine.UIElements;
@@ -114,11 +113,11 @@ namespace Game.Scripts.UI
 
             _pauseMenuVisualElement = _rootVisualElement.Q<VisualElement>("PauseMenuVisualElement");
             _quitButton = _pauseMenuVisualElement.Q<Button>("QuitButton");
-            _quitButton.clicked += () => { GameEventsSystem.OnQuitButtonClicked?.Invoke(); };
+            _quitButton.clicked += OnQuitButtonClicked;
             _restartButton = _pauseMenuVisualElement.Q<Button>("RestartButton");
-            _restartButton.clicked += () => { GameEventsSystem.OnRestartButtonClicked?.Invoke(); };
+            _restartButton.clicked += OnRestartButtonClicked;
             _resumeButton = _pauseMenuVisualElement.Q<Button>("ResumeButton");
-            _resumeButton.clicked += () => { GameEventsSystem.OnResumeButtonClicked?.Invoke(); };
+            _resumeButton.clicked += OnResumeButtonClicked;
             _pauseMenuVisualElement.style.display = DisplayStyle.None;
         }
 
@@ -128,9 +127,6 @@ namespace Game.Scripts.UI
             GameEventsSystem.OnHealthValueChanged += OnHealthValueChanged;
             GameEventsSystem.OnLevelValueChanged += OnLevelValueChanged;
             GameEventsSystem.OnPauseButtonClicked += OnPauseButtonClicked;
-            GameEventsSystem.OnQuitButtonClicked += OnQuitButtonClicked;
-            GameEventsSystem.OnRestartButtonClicked += OnRestartButtonClicked;
-            GameEventsSystem.OnResumeButtonClicked += OnResumeButtonClicked;
             GameEventsSystem.OnTurretCooldownStarted += OnTurretCooldownStarted;
             GameEventsSystem.OnWavePrepCountdownStarted += OnWavePrepCountdownStarted;
         }
@@ -141,9 +137,6 @@ namespace Game.Scripts.UI
             GameEventsSystem.OnHealthValueChanged -= OnHealthValueChanged;
             GameEventsSystem.OnLevelValueChanged -= OnLevelValueChanged;
             GameEventsSystem.OnPauseButtonClicked -= OnPauseButtonClicked;
-            GameEventsSystem.OnQuitButtonClicked -= OnQuitButtonClicked;
-            GameEventsSystem.OnRestartButtonClicked -= OnRestartButtonClicked;
-            GameEventsSystem.OnResumeButtonClicked -= OnResumeButtonClicked;
             GameEventsSystem.OnTurretCooldownStarted -= OnTurretCooldownStarted;
             GameEventsSystem.OnWavePrepCountdownStarted -= OnWavePrepCountdownStarted;
         }
@@ -186,11 +179,7 @@ namespace Game.Scripts.UI
 
         private void OnQuitButtonClicked()
         {
-            #if UNITY_EDITOR
-                EditorApplication.isPlaying = false;
-            #else
-				Application.Quit();
-            #endif
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
         private void OnResumeButtonClicked()

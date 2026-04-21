@@ -2,7 +2,6 @@ namespace Game.Scripts.UI
 {
     using Components;
     using System.Collections.Generic;
-    using Systems;
     using Unity.Entities;
     using UnityEditor;
     using UnityEngine;
@@ -43,10 +42,10 @@ namespace Game.Scripts.UI
             _scoresVisualElement = _rootVisualElement.Q<VisualElement>("ScoresVisualElement");
             
             _quitButton = _mainMenuVisualElement.Q<Button>("QuitButton");
-            _quitButton.clicked += () => { GameEventsSystem.OnQuitButtonClicked?.Invoke(); };
+            _quitButton.clicked += OnQuitButtonClicked;
             
             _startButton = _mainMenuVisualElement.Q<Button>("StartButton");
-            _startButton.clicked += () => { GameEventsSystem.OnStartButtonClicked?.Invoke(); };
+            _startButton.clicked += OnStartButtonClicked;
             
             _mainMenuUIButtonsList = _mainMenuVisualElement.Query<Button>().ToList();
 
@@ -65,18 +64,6 @@ namespace Game.Scripts.UI
             {
                 if(button != null) { button.style.opacity = alpha; }
             }
-        }
-
-        private void OnEnable()
-        {
-            GameEventsSystem.OnQuitButtonClicked += OnQuitButtonClicked;
-            GameEventsSystem.OnStartButtonClicked += OnStartButtonClicked;
-        }
-
-        private void OnDisable()
-        {
-            GameEventsSystem.OnQuitButtonClicked -= OnQuitButtonClicked;
-            GameEventsSystem.OnStartButtonClicked -= OnStartButtonClicked;
         }
         
         #endregion
