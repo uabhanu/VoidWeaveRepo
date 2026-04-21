@@ -5,35 +5,35 @@ namespace Game.Scripts.UI
     using Unity.Entities;
     using UnityEngine;
     using UnityEngine.UIElements;
-    
+
     #if UNITY_EDITOR
-        using UnityEditor;
+    using UnityEditor;
     #endif
 
     public class MainMenuUI : MonoBehaviour
     {
         #region Variables
-        
+
         private Button _quitButton;
         private Button _startButton;
         private List<Button> _mainMenuUIButtonsList = new();
-        
+
         private EntityManager _entityManager;
-        
+
         private VisualElement _mainMenuVisualElement;
         private VisualElement _rootVisualElement;
         private VisualElement _scoresVisualElement;
-        
+
         [SerializeField] private float maxOpacity;
         [SerializeField] private float minOpacity;
         [SerializeField] private float pulseSpeed;
         [SerializeField] private float sineDivisor;
         [SerializeField] private float sineOffset;
-        
+
         [SerializeField] private UIDocument uiDocument;
-        
+
         #endregion
-        
+
         #region Unity Callbacks
 
         private void Start()
@@ -43,13 +43,13 @@ namespace Game.Scripts.UI
             _rootVisualElement = uiDocument.rootVisualElement;
             _mainMenuVisualElement = _rootVisualElement.Q<VisualElement>("MainMenuVisualElement");
             _scoresVisualElement = _rootVisualElement.Q<VisualElement>("ScoresVisualElement");
-            
+
             _quitButton = _mainMenuVisualElement.Q<Button>("QuitButton");
             _quitButton.clicked += OnQuitButtonClicked;
-            
+
             _startButton = _mainMenuVisualElement.Q<Button>("StartButton");
             _startButton.clicked += OnStartButtonClicked;
-            
+
             _mainMenuUIButtonsList = _mainMenuVisualElement.Query<Button>().ToList();
 
             var world = World.DefaultGameObjectInjectionWorld;
@@ -68,15 +68,15 @@ namespace Game.Scripts.UI
                 if(button != null) { button.style.opacity = alpha; }
             }
         }
-        
+
         #endregion
-        
+
         #region Button Event Callbacks
-        
+
         private void OnQuitButtonClicked()
         {
             #if UNITY_EDITOR
-                EditorApplication.isPlaying = false;
+            EditorApplication.isPlaying = false;
             #else
 				Application.Quit();
             #endif
@@ -84,12 +84,22 @@ namespace Game.Scripts.UI
 
         private void OnStartButtonClicked()
         {
-            _entityManager.CreateEntity(typeof(StartGameRequestTag));
+            var world = World.DefaultGameObjectInjectionWorld;
+
+            if(world == null) { return; }
+
+            var manager = world.EntityManager;
+
+            EntityQuery query = manager.CreateEntityQuery(typeof(StartGameRequestTag));
+            
+            if(query.IsEmpty) { manager.CreateEntity(typeof(StartGameRequestTag)); }
+
+            query.Dispose();
 
             _mainMenuVisualElement.style.display = DisplayStyle.None;
             _scoresVisualElement.style.display = DisplayStyle.Flex;
         }
-        
+
         #endregion
     }
 }

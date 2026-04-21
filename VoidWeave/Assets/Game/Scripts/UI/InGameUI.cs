@@ -179,6 +179,7 @@ namespace Game.Scripts.UI
 
         private void OnQuitButtonClicked()
         {
+            Time.timeScale = 1f;
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
