@@ -3,9 +3,12 @@ namespace Game.Scripts.UI
     using Components;
     using System.Collections.Generic;
     using Unity.Entities;
-    using UnityEditor;
     using UnityEngine;
     using UnityEngine.UIElements;
+    
+    #if UNITY_EDITOR
+        using UnityEditor;
+    #endif
 
     public class MainMenuUI : MonoBehaviour
     {
