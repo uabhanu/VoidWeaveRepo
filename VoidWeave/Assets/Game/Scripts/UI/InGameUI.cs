@@ -5,7 +5,6 @@ namespace Game.Scripts.UI
     using Systems;
     using Unity.Entities;
     using Unity.Mathematics;
-    using UnityEditor;
     using UnityEngine;
     using UnityEngine.SceneManagement;
     using UnityEngine.UIElements;
@@ -14,9 +13,10 @@ namespace Game.Scripts.UI
     {
         #region Variables
 
+        private readonly List<Button> _inGameUIButtonsList = new();
         private readonly Dictionary<Entity , Label> _turretCooldownLabelsDictionary = new();
+        
         private EntityQuery _boundaryYQuery;
-        private List<Button> _uiButtons = new();
 
         private Button _pauseButton;
         private Button _quitButton;
@@ -100,16 +100,11 @@ namespace Game.Scripts.UI
             _rootVisualElement = uiDocument.rootVisualElement;
 
             _pauseButton = _rootVisualElement.Q<Button>("PauseButton");
-            _quitButton = _rootVisualElement.Q<Button>("QuitButton");
-            _restartButton = _rootVisualElement.Q<Button>("RestartButton");
-            _resumeButton = _rootVisualElement.Q<Button>("ResumeButton");
-
-            _uiButtons = _rootVisualElement.Query<Button>(null , "unity-button").ToList();
+            
+            _inGameUIButtonsList.Add(_pauseButton);
+            _inGameUIButtonsList.AddRange(_rootVisualElement.Q("PauseMenuVisualElement").Query<Button>().ToList());
 
             _pauseButton.clicked += () => { GameEventsSystem.OnPauseButtonClicked?.Invoke(); };
-            _quitButton.clicked += () => { GameEventsSystem.OnQuitButtonClicked?.Invoke(); };
-            _restartButton.clicked += () => { GameEventsSystem.OnRestartButtonClicked?.Invoke(); };
-            _resumeButton.clicked += () => { GameEventsSystem.OnResumeButtonClicked?.Invoke(); };
 
             _energyValueLabel = _rootVisualElement.Q<Label>("EnergyValueLabel");
             _healthValueLabel = _rootVisualElement.Q<Label>("HealthValueLabel");
@@ -117,6 +112,12 @@ namespace Game.Scripts.UI
             _levelValueLabel = _rootVisualElement.Q<Label>("LevelValueLabel");
 
             _pauseMenuVisualElement = _rootVisualElement.Q<VisualElement>("PauseMenuVisualElement");
+            _quitButton = _pauseMenuVisualElement.Q<Button>("QuitButton");
+            _quitButton.clicked += OnQuitButtonClicked;
+            _restartButton = _pauseMenuVisualElement.Q<Button>("RestartButton");
+            _restartButton.clicked += OnRestartButtonClicked;
+            _resumeButton = _pauseMenuVisualElement.Q<Button>("ResumeButton");
+            _resumeButton.clicked += OnResumeButtonClicked;
             _pauseMenuVisualElement.style.display = DisplayStyle.None;
         }
 
@@ -126,9 +127,6 @@ namespace Game.Scripts.UI
             GameEventsSystem.OnHealthValueChanged += OnHealthValueChanged;
             GameEventsSystem.OnLevelValueChanged += OnLevelValueChanged;
             GameEventsSystem.OnPauseButtonClicked += OnPauseButtonClicked;
-            GameEventsSystem.OnQuitButtonClicked += OnQuitButtonClicked;
-            GameEventsSystem.OnRestartButtonClicked += OnRestartButtonClicked;
-            GameEventsSystem.OnResumeButtonClicked += OnResumeButtonClicked;
             GameEventsSystem.OnTurretCooldownStarted += OnTurretCooldownStarted;
             GameEventsSystem.OnWavePrepCountdownStarted += OnWavePrepCountdownStarted;
         }
@@ -139,9 +137,6 @@ namespace Game.Scripts.UI
             GameEventsSystem.OnHealthValueChanged -= OnHealthValueChanged;
             GameEventsSystem.OnLevelValueChanged -= OnLevelValueChanged;
             GameEventsSystem.OnPauseButtonClicked -= OnPauseButtonClicked;
-            GameEventsSystem.OnQuitButtonClicked -= OnQuitButtonClicked;
-            GameEventsSystem.OnRestartButtonClicked -= OnRestartButtonClicked;
-            GameEventsSystem.OnResumeButtonClicked -= OnResumeButtonClicked;
             GameEventsSystem.OnTurretCooldownStarted -= OnTurretCooldownStarted;
             GameEventsSystem.OnWavePrepCountdownStarted -= OnWavePrepCountdownStarted;
         }
@@ -151,12 +146,12 @@ namespace Game.Scripts.UI
             var world = World.DefaultGameObjectInjectionWorld;
 
             if(world == null || !world.IsCreated) return;
-            if(_entityManager == null || _entityManager.World != world) { RefreshEcsReferences(); }
+            if(_entityManager.World != world) { RefreshEcsReferences(); }
 
             float pulse = (Mathf.Sin(Time.unscaledTime * pulseSpeed) + sineOffset) / sineDivisor;
             float alpha = Mathf.Lerp(minOpacity , maxOpacity , pulse);
 
-            foreach(var button in _uiButtons)
+            foreach(var button in _inGameUIButtonsList)
             {
                 if(button != null)
                 {
@@ -184,11 +179,8 @@ namespace Game.Scripts.UI
 
         private void OnQuitButtonClicked()
         {
-            #if UNITY_EDITOR
-            EditorApplication.isPlaying = false;
-            #else
-				Application.Quit();
-            #endif
+            Time.timeScale = 1f;
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
         private void OnResumeButtonClicked()
@@ -210,21 +202,21 @@ namespace Game.Scripts.UI
 
         private void OnEnergyValueChanged(float currentEnergy)
         {
-            if(_entityManager == null || !_entityManager.World.IsCreated) return;
+            if(!_entityManager.World.IsCreated) return;
             _entityManager.CompleteDependencyBeforeRO<CurrentEnergyComponent>();
             if(!_energyQuery.IsEmptyIgnoreFilter) _energyValueLabel.text = $"{currentEnergy:F0}";
         }
 
         private void OnHealthValueChanged(float currentHealth)
         {
-            if(_entityManager == null || !_entityManager.World.IsCreated) return;
+            if(!_entityManager.World.IsCreated) return;
             _entityManager.CompleteDependencyBeforeRO<CurrentHealthComponent>();
             if(!_healthQuery.IsEmptyIgnoreFilter) _healthValueLabel.text = $"{currentHealth:F0}";
         }
 
         private void OnLevelValueChanged(int currentLevel)
         {
-            if(_entityManager == null || !_entityManager.World.IsCreated) return;
+            if(!_entityManager.World.IsCreated) return;
             _entityManager.CompleteDependencyBeforeRO<LevelComponent>();
             if(!_levelQuery.IsEmptyIgnoreFilter) _levelValueLabel.text = $"{currentLevel:F0}";
         }
