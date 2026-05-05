@@ -207,11 +207,17 @@ namespace Game.Scripts.UI
             if(!_energyQuery.IsEmptyIgnoreFilter) _energyValueLabel.text = $"{currentEnergy:F0}";
         }
 
-        private void OnHealthValueChanged(float currentHealth)
+        private void OnHealthValueChanged()
         {
             if(!_entityManager.World.IsCreated) return;
+            
             _entityManager.CompleteDependencyBeforeRO<CurrentHealthComponent>();
-            if(!_healthQuery.IsEmptyIgnoreFilter) _healthValueLabel.text = $"{currentHealth:F0}";
+            
+            if(!_healthQuery.IsEmptyIgnoreFilter) 
+            {
+                float playerHealth = _healthQuery.GetSingleton<CurrentHealthComponent>().Value;
+                _healthValueLabel.text = $"{playerHealth:F0}";
+            }
         }
 
         private void OnLevelValueChanged(int currentLevel)

@@ -9,7 +9,8 @@ namespace Game.Scripts.Audio
         #region Variables
         
         [SerializeField] private AudioClip dashClip;
-        [SerializeField] private AudioClip damageTakenClip;
+        [SerializeField] private AudioClip damageTakenByEnemyClip;
+        [SerializeField] private AudioClip damageTakenByPlayerClip;
         [SerializeField] private AudioClip enemyDeathClip;
         [SerializeField] private AudioSource musicSource;
         [SerializeField] private AudioClip playerDeathClip;
@@ -24,9 +25,10 @@ namespace Game.Scripts.Audio
 
         private void OnEnable()
         {
+            GameEventsSystem.AudioManagerOnDamageTakenByEnemy += OnDamageTakenByEnemy;
+            GameEventsSystem.AudioManagerOnDamageTakenByPlayer += OnDamageTakenByPlayer;
             GameEventsSystem.AudioManagerOnTurretCooldownFinished += OnTurretCooldownFinished;
             GameEventsSystem.AudioManagerOnWavePrepCountdownStarted += OnWavePrepCountdownStarted;
-            GameEventsSystem.OnDamageTaken += OnDamageTaken;
             GameEventsSystem.OnDashPerformed += OnDashPerformed;
             GameEventsSystem.OnEnemyDeath += OnEnemyDeath;
             GameEventsSystem.OnProjectileFired += OnProjectileFired;
@@ -36,9 +38,10 @@ namespace Game.Scripts.Audio
         private void OnDisable()
         {
             
+            GameEventsSystem.AudioManagerOnDamageTakenByEnemy -= OnDamageTakenByEnemy;
+            GameEventsSystem.AudioManagerOnDamageTakenByPlayer -= OnDamageTakenByPlayer;
             GameEventsSystem.AudioManagerOnTurretCooldownFinished -= OnTurretCooldownFinished;
             GameEventsSystem.AudioManagerOnWavePrepCountdownStarted -= OnWavePrepCountdownStarted;
-            GameEventsSystem.OnDamageTaken -= OnDamageTaken;
             GameEventsSystem.OnDashPerformed -= OnDashPerformed;
             GameEventsSystem.OnEnemyDeath -= OnEnemyDeath;
             GameEventsSystem.OnProjectileFired -= OnProjectileFired;
@@ -49,10 +52,16 @@ namespace Game.Scripts.Audio
         
         #region User Defined Event Listeners
         
-        private void OnDamageTaken(float currentHealth)
+        private void OnDamageTakenByEnemy()
         {
-            Debug.Log("Play Damage Sound");
-            sfxSource.PlayOneShot(damageTakenClip);
+            Debug.Log("Play Enemy Damage Sound");
+            sfxSource.PlayOneShot(damageTakenByEnemyClip);
+        }
+        
+        private void OnDamageTakenByPlayer()
+        {
+            Debug.Log("Play Player Damage Sound");
+            sfxSource.PlayOneShot(damageTakenByPlayerClip);
         }
 
         private void OnDashPerformed()
