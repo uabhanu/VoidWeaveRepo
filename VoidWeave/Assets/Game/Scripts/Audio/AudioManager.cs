@@ -1,7 +1,6 @@
 namespace Game.Scripts.Audio
 {
     using Systems;
-    using Unity.Entities;
     using Unity.Mathematics;
     using UnityEngine;
 
@@ -25,23 +24,25 @@ namespace Game.Scripts.Audio
 
         private void OnEnable()
         {
+            GameEventsSystem.AudioManagerOnTurretCooldownFinished += OnTurretCooldownFinished;
             GameEventsSystem.AudioManagerOnWavePrepCountdownStarted += OnWavePrepCountdownStarted;
             GameEventsSystem.OnDamageTaken += OnDamageTaken;
             GameEventsSystem.OnDashPerformed += OnDashPerformed;
             GameEventsSystem.OnEnemyDeath += OnEnemyDeath;
             GameEventsSystem.OnProjectileFired += OnProjectileFired;
             GameEventsSystem.OnPlayerDeath += OnPlayerDeath;
-            GameEventsSystem.OnTurretCooldownStarted += OnTurretCooldownStarted;
         }
 
         private void OnDisable()
         {
+            
+            GameEventsSystem.AudioManagerOnTurretCooldownFinished -= OnTurretCooldownFinished;
             GameEventsSystem.AudioManagerOnWavePrepCountdownStarted -= OnWavePrepCountdownStarted;
+            GameEventsSystem.OnDamageTaken -= OnDamageTaken;
             GameEventsSystem.OnDashPerformed -= OnDashPerformed;
             GameEventsSystem.OnEnemyDeath -= OnEnemyDeath;
             GameEventsSystem.OnProjectileFired -= OnProjectileFired;
             GameEventsSystem.OnPlayerDeath -= OnPlayerDeath;
-            GameEventsSystem.OnTurretCooldownStarted -= OnTurretCooldownStarted;
         }
         
         #endregion
@@ -78,9 +79,9 @@ namespace Game.Scripts.Audio
             sfxSource.PlayOneShot(projectileFiredClip);
         }
 
-        private void OnTurretCooldownStarted(Entity entity , float timer , float3 worldPosition)
+        private void OnTurretCooldownFinished()
         {
-            Debug.Log("Play Turret Cooldown Sound");
+            Debug.Log("Play Turret Cooldown Finished Sound");
             sfxSource.PlayOneShot(turretCooldownClip);
         }
 

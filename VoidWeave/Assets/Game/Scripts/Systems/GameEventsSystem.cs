@@ -10,6 +10,7 @@ namespace Game.Scripts.Systems
     {
         public static Action OnPauseButtonClicked;
 
+        public static event Action AudioManagerOnTurretCooldownFinished;
         public static event Action AudioManagerOnWavePrepCountdownStarted;
         public static event Action<float> OnDamageTaken;
         public static event Action OnDashPerformed;
@@ -28,7 +29,15 @@ namespace Game.Scripts.Systems
 
             foreach(RefRO<CurrentHealthComponent> currentHealthComponent in SystemAPI.Query<RefRO<CurrentHealthComponent>>().WithAll<PlayerTag>().WithChangeFilter<CurrentHealthComponent>()) OnHealthValueChanged?.Invoke(currentHealthComponent.ValueRO.Value);
 
-            foreach((RefRO<CooldownComponent> cooldownComponent , RefRO<LocalTransform> transform , Entity turretEntity) in SystemAPI.Query<RefRO<CooldownComponent> , RefRO<LocalTransform>>().WithAny<BeamTurretTag , ScatterTurretTag , StrikerTurretTag>().WithChangeFilter<CooldownComponent>().WithEntityAccess()) OnTurretCooldownStarted?.Invoke(turretEntity , cooldownComponent.ValueRO.Value , transform.ValueRO.Position);
+            foreach((RefRO<CooldownComponent> cooldownComponent , RefRO<LocalTransform> transform , Entity turretEntity) in SystemAPI.Query<RefRO<CooldownComponent> , RefRO<LocalTransform>>().WithAny<BeamTurretTag , ScatterTurretTag , StrikerTurretTag>().WithChangeFilter<CooldownComponent>().WithEntityAccess())
+            {
+                OnTurretCooldownStarted?.Invoke(turretEntity , cooldownComponent.ValueRO.Value , transform.ValueRO.Position);
+                
+                int startLoop = (int)SystemAPI.GetSingleton<InputNoneComponent>().Value;
+                int endLoop = math.select(startLoop , (int)(SystemAPI.GetSingleton<WaveStateCombatComponent>().Value / SystemAPI.GetSingleton<WaveStateCombatComponent>().Value) , cooldownComponent.ValueRO.Value > SystemAPI.GetSingleton<InputNoneComponent>().Value && (int)cooldownComponent.ValueRO.Value != (int)(cooldownComponent.ValueRO.Value + SystemAPI.Time.DeltaTime));
+
+                for(int i = startLoop ; i < endLoop ; i++) { AudioManagerOnTurretCooldownFinished?.Invoke(); }
+            }
 
             foreach(var (currentHealthComponent , _ , entity) in SystemAPI.Query<RefRO<CurrentHealthComponent> , RefRO<DamageEventComponent>>().WithAll<PlayerTag>().WithEntityAccess())
             {
