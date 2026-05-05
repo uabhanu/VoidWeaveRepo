@@ -25,23 +25,23 @@ namespace Game.Scripts.Audio
 
         private void OnEnable()
         {
+            GameEventsSystem.AudioManagerOnWavePrepCountdownStarted += OnWavePrepCountdownStarted;
             GameEventsSystem.OnDamageTaken += OnDamageTaken;
             GameEventsSystem.OnDashPerformed += OnDashPerformed;
             GameEventsSystem.OnEnemyDeath += OnEnemyDeath;
             GameEventsSystem.OnProjectileFired += OnProjectileFired;
             GameEventsSystem.OnPlayerDeath += OnPlayerDeath;
             GameEventsSystem.OnTurretCooldownStarted += OnTurretCooldownStarted;
-            GameEventsSystem.OnWavePrepCountdownStarted += OnWavePrepCountdownStarted;
         }
 
         private void OnDisable()
         {
+            GameEventsSystem.AudioManagerOnWavePrepCountdownStarted -= OnWavePrepCountdownStarted;
             GameEventsSystem.OnDashPerformed -= OnDashPerformed;
             GameEventsSystem.OnEnemyDeath -= OnEnemyDeath;
             GameEventsSystem.OnProjectileFired -= OnProjectileFired;
             GameEventsSystem.OnPlayerDeath -= OnPlayerDeath;
             GameEventsSystem.OnTurretCooldownStarted -= OnTurretCooldownStarted;
-            GameEventsSystem.OnWavePrepCountdownStarted -= OnWavePrepCountdownStarted;
         }
         
         #endregion
@@ -51,50 +51,43 @@ namespace Game.Scripts.Audio
         private void OnDamageTaken(float currentHealth)
         {
             Debug.Log("Play Damage Sound");
-            
-            if(damageTakenClip) sfxSource.PlayOneShot(damageTakenClip);
+            sfxSource.PlayOneShot(damageTakenClip);
         }
 
         private void OnDashPerformed()
         {
             Debug.Log("Play Dash Sound");
-            
-            if(dashClip) sfxSource.PlayOneShot(dashClip);
+            sfxSource.PlayOneShot(dashClip);
         }
         
         private void OnEnemyDeath()
         {
             Debug.Log("Play Enemy Death Sound");
-            
-            if(enemyDeathClip) sfxSource.PlayOneShot(enemyDeathClip);
+            sfxSource.PlayOneShot(enemyDeathClip);
         }
         
         private void OnPlayerDeath()
         {
             Debug.Log("Play Player Death Sound");
-            
-            if(playerDeathClip) sfxSource.PlayOneShot(playerDeathClip);
+            sfxSource.PlayOneShot(playerDeathClip);
         }
 
         private void OnProjectileFired(float3 position)
         {
             Debug.Log("Play Projectile Fire Sound");
-            
-            if(projectileFiredClip) sfxSource.PlayOneShot(projectileFiredClip);
+            sfxSource.PlayOneShot(projectileFiredClip);
         }
 
         private void OnTurretCooldownStarted(Entity entity , float timer , float3 worldPosition)
         {
             Debug.Log("Play Turret Cooldown Sound");
-            
-            if(turretCooldownClip) sfxSource.PlayOneShot(turretCooldownClip);
+            sfxSource.PlayOneShot(turretCooldownClip);
         }
 
-        private void OnWavePrepCountdownStarted(float timer , int waveState)
+        private void OnWavePrepCountdownStarted()
         {
             Debug.Log("Play Wave Prep Cooldown Sound");
-            
-            if(wavePrepClip && timer > 0) sfxSource.PlayOneShot(wavePrepClip);
+            sfxSource.PlayOneShot(wavePrepClip);
         }
         
         #endregion

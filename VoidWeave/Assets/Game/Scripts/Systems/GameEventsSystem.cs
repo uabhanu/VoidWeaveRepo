@@ -10,6 +10,7 @@ namespace Game.Scripts.Systems
     {
         public static Action OnPauseButtonClicked;
 
+        public static event Action AudioManagerOnWavePrepCountdownStarted;
         public static event Action<float> OnDamageTaken;
         public static event Action OnDashPerformed;
         public static event Action OnEnemyDeath;
@@ -56,7 +57,15 @@ namespace Game.Scripts.Systems
 
             foreach(RefRO<LocalTransform> localTransformComponent in SystemAPI.Query<RefRO<LocalTransform>>().WithAll<ProjectileTag>().WithChangeFilter<LocalTransform>()) { OnProjectileFired?.Invoke(localTransformComponent.ValueRO.Position); }
 
-            foreach((RefRO<TimerComponent> timerComponent , RefRO<WaveStateComponent> waveStateComponent) in SystemAPI.Query<RefRO<TimerComponent> , RefRO<WaveStateComponent>>()) OnWavePrepCountdownStarted?.Invoke(timerComponent.ValueRO.Value , waveStateComponent.ValueRO.Value);
+            foreach((RefRO<TimerComponent> timerComponent , RefRO<WaveStateComponent> waveStateComponent) in SystemAPI.Query<RefRO<TimerComponent> , RefRO<WaveStateComponent>>().WithChangeFilter<TimerComponent>())
+            {
+                OnWavePrepCountdownStarted?.Invoke(timerComponent.ValueRO.Value , waveStateComponent.ValueRO.Value);
+
+                int startLoop = SystemAPI.GetSingleton<WaveStateComponent>().Value;
+                int endLoop = math.select(startLoop , SystemAPI.GetSingleton<WaveStateCombatComponent>().Value / SystemAPI.GetSingleton<WaveStateCombatComponent>().Value , waveStateComponent.ValueRO.Value == startLoop && timerComponent.ValueRO.Value > SystemAPI.GetSingleton<InputNoneComponent>().Value && (int)timerComponent.ValueRO.Value != (int)(timerComponent.ValueRO.Value + SystemAPI.Time.DeltaTime));
+
+                for(int i = startLoop ; i < endLoop ; i++) { AudioManagerOnWavePrepCountdownStarted?.Invoke(); }
+            }
         }
     }
 }
