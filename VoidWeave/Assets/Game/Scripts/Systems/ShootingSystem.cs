@@ -44,7 +44,7 @@ namespace Game.Scripts.Systems
         public float SpreadZero;
         public float TimerExpired;
 
-        private void Execute(in AttackRateComponent attackRateComponent , in BulletEntityComponent bulletEntityComponent , RefRW<CooldownComponent> cooldownComponent , in DamageComponent damageComponent , [EntityIndexInQuery] int entityIndexInQuery , in LocalToWorld localToWorld , in ProjectileCountComponent projectileCountComponent , in ProjectileSpawnPointComponent projectileSpawnPointComponent , in SpreadComponent spreadComponent)
+        private void Execute(in AttackRateComponent attackRateComponent , in BulletEntityComponent bulletEntityComponent , RefRW<CooldownComponent> cooldownComponent , in DamageComponent damageComponent , Entity entity , [EntityIndexInQuery] int entityIndexInQuery , in LocalToWorld localToWorld , in ProjectileCountComponent projectileCountComponent , in ProjectileSpawnPointComponent projectileSpawnPointComponent , in SpreadComponent spreadComponent)
         {
             bool isReady = cooldownComponent.ValueRO.Value <= TimerExpired;
             cooldownComponent.ValueRW.Value = math.select(cooldownComponent.ValueRO.Value , attackRateComponent.Value , isReady);
@@ -78,6 +78,8 @@ namespace Game.Scripts.Systems
                 float3 direction = math.mul(finalRotation , math.up());
                 ECBParallelWriter.SetComponent(entityIndexInQuery , newBullet , new VelocityComponent { Value = direction.xy });
             }
+
+            for(int i = 0 ; i < math.select(0 , 1 , isReady) ; i++) { ECBParallelWriter.AddComponent<ProjectileFiredEventTag>(entityIndexInQuery , entity); }
         }
     }
 }

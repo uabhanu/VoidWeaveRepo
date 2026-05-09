@@ -12,16 +12,16 @@ namespace Game.Scripts.Systems
 
         public static event Action AudioManagerOnDamageTakenByEnemy;
         public static event Action AudioManagerOnDamageTakenByPlayer;
+        public static event Action AudioManagerOnProjectileFiredByEnemy;
+        public static event Action AudioManagerOnProjectileFiredByPlayer;
         public static event Action AudioManagerOnTurretCooldownFinished;
         public static event Action AudioManagerOnWavePrepCountdownStarted;
-        public static event Action<float> OnDamageTaken;
         public static event Action OnDashPerformed;
         public static event Action OnEnemyDeath;
         public static event Action<float> OnEnergyValueChanged;
         public static event Action OnHealthValueChanged;
         public static event Action<int> OnLevelValueChanged;
         public static event Action OnPlayerDeath;
-        public static event Action<float3> OnProjectileFired;
         public static event Action<Entity , float , float3> OnTurretCooldownStarted;
         public static event Action<float , int> OnWavePrepCountdownStarted;
 
@@ -29,11 +29,10 @@ namespace Game.Scripts.Systems
         {
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
 
-            foreach(var (currentHealthComponent , _ , entity) in SystemAPI.Query<RefRO<CurrentHealthComponent> , RefRO<DamageEventComponent>>().WithEntityAccess())
+            foreach(var (_ , _ , entity) in SystemAPI.Query<RefRO<CurrentHealthComponent> , RefRO<DamageEventComponent>>().WithEntityAccess())
             {
-                OnDamageTaken?.Invoke(currentHealthComponent.ValueRO.Value);
-                
                 for(int i = 0 ; i < math.select(0 , 1 , SystemAPI.HasComponent<EnemyTag>(entity)) ; i++) { AudioManagerOnDamageTakenByEnemy?.Invoke(); }
+
                 for(int i = 0 ; i < math.select(0 , 1 , SystemAPI.HasComponent<PlayerTag>(entity)) ; i++) { AudioManagerOnDamageTakenByPlayer?.Invoke(); }
 
                 ecb.RemoveComponent<DamageEventComponent>(entity);
@@ -52,7 +51,7 @@ namespace Game.Scripts.Systems
 
             foreach(RefRO<CurrentEnergyComponent> currentEnergyComponent in SystemAPI.Query<RefRO<CurrentEnergyComponent>>().WithChangeFilter<CurrentEnergyComponent>()) OnEnergyValueChanged?.Invoke(currentEnergyComponent.ValueRO.Value);
 
-            foreach(RefRO<CurrentHealthComponent> currentHealthComponent in SystemAPI.Query<RefRO<CurrentHealthComponent>>().WithChangeFilter<CurrentHealthComponent>()) { OnHealthValueChanged?.Invoke(); }
+            foreach(RefRO<CurrentHealthComponent> _ in SystemAPI.Query<RefRO<CurrentHealthComponent>>().WithChangeFilter<CurrentHealthComponent>()) { OnHealthValueChanged?.Invoke(); }
 
             foreach(var (_ , entity) in SystemAPI.Query<RefRO<DeathTag>>().WithAll<PlayerTag>().WithEntityAccess())
             {
@@ -61,15 +60,21 @@ namespace Game.Scripts.Systems
             }
 
             foreach(RefRO<LevelComponent> levelComponent in SystemAPI.Query<RefRO<LevelComponent>>().WithChangeFilter<LevelComponent>()) OnLevelValueChanged?.Invoke(levelComponent.ValueRO.Value);
-
-            foreach(RefRO<LocalTransform> localTransformComponent in SystemAPI.Query<RefRO<LocalTransform>>().WithAll<ProjectileTag>().WithChangeFilter<LocalTransform>()) { OnProjectileFired?.Invoke(localTransformComponent.ValueRO.Position); }
+            
+            foreach(var (_ , entity) in SystemAPI.Query<RefRO<ProjectileFiredEventTag>>().WithEntityAccess())
+            {
+                for(int i = 0 ; i < math.select(0 , 1 , SystemAPI.HasComponent<EnemyTag>(entity)) ; i++) { AudioManagerOnProjectileFiredByEnemy?.Invoke(); }
+                for(int i = 0 ; i < math.select(0 , 1 , SystemAPI.HasComponent<TurretTag>(entity)) ; i++) { AudioManagerOnProjectileFiredByPlayer?.Invoke(); }
+                
+                ecb.RemoveComponent<ProjectileFiredEventTag>(entity);
+            }
 
             foreach((RefRO<CooldownComponent> cooldownComponent , RefRO<LocalTransform> transform , Entity turretEntity) in SystemAPI.Query<RefRO<CooldownComponent> , RefRO<LocalTransform>>().WithAny<BeamTurretTag , ScatterTurretTag , StrikerTurretTag>().WithChangeFilter<CooldownComponent>().WithEntityAccess())
             {
                 OnTurretCooldownStarted?.Invoke(turretEntity , cooldownComponent.ValueRO.Value , transform.ValueRO.Position);
 
                 int startLoop = (int)SystemAPI.GetSingleton<InputNoneComponent>().Value;
-                int endLoop = math.select(startLoop , (int)(SystemAPI.GetSingleton<WaveStateCombatComponent>().Value / SystemAPI.GetSingleton<WaveStateCombatComponent>().Value) , cooldownComponent.ValueRO.Value > SystemAPI.GetSingleton<InputNoneComponent>().Value && (int)cooldownComponent.ValueRO.Value != (int)(cooldownComponent.ValueRO.Value + SystemAPI.Time.DeltaTime));
+                int endLoop = math.select(startLoop , SystemAPI.GetSingleton<WaveStateCombatComponent>().Value / SystemAPI.GetSingleton<WaveStateCombatComponent>().Value , cooldownComponent.ValueRO.Value > SystemAPI.GetSingleton<InputNoneComponent>().Value && (int)cooldownComponent.ValueRO.Value != (int)(cooldownComponent.ValueRO.Value + SystemAPI.Time.DeltaTime));
 
                 for(int i = startLoop ; i < endLoop ; i++) { AudioManagerOnTurretCooldownFinished?.Invoke(); }
             }

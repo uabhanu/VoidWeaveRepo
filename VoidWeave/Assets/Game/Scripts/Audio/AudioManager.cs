@@ -1,7 +1,6 @@
 namespace Game.Scripts.Audio
 {
     using Systems;
-    using Unity.Mathematics;
     using UnityEngine;
 
     public class AudioManager : MonoBehaviour
@@ -14,7 +13,8 @@ namespace Game.Scripts.Audio
         [SerializeField] private AudioClip enemyDeathClip;
         [SerializeField] private AudioSource musicSource;
         [SerializeField] private AudioClip playerDeathClip;
-        [SerializeField] private AudioClip projectileFiredClip;
+        [SerializeField] private AudioClip projectileFiredByEnemyClip;
+        [SerializeField] private AudioClip projectileFiredByPlayerClip;
         [SerializeField] private AudioSource sfxSource;
         [SerializeField] private AudioClip turretCooldownClip;
         [SerializeField] private AudioClip wavePrepClip;
@@ -27,11 +27,12 @@ namespace Game.Scripts.Audio
         {
             GameEventsSystem.AudioManagerOnDamageTakenByEnemy += OnDamageTakenByEnemy;
             GameEventsSystem.AudioManagerOnDamageTakenByPlayer += OnDamageTakenByPlayer;
+            GameEventsSystem.AudioManagerOnProjectileFiredByEnemy += OnProjectileFiredByEnemy;
+            GameEventsSystem.AudioManagerOnProjectileFiredByPlayer += OnProjectileFiredByPlayer;
             GameEventsSystem.AudioManagerOnTurretCooldownFinished += OnTurretCooldownFinished;
             GameEventsSystem.AudioManagerOnWavePrepCountdownStarted += OnWavePrepCountdownStarted;
             GameEventsSystem.OnDashPerformed += OnDashPerformed;
             GameEventsSystem.OnEnemyDeath += OnEnemyDeath;
-            GameEventsSystem.OnProjectileFired += OnProjectileFired;
             GameEventsSystem.OnPlayerDeath += OnPlayerDeath;
         }
 
@@ -40,11 +41,12 @@ namespace Game.Scripts.Audio
             
             GameEventsSystem.AudioManagerOnDamageTakenByEnemy -= OnDamageTakenByEnemy;
             GameEventsSystem.AudioManagerOnDamageTakenByPlayer -= OnDamageTakenByPlayer;
+            GameEventsSystem.AudioManagerOnProjectileFiredByEnemy -= OnProjectileFiredByEnemy;
+            GameEventsSystem.AudioManagerOnProjectileFiredByPlayer -= OnProjectileFiredByPlayer;
             GameEventsSystem.AudioManagerOnTurretCooldownFinished -= OnTurretCooldownFinished;
             GameEventsSystem.AudioManagerOnWavePrepCountdownStarted -= OnWavePrepCountdownStarted;
             GameEventsSystem.OnDashPerformed -= OnDashPerformed;
             GameEventsSystem.OnEnemyDeath -= OnEnemyDeath;
-            GameEventsSystem.OnProjectileFired -= OnProjectileFired;
             GameEventsSystem.OnPlayerDeath -= OnPlayerDeath;
         }
         
@@ -54,49 +56,46 @@ namespace Game.Scripts.Audio
         
         private void OnDamageTakenByEnemy()
         {
-            Debug.Log("Play Enemy Damage Sound");
             sfxSource.PlayOneShot(damageTakenByEnemyClip);
         }
         
         private void OnDamageTakenByPlayer()
         {
-            Debug.Log("Play Player Damage Sound");
             sfxSource.PlayOneShot(damageTakenByPlayerClip);
         }
 
         private void OnDashPerformed()
         {
-            Debug.Log("Play Dash Sound");
             sfxSource.PlayOneShot(dashClip);
         }
         
         private void OnEnemyDeath()
         {
-            Debug.Log("Play Enemy Death Sound");
             sfxSource.PlayOneShot(enemyDeathClip);
         }
         
         private void OnPlayerDeath()
         {
-            Debug.Log("Play Player Death Sound");
             sfxSource.PlayOneShot(playerDeathClip);
         }
 
-        private void OnProjectileFired(float3 position)
+        private void OnProjectileFiredByEnemy()
         {
-            Debug.Log("Play Projectile Fire Sound");
-            sfxSource.PlayOneShot(projectileFiredClip);
+            sfxSource.PlayOneShot(projectileFiredByEnemyClip);
+        }
+        
+        private void OnProjectileFiredByPlayer()
+        {
+            sfxSource.PlayOneShot(projectileFiredByPlayerClip);
         }
 
         private void OnTurretCooldownFinished()
         {
-            Debug.Log("Play Turret Cooldown Finished Sound");
             sfxSource.PlayOneShot(turretCooldownClip);
         }
 
         private void OnWavePrepCountdownStarted()
         {
-            Debug.Log("Play Wave Prep Cooldown Sound");
             sfxSource.PlayOneShot(wavePrepClip);
         }
         
