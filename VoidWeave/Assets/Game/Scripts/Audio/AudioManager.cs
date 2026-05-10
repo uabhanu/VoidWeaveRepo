@@ -14,9 +14,11 @@ namespace Game.Scripts.Audio
         [SerializeField] private AudioSource musicSource;
         [SerializeField] private AudioClip playerDeathClip;
         [SerializeField] private AudioClip projectileFiredByEnemyClip;
-        [SerializeField] private AudioClip projectileFiredByPlayerClip;
+        [SerializeField] private AudioClip projectileFiredByBeamTurretClip;
+        [SerializeField] private AudioClip projectileFiredByScatterTurretClip;
+        [SerializeField] private AudioClip projectileFiredByStrikerTurretClip;
         [SerializeField] private AudioSource sfxSource;
-        [SerializeField] private AudioClip turretCooldownClip;
+        [SerializeField] private AudioClip turretCooldownCompleteClip;
         [SerializeField] private AudioClip wavePrepClip;
         
         #endregion
@@ -28,7 +30,9 @@ namespace Game.Scripts.Audio
             GameEventsSystem.AudioManagerOnDamageTakenByEnemy += OnDamageTakenByEnemy;
             GameEventsSystem.AudioManagerOnDamageTakenByPlayer += OnDamageTakenByPlayer;
             GameEventsSystem.AudioManagerOnProjectileFiredByEnemy += OnProjectileFiredByEnemy;
-            GameEventsSystem.AudioManagerOnProjectileFiredByPlayer += OnProjectileFiredByPlayer;
+            GameEventsSystem.AudioManagerOnProjectileFiredByBeamTurret += OnProjectileFiredByBeamTurret;
+            GameEventsSystem.AudioManagerOnProjectileFiredByScatterTurret += OnProjectileFiredByScatterTurret;
+            GameEventsSystem.AudioManagerOnProjectileFiredByStrikerTurret += OnProjectileFiredByStrikerTurret;
             GameEventsSystem.AudioManagerOnTurretCooldownFinished += OnTurretCooldownFinished;
             GameEventsSystem.AudioManagerOnWavePrepCountdownStarted += OnWavePrepCountdownStarted;
             GameEventsSystem.OnDashPerformed += OnDashPerformed;
@@ -42,7 +46,9 @@ namespace Game.Scripts.Audio
             GameEventsSystem.AudioManagerOnDamageTakenByEnemy -= OnDamageTakenByEnemy;
             GameEventsSystem.AudioManagerOnDamageTakenByPlayer -= OnDamageTakenByPlayer;
             GameEventsSystem.AudioManagerOnProjectileFiredByEnemy -= OnProjectileFiredByEnemy;
-            GameEventsSystem.AudioManagerOnProjectileFiredByPlayer -= OnProjectileFiredByPlayer;
+            GameEventsSystem.AudioManagerOnProjectileFiredByBeamTurret -= OnProjectileFiredByBeamTurret;
+            GameEventsSystem.AudioManagerOnProjectileFiredByScatterTurret -= OnProjectileFiredByScatterTurret;
+            GameEventsSystem.AudioManagerOnProjectileFiredByStrikerTurret -= OnProjectileFiredByStrikerTurret;
             GameEventsSystem.AudioManagerOnTurretCooldownFinished -= OnTurretCooldownFinished;
             GameEventsSystem.AudioManagerOnWavePrepCountdownStarted -= OnWavePrepCountdownStarted;
             GameEventsSystem.OnDashPerformed -= OnDashPerformed;
@@ -84,14 +90,24 @@ namespace Game.Scripts.Audio
             sfxSource.PlayOneShot(projectileFiredByEnemyClip);
         }
         
-        private void OnProjectileFiredByPlayer()
+        private void OnProjectileFiredByBeamTurret()
         {
-            sfxSource.PlayOneShot(projectileFiredByPlayerClip);
+            sfxSource.PlayOneShot(projectileFiredByBeamTurretClip);
+        }
+        
+        private void OnProjectileFiredByScatterTurret()
+        {
+            sfxSource.PlayOneShot(projectileFiredByScatterTurretClip);
+        }
+        
+        private void OnProjectileFiredByStrikerTurret()
+        {
+            sfxSource.PlayOneShot(projectileFiredByStrikerTurretClip);
         }
 
         private void OnTurretCooldownFinished()
         {
-            sfxSource.PlayOneShot(turretCooldownClip);
+            sfxSource.PlayOneShot(turretCooldownCompleteClip);
         }
 
         private void OnWavePrepCountdownStarted()

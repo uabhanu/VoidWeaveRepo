@@ -8,12 +8,16 @@ namespace Game.Scripts.Systems
 
     public partial class GameEventsSystem : SystemBase
     {
+        #region Variables
+        
         public static Action OnPauseButtonClicked;
 
         public static event Action AudioManagerOnDamageTakenByEnemy;
         public static event Action AudioManagerOnDamageTakenByPlayer;
         public static event Action AudioManagerOnProjectileFiredByEnemy;
-        public static event Action AudioManagerOnProjectileFiredByPlayer;
+        public static event Action AudioManagerOnProjectileFiredByBeamTurret;
+        public static event Action AudioManagerOnProjectileFiredByScatterTurret;
+        public static event Action AudioManagerOnProjectileFiredByStrikerTurret;
         public static event Action AudioManagerOnTurretCooldownFinished;
         public static event Action AudioManagerOnWavePrepCountdownStarted;
         public static event Action OnDashPerformed;
@@ -24,16 +28,23 @@ namespace Game.Scripts.Systems
         public static event Action OnPlayerDeath;
         public static event Action<Entity , float , float3> OnTurretCooldownStarted;
         public static event Action<float , int> OnWavePrepCountdownStarted;
+        
+        #endregion
+        
+        #region Unity Callbacks
 
         protected override void OnUpdate()
         {
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
+            
+            int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
+            int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
 
             foreach(var (_ , _ , entity) in SystemAPI.Query<RefRO<CurrentHealthComponent> , RefRO<DamageEventComponent>>().WithEntityAccess())
             {
-                for(int i = 0 ; i < math.select(0 , 1 , SystemAPI.HasComponent<EnemyTag>(entity)) ; i++) { AudioManagerOnDamageTakenByEnemy?.Invoke(); }
+                for(int i = noAction ; i < math.select(noAction , doAction , SystemAPI.HasComponent<EnemyTag>(entity)) ; i++) { AudioManagerOnDamageTakenByEnemy?.Invoke(); }
 
-                for(int i = 0 ; i < math.select(0 , 1 , SystemAPI.HasComponent<PlayerTag>(entity)) ; i++) { AudioManagerOnDamageTakenByPlayer?.Invoke(); }
+                for(int i = noAction ; i < math.select(noAction , doAction , SystemAPI.HasComponent<PlayerTag>(entity)) ; i++) { AudioManagerOnDamageTakenByPlayer?.Invoke(); }
 
                 ecb.RemoveComponent<DamageEventComponent>(entity);
             }
@@ -63,8 +74,11 @@ namespace Game.Scripts.Systems
             
             foreach(var (_ , entity) in SystemAPI.Query<RefRO<ProjectileFiredEventTag>>().WithEntityAccess())
             {
-                for(int i = 0 ; i < math.select(0 , 1 , SystemAPI.HasComponent<EnemyTag>(entity)) ; i++) { AudioManagerOnProjectileFiredByEnemy?.Invoke(); }
-                for(int i = 0 ; i < math.select(0 , 1 , SystemAPI.HasComponent<TurretTag>(entity)) ; i++) { AudioManagerOnProjectileFiredByPlayer?.Invoke(); }
+                for(int i = noAction ; i < math.select(noAction , doAction , SystemAPI.HasComponent<EnemyTag>(entity)) ; i++) { AudioManagerOnProjectileFiredByEnemy?.Invoke(); }
+                
+                for(int i = noAction ; i < math.select(noAction , doAction , SystemAPI.HasComponent<BeamTurretTag>(entity)) ; i++) { AudioManagerOnProjectileFiredByBeamTurret?.Invoke(); }
+                for(int i = noAction ; i < math.select(noAction , doAction , SystemAPI.HasComponent<ScatterTurretTag>(entity)) ; i++) { AudioManagerOnProjectileFiredByScatterTurret?.Invoke(); }
+                for(int i = noAction ; i < math.select(noAction , doAction , SystemAPI.HasComponent<StrikerTurretTag>(entity)) ; i++) { AudioManagerOnProjectileFiredByStrikerTurret?.Invoke(); }
                 
                 ecb.RemoveComponent<ProjectileFiredEventTag>(entity);
             }
@@ -89,5 +103,7 @@ namespace Game.Scripts.Systems
                 for(int i = startLoop ; i < endLoop ; i++) { AudioManagerOnWavePrepCountdownStarted?.Invoke(); }
             }
         }
+        
+        #endregion
     }
 }
