@@ -9,7 +9,7 @@ namespace Game.Scripts.Systems
     public partial class GameEventsSystem : SystemBase
     {
         #region Variables
-        
+
         public static Action OnPauseButtonClicked;
 
         public static event Action AudioManagerOnDamageTakenByEnemy;
@@ -28,15 +28,15 @@ namespace Game.Scripts.Systems
         public static event Action OnPlayerDeath;
         public static event Action<Entity , float , float3> OnTurretCooldownStarted;
         public static event Action<float , int> OnWavePrepCountdownStarted;
-        
+
         #endregion
-        
+
         #region Unity Callbacks
 
         protected override void OnUpdate()
         {
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
-            
+
             int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
             int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
 
@@ -49,9 +49,10 @@ namespace Game.Scripts.Systems
                 ecb.RemoveComponent<DamageEventComponent>(entity);
             }
 
-            foreach(RefRO<PlayerInputComponent> playerInputComponent in SystemAPI.Query<RefRO<PlayerInputComponent>>().WithAll<PlayerTag>())
+            foreach(var (_ , entity) in SystemAPI.Query<DashPerformedTag>().WithEntityAccess())
             {
-                for(int i = (int)SystemAPI.GetSingleton<InputNoneComponent>().Value ; i < (int)math.select(SystemAPI.GetSingleton<InputNoneComponent>().Value , math.countbits(playerInputComponent.ValueRO.Value & SystemAPI.GetSingleton<InputDashComponent>().Value) , SystemAPI.GetSingleton<DashCooldownComponent>().Value <= SystemAPI.GetSingleton<InputNoneComponent>().Value) ; i++) { OnDashPerformed?.Invoke(); }
+                OnDashPerformed?.Invoke();
+                ecb.RemoveComponent<DashPerformedTag>(entity);
             }
 
             foreach(var (_ , entity) in SystemAPI.Query<RefRO<DeathTag>>().WithAll<EnemyTag>().WithEntityAccess())
@@ -62,7 +63,7 @@ namespace Game.Scripts.Systems
 
             foreach(RefRO<CurrentEnergyComponent> currentEnergyComponent in SystemAPI.Query<RefRO<CurrentEnergyComponent>>().WithChangeFilter<CurrentEnergyComponent>()) OnEnergyValueChanged?.Invoke(currentEnergyComponent.ValueRO.Value);
 
-            foreach(RefRO<CurrentHealthComponent> _ in SystemAPI.Query<RefRO<CurrentHealthComponent>>().WithChangeFilter<CurrentHealthComponent>()) { OnHealthValueChanged?.Invoke(); }
+            foreach(var _ in SystemAPI.Query<RefRO<CurrentHealthComponent>>().WithAll<PlayerTag>().WithChangeFilter<CurrentHealthComponent>()) { OnHealthValueChanged?.Invoke(); }
 
             foreach(var (_ , entity) in SystemAPI.Query<RefRO<DeathTag>>().WithAll<PlayerTag>().WithEntityAccess())
             {
@@ -71,15 +72,17 @@ namespace Game.Scripts.Systems
             }
 
             foreach(RefRO<LevelComponent> levelComponent in SystemAPI.Query<RefRO<LevelComponent>>().WithChangeFilter<LevelComponent>()) OnLevelValueChanged?.Invoke(levelComponent.ValueRO.Value);
-            
+
             foreach(var (_ , entity) in SystemAPI.Query<RefRO<ProjectileFiredEventTag>>().WithEntityAccess())
             {
                 for(int i = noAction ; i < math.select(noAction , doAction , SystemAPI.HasComponent<EnemyTag>(entity)) ; i++) { AudioManagerOnProjectileFiredByEnemy?.Invoke(); }
-                
+
                 for(int i = noAction ; i < math.select(noAction , doAction , SystemAPI.HasComponent<BeamTurretTag>(entity)) ; i++) { AudioManagerOnProjectileFiredByBeamTurret?.Invoke(); }
+
                 for(int i = noAction ; i < math.select(noAction , doAction , SystemAPI.HasComponent<ScatterTurretTag>(entity)) ; i++) { AudioManagerOnProjectileFiredByScatterTurret?.Invoke(); }
+
                 for(int i = noAction ; i < math.select(noAction , doAction , SystemAPI.HasComponent<StrikerTurretTag>(entity)) ; i++) { AudioManagerOnProjectileFiredByStrikerTurret?.Invoke(); }
-                
+
                 ecb.RemoveComponent<ProjectileFiredEventTag>(entity);
             }
 
@@ -88,7 +91,7 @@ namespace Game.Scripts.Systems
                 OnTurretCooldownStarted?.Invoke(turretEntity , cooldownComponent.ValueRO.Value , transform.ValueRO.Position);
 
                 int startLoop = (int)SystemAPI.GetSingleton<InputNoneComponent>().Value;
-                int endLoop = math.select(startLoop , SystemAPI.GetSingleton<WaveStateCombatComponent>().Value / SystemAPI.GetSingleton<WaveStateCombatComponent>().Value , cooldownComponent.ValueRO.Value > SystemAPI.GetSingleton<InputNoneComponent>().Value && (int)cooldownComponent.ValueRO.Value != (int)(cooldownComponent.ValueRO.Value + SystemAPI.Time.DeltaTime));
+                int endLoop = math.select(startLoop , 1 , cooldownComponent.ValueRO.Value > SystemAPI.GetSingleton<InputNoneComponent>().Value && (int)cooldownComponent.ValueRO.Value != (int)(cooldownComponent.ValueRO.Value + SystemAPI.Time.DeltaTime));
 
                 for(int i = startLoop ; i < endLoop ; i++) { AudioManagerOnTurretCooldownFinished?.Invoke(); }
             }
@@ -98,12 +101,12 @@ namespace Game.Scripts.Systems
                 OnWavePrepCountdownStarted?.Invoke(timerComponent.ValueRO.Value , waveStateComponent.ValueRO.Value);
 
                 int startLoop = SystemAPI.GetSingleton<WaveStateComponent>().Value;
-                int endLoop = math.select(startLoop , SystemAPI.GetSingleton<WaveStateCombatComponent>().Value / SystemAPI.GetSingleton<WaveStateCombatComponent>().Value , waveStateComponent.ValueRO.Value == startLoop && timerComponent.ValueRO.Value > SystemAPI.GetSingleton<InputNoneComponent>().Value && (int)timerComponent.ValueRO.Value != (int)(timerComponent.ValueRO.Value + SystemAPI.Time.DeltaTime));
+                int endLoop = math.select(startLoop , 1 , waveStateComponent.ValueRO.Value == startLoop && timerComponent.ValueRO.Value > SystemAPI.GetSingleton<InputNoneComponent>().Value && (int)timerComponent.ValueRO.Value != (int)(timerComponent.ValueRO.Value + SystemAPI.Time.DeltaTime));
 
                 for(int i = startLoop ; i < endLoop ; i++) { AudioManagerOnWavePrepCountdownStarted?.Invoke(); }
             }
         }
-        
+
         #endregion
     }
 }

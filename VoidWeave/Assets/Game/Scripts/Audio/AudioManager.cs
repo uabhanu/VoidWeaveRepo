@@ -6,7 +6,7 @@ namespace Game.Scripts.Audio
     public class AudioManager : MonoBehaviour
     {
         #region Variables
-        
+
         [SerializeField] private AudioClip dashClip;
         [SerializeField] private AudioClip damageTakenByEnemyClip;
         [SerializeField] private AudioClip damageTakenByPlayerClip;
@@ -20,9 +20,9 @@ namespace Game.Scripts.Audio
         [SerializeField] private AudioSource sfxSource;
         [SerializeField] private AudioClip turretCooldownCompleteClip;
         [SerializeField] private AudioClip wavePrepClip;
-        
+
         #endregion
-        
+
         #region Unity Callbacks
 
         private void OnEnable()
@@ -42,7 +42,6 @@ namespace Game.Scripts.Audio
 
         private void OnDisable()
         {
-            
             GameEventsSystem.AudioManagerOnDamageTakenByEnemy -= OnDamageTakenByEnemy;
             GameEventsSystem.AudioManagerOnDamageTakenByPlayer -= OnDamageTakenByPlayer;
             GameEventsSystem.AudioManagerOnProjectileFiredByEnemy -= OnProjectileFiredByEnemy;
@@ -55,64 +54,73 @@ namespace Game.Scripts.Audio
             GameEventsSystem.OnEnemyDeath -= OnEnemyDeath;
             GameEventsSystem.OnPlayerDeath -= OnPlayerDeath;
         }
-        
+
         #endregion
-        
+
         #region User Defined Event Listeners
-        
+
         private void OnDamageTakenByEnemy()
         {
-            sfxSource.PlayOneShot(damageTakenByEnemyClip);
+            PlaySfx(damageTakenByEnemyClip);
         }
-        
+
         private void OnDamageTakenByPlayer()
         {
-            sfxSource.PlayOneShot(damageTakenByPlayerClip);
+            PlaySfx(damageTakenByPlayerClip);
         }
 
         private void OnDashPerformed()
         {
-            sfxSource.PlayOneShot(dashClip);
+            PlaySfx(dashClip);
         }
-        
+
         private void OnEnemyDeath()
         {
-            sfxSource.PlayOneShot(enemyDeathClip);
+            PlaySfx(enemyDeathClip);
         }
-        
+
         private void OnPlayerDeath()
         {
-            sfxSource.PlayOneShot(playerDeathClip);
+            PlaySfx(playerDeathClip);
         }
 
         private void OnProjectileFiredByEnemy()
         {
-            sfxSource.PlayOneShot(projectileFiredByEnemyClip);
+            PlaySfx(projectileFiredByEnemyClip);
         }
-        
+
         private void OnProjectileFiredByBeamTurret()
         {
-            sfxSource.PlayOneShot(projectileFiredByBeamTurretClip);
+            PlaySfx(projectileFiredByBeamTurretClip);
         }
-        
+
         private void OnProjectileFiredByScatterTurret()
         {
-            sfxSource.PlayOneShot(projectileFiredByScatterTurretClip);
+            PlaySfx(projectileFiredByScatterTurretClip);
         }
-        
+
         private void OnProjectileFiredByStrikerTurret()
         {
-            sfxSource.PlayOneShot(projectileFiredByStrikerTurretClip);
+            PlaySfx(projectileFiredByStrikerTurretClip);
         }
 
         private void OnTurretCooldownFinished()
         {
-            sfxSource.PlayOneShot(turretCooldownCompleteClip);
+            PlaySfx(turretCooldownCompleteClip);
         }
 
         private void OnWavePrepCountdownStarted()
         {
-            sfxSource.PlayOneShot(wavePrepClip);
+            PlaySfx(wavePrepClip);
+        }
+
+        #endregion
+        
+        #region User Defined Custom Functions
+
+        private void PlaySfx(AudioClip clip)
+        {
+            if(sfxSource && clip) { sfxSource.PlayOneShot(clip); }
         }
         
         #endregion
