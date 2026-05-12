@@ -133,8 +133,16 @@ Level 1 (Base) → Level 2 (+50%) → Level 3 (+100%)
 
 ## Enemy Types
 
+### ▬ Line - The Formation
+- **Health:** 100 HP
+- **Speed:** 2.5 units/sec (Medium)
+- **Damage:** Collision only
+- **Reward:** 15 resources
+- **Behaviour:** Moves in straight formations, spawns in groups of 5-10
+- **Counter:** Striker turrets + kiting
+
 ### 🔻 Triangle - The Swarm
-- **Health:** 50 HP
+- **Health:** 150 HP
 - **Speed:** 4 units/sec (Fast)
 - **Damage:** Collision only
 - **Reward:** 5 resources
@@ -148,14 +156,6 @@ Level 1 (Base) → Level 2 (+50%) → Level 3 (+100%)
 - **Fire Rate:** 0.5/sec
 - **Reward:** 25 resources
 - **Behaviour:** Slow movement, shoots projectiles, high health
-- **Counter:** Striker turrets + kiting
-
-### ▬ Line - The Formation
-- **Health:** 100 HP
-- **Speed:** 2.5 units/sec (Medium)
-- **Damage:** Collision only
-- **Reward:** 15 resources
-- **Behaviour:** Moves in straight formations, spawns in groups of 5-10
 - **Counter:** Beam turrets + perpendicular dodging
 
 ---
@@ -206,32 +206,32 @@ Level 1 (Base) → Level 2 (+50%) → Level 3 (+100%)
 ## Roadmap
 
 ### ✅ Phase 1: Foundation (Current)
-- [ ] Project setup and architecture
-- [ ] Input handler implementation
-- [ ] Core data structures
-- [ ] Movement system
-- [ ] Dash system
+- [x] Project setup and architecture
+- [x] Input handler implementation
+- [x] Core data structures
+- [x] Movement system
+- [x] Dash system
 
 ### 🔄 Phase 2: Core Gameplay (Next)
-- [ ] Turret deployment system
-- [ ] Enemy spawning system
-- [ ] Collision detection
-- [ ] Basic enemy AI
-- [ ] Resource collection
-- [ ] Wave management
+- [x] Turret deployment system
+- [x] Targeting System
+- [x] Enemy spawning system
+- [x] Collision detection
+- [x] Basic enemy AI
+- [x] Resource collection
+- [x] Wave management
 
 ### 📅 Phase 3: Combat Depth
-- [ ] All turret types functional
-- [ ] All enemy types with behaviours
-- [ ] Turret targeting systems
-- [ ] Bullet-hell patterns
-- [ ] Health and damage systems
+- [x] All turret types are functional
+- [x] All enemy types with behaviours
+- [x] Bullet-hell patterns
+- [x] Health and damage systems
 
 ### 📅 Phase 4: Progression & Polish
-- [ ] Upgrade system
-- [ ] UI/UX implementation
-- [ ] Visual effects
-- [ ] Audio
+- [x] Upgrade system
+- [x] UI/UX implementation
+- [x] Visual effects
+- [x] Audio
 - [ ] Tutorial
 
 ### 📅 Phase 5: Content & Balance
@@ -263,8 +263,7 @@ This is a learning/portfolio project. Contributions and feedback welcome!
 
 1. Clone the repository
 2. Open in Unity 6000.2+
-3. Review `/Assets/MyProjectStyle.md`
-4. Check Issues for tasks
+3. Check Issues for tasks
 
 ---
 

@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &9071633379703226984
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7824121857968869560}
+  - component: {fileID: 7923867144187035195}
+  m_Layer: 0
+  m_Name: EnemySpawnerEntity
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7824121857968869560
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9071633379703226984}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7923867144187035195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9071633379703226984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd6dc88fc89b2bf42bd4816a77933097, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Entities.EnemySpawnerEntity
+  activeWaveState: 1
+  baseEnemies: 10
+  enemyIncrement: 5
+  enemySpawnRadius: 7.2
+  enemySpawnRate: 2.1
+  enemyTypesCount: 3
+  initialBitmask: 1
+  lineEnemyIndex: 0
+  lineEnemyPrefab: {fileID: 2768343762146773365, guid: c5a66dd71980323478ef27cdd55a4a59, type: 3}
+  randomRangeStartValue: 0
+  randomSeed: 1
+  randomSeedMin: 1
+  squareEnemyIndex: 2
+  squareEnemyPrefab: {fileID: 5566403319572895637, guid: 3a11e4bdcdb3b4b40a107b434e2cb590, type: 3}
+  triangleEnemyIndex: 1
+  triangleEnemyPrefab: {fileID: 4429918964874133129, guid: fa278bf6dc9f86f4ca9633468be8bffb, type: 3}
+  wavePrepDuration: 30
