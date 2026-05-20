@@ -71,6 +71,7 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new RotationOffsetComponent { Value = authoring.rotationOffset });
                 AddComponent(entity , new RotationSpeedComponent { Value = authoring.rotationSpeed });
                 AddComponent(entity , new SpreadComponent { Value = authoring.spreadDegrees });
+                AddComponent(entity , new TargetEntityComponent());
                 AddComponent(entity , new TargetPositionComponent());
                 AddComponent(entity , new TeamComponent { Value = authoring.teamID });
                 AddComponent(entity , new TimerComponent { Value = authoring.spawnVfxDuration });

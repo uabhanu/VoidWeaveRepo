@@ -153,7 +153,7 @@ MonoBehaviour:
   levelWhileTesting: 3
   timerWhileTesting: 0
   waveStateWhileTesting: 1
-  waveStockWhileTesting: 1
+  waveStockWhileTesting: 5
 --- !u!4 &64175127
 Transform:
   m_ObjectHideFlags: 0
