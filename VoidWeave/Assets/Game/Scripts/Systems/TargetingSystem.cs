@@ -86,21 +86,20 @@ namespace Game.Scripts.Systems
             var closestTargetPosition = new float4(TargetDefaultPosition , float.MaxValue);
             var selectedEntity = Entity.Null;
 
-            for(var i = 0 ; i < TargetPositionsNativeList.Length ; i++)
-            {
-                float dSq = math.distancesq(localToWorld.Position , TargetPositionsNativeList[i].Position);
-                bool isSelectedTarget = TargetTeamComponentsNativeList[i].Value != teamComponent.Value && dSq < closestTargetPosition.w;
-                closestTargetPosition = math.select(closestTargetPosition , new float4(TargetPositionsNativeList[i].Position , math.distancesq(localToWorld.Position , TargetPositionsNativeList[i].Position)) , TargetTeamComponentsNativeList[i].Value != teamComponent.Value && math.distancesq(localToWorld.Position , TargetPositionsNativeList[i].Position) < closestTargetPosition.w);
-                selectedEntity = isSelectedTarget ? TargetEntitiesNativeList[i] : selectedEntity;
-            }
-
             bool isSelectedTargetStillExists = false;
             var currentTargetPosition = new float4(TargetDefaultPosition , float.MaxValue);
 
-            for(var i = 0 ; i < TargetEntitiesNativeList.Length ; i++)
+            for(var i = 0 ; i < TargetPositionsNativeList.Length ; i++)
             {
-                bool isCurrent = targetEntityComponent.Entity == TargetEntitiesNativeList[i];
                 float dSq = math.distancesq(localToWorld.Position , TargetPositionsNativeList[i].Position);
+
+                // Proximity Scan
+                bool isSelectedTarget = TargetTeamComponentsNativeList[i].Value != teamComponent.Value && dSq < closestTargetPosition.w;
+                closestTargetPosition = math.select(closestTargetPosition , new float4(TargetPositionsNativeList[i].Position , dSq) , isSelectedTarget);
+                selectedEntity = isSelectedTarget ? TargetEntitiesNativeList[i] : selectedEntity;
+
+                // Persistence Scan
+                bool isCurrent = targetEntityComponent.Entity == TargetEntitiesNativeList[i];
                 bool inRangeCurrent = dSq <= rangeComponent.Value * rangeComponent.Value;
                 isSelectedTargetStillExists = isCurrent && inRangeCurrent || isSelectedTargetStillExists;
                 currentTargetPosition = math.select(currentTargetPosition , new float4(TargetPositionsNativeList[i].Position , dSq) , isCurrent && inRangeCurrent);
@@ -137,21 +136,20 @@ namespace Game.Scripts.Systems
             var closestTargetPosition = new float4(TargetDefaultPosition , float.MaxValue);
             var selectedEntity = Entity.Null;
 
-            for(var i = 0 ; i < TargetPositionsNativeList.Length ; i++)
-            {
-                float dSq = math.distancesq(localToWorld.Position , TargetPositionsNativeList[i].Position);
-                bool isSelectedTarget = TargetTeamComponentsNativeList[i].Value != teamComponent.Value && dSq < closestTargetPosition.w;
-                closestTargetPosition = math.select(closestTargetPosition , new float4(TargetPositionsNativeList[i].Position , dSq) , isSelectedTarget);
-                selectedEntity = isSelectedTarget ? TargetEntitiesNativeList[i] : selectedEntity;
-            }
-
             bool isSelectedTargetStillExists = false;
             var currentTargetPosition = new float4(TargetDefaultPosition , float.MaxValue);
 
-            for(var i = 0 ; i < TargetEntitiesNativeList.Length ; i++)
+            for(var i = 0 ; i < TargetPositionsNativeList.Length ; i++)
             {
-                bool isCurrent = targetEntityComponent.Entity == TargetEntitiesNativeList[i];
                 float dSq = math.distancesq(localToWorld.Position , TargetPositionsNativeList[i].Position);
+
+                // Proximity Scan
+                bool isSelectedTarget = TargetTeamComponentsNativeList[i].Value != teamComponent.Value && dSq < closestTargetPosition.w;
+                closestTargetPosition = math.select(closestTargetPosition , new float4(TargetPositionsNativeList[i].Position , dSq) , isSelectedTarget);
+                selectedEntity = isSelectedTarget ? TargetEntitiesNativeList[i] : selectedEntity;
+
+                // Persistence Scan
+                bool isCurrent = targetEntityComponent.Entity == TargetEntitiesNativeList[i];
                 bool inRangeCurrent = dSq <= rangeComponent.Value * rangeComponent.Value;
                 isSelectedTargetStillExists = isCurrent && inRangeCurrent || isSelectedTargetStillExists;
                 currentTargetPosition = math.select(currentTargetPosition , new float4(TargetPositionsNativeList[i].Position , dSq) , isCurrent && inRangeCurrent);
