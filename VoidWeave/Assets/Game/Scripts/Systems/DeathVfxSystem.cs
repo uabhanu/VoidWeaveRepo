@@ -5,7 +5,7 @@ namespace Game.Scripts.Systems
     using Unity.Entities;
     using Unity.Transforms;
 
-    [UpdateInGroup(typeof(SimulationSystemGroup))]
+    [UpdateInGroup(typeof(GameplaySystemGroup))]
     [UpdateBefore(typeof(DeathSystem))]
     public partial struct DeathVfxSystem : ISystem
     {

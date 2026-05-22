@@ -11,6 +11,9 @@ namespace Game.Scripts.Systems
         #region Variables
 
         public static Action OnPauseButtonClicked;
+        public static Action OnQuitButtonClicked;
+        public static Action OnRestartButtonClicked;
+        public static Action OnResumeButtonClicked;
 
         public static event Action AudioManagerOnDamageTakenByEnemy;
         public static event Action AudioManagerOnDamageTakenByPlayer;

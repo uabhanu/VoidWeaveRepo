@@ -8,7 +8,7 @@ namespace Game.Scripts.Systems
     using Unity.Mathematics;
     using Unity.Transforms;
 
-    [UpdateInGroup(typeof(SimulationSystemGroup))]
+    [UpdateInGroup(typeof(GameplaySystemGroup))]
     [UpdateBefore(typeof(ShootingSystem))]
     public partial struct TargetingSystem : ISystem
     {

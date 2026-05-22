@@ -5,7 +5,7 @@ namespace Game.Scripts.Systems
     using Unity.Entities;
     using Unity.Mathematics;
 
-    [UpdateInGroup(typeof(SimulationSystemGroup))]
+    [UpdateInGroup(typeof(GameplaySystemGroup))]
     [UpdateBefore(typeof(MovementSystem))]
     public partial struct DashSystem : ISystem
     {

@@ -4,7 +4,7 @@ namespace Game.Scripts.Systems
     using Unity.Burst;
     using Unity.Entities;
 
-    [UpdateInGroup(typeof(SimulationSystemGroup))]
+    [UpdateInGroup(typeof(GameplaySystemGroup))]
     [UpdateAfter(typeof(CollisionSystem))]
     public partial struct DeathSystem : ISystem
     {

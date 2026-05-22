@@ -5,7 +5,7 @@ namespace Game.Scripts.Systems
     using Unity.Entities;
     using Unity.Mathematics;
 
-    [UpdateInGroup(typeof(SimulationSystemGroup))]
+    [UpdateInGroup(typeof(GameplaySystemGroup))]
     [UpdateAfter(typeof(WaveStateSystem))]
     [UpdateBefore(typeof(EnemySpawningSystem))]
     public partial struct LevelProgressionSystem : ISystem

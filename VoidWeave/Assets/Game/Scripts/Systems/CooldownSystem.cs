@@ -4,7 +4,7 @@ namespace Game.Scripts.Systems
     using Unity.Burst;
     using Unity.Entities;
 
-    [UpdateInGroup(typeof(SimulationSystemGroup))]
+    [UpdateInGroup(typeof(GameplaySystemGroup))]
     public partial struct CooldownSystem : ISystem
     {
         [BurstCompile]

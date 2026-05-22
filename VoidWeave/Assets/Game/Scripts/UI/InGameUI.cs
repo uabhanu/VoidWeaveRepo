@@ -100,11 +100,10 @@ namespace Game.Scripts.UI
             _rootVisualElement = uiDocument.rootVisualElement;
 
             _pauseButton = _rootVisualElement.Q<Button>("PauseButton");
+            _pauseButton.clicked += () => { GameEventsSystem.OnPauseButtonClicked?.Invoke(); };
             
             _inGameUIButtonsList.Add(_pauseButton);
             _inGameUIButtonsList.AddRange(_rootVisualElement.Q("PauseMenuVisualElement").Query<Button>().ToList());
-
-            _pauseButton.clicked += () => { GameEventsSystem.OnPauseButtonClicked?.Invoke(); };
 
             _energyValueLabel = _rootVisualElement.Q<Label>("EnergyValueLabel");
             _healthValueLabel = _rootVisualElement.Q<Label>("HealthValueLabel");
@@ -112,12 +111,16 @@ namespace Game.Scripts.UI
             _levelValueLabel = _rootVisualElement.Q<Label>("LevelValueLabel");
 
             _pauseMenuVisualElement = _rootVisualElement.Q<VisualElement>("PauseMenuVisualElement");
+            
             _quitButton = _pauseMenuVisualElement.Q<Button>("QuitButton");
-            _quitButton.clicked += OnQuitButtonClicked;
+            _quitButton.clicked += () => { GameEventsSystem.OnQuitButtonClicked?.Invoke(); };
+           
             _restartButton = _pauseMenuVisualElement.Q<Button>("RestartButton");
-            _restartButton.clicked += OnRestartButtonClicked;
+            _restartButton.clicked += () => { GameEventsSystem.OnRestartButtonClicked?.Invoke(); };
+           
             _resumeButton = _pauseMenuVisualElement.Q<Button>("ResumeButton");
-            _resumeButton.clicked += OnResumeButtonClicked;
+            _resumeButton.clicked += () => { GameEventsSystem.OnResumeButtonClicked?.Invoke(); };
+            
             _pauseMenuVisualElement.style.display = DisplayStyle.None;
         }
 
@@ -127,6 +130,9 @@ namespace Game.Scripts.UI
             GameEventsSystem.OnHealthValueChanged += OnHealthValueChanged;
             GameEventsSystem.OnLevelValueChanged += OnLevelValueChanged;
             GameEventsSystem.OnPauseButtonClicked += OnPauseButtonClicked;
+            GameEventsSystem.OnQuitButtonClicked += OnQuitButtonClicked;
+            GameEventsSystem.OnRestartButtonClicked += OnRestartButtonClicked;
+            GameEventsSystem.OnResumeButtonClicked += OnResumeButtonClicked;
             GameEventsSystem.OnTurretCooldownStarted += OnTurretCooldownStarted;
             GameEventsSystem.OnWavePrepCountdownStarted += OnWavePrepCountdownStarted;
         }
@@ -137,6 +143,9 @@ namespace Game.Scripts.UI
             GameEventsSystem.OnHealthValueChanged -= OnHealthValueChanged;
             GameEventsSystem.OnLevelValueChanged -= OnLevelValueChanged;
             GameEventsSystem.OnPauseButtonClicked -= OnPauseButtonClicked;
+            GameEventsSystem.OnQuitButtonClicked -= OnQuitButtonClicked;
+            GameEventsSystem.OnRestartButtonClicked -= OnRestartButtonClicked;
+            GameEventsSystem.OnResumeButtonClicked -= OnResumeButtonClicked;
             GameEventsSystem.OnTurretCooldownStarted -= OnTurretCooldownStarted;
             GameEventsSystem.OnWavePrepCountdownStarted -= OnWavePrepCountdownStarted;
         }
@@ -182,18 +191,18 @@ namespace Game.Scripts.UI
             Time.timeScale = 1f;
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
+        
+        private void OnRestartButtonClicked()
+        {
+            Time.timeScale = 1f;
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
 
         private void OnResumeButtonClicked()
         {
             _entityManager.CreateEntity(typeof(ResumeInputTag));
             _pauseButton.SetEnabled(true);
             _pauseMenuVisualElement.style.display = DisplayStyle.None;
-        }
-
-        private void OnRestartButtonClicked()
-        {
-            Time.timeScale = 1f;
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
         #endregion
