@@ -7,7 +7,7 @@ namespace Game.Scripts.Systems
     using Unity.Transforms;
     using UnityEngine;
 
-    [UpdateInGroup(typeof(SimulationSystemGroup))]
+    [UpdateInGroup(typeof(GameplaySystemGroup))]
     [UpdateBefore(typeof(MovementSystem))]
     public partial struct ScreenBoundarySystem : ISystem
     {

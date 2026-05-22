@@ -37,7 +37,9 @@ namespace Game.Scripts.Audio
             GameEventsSystem.AudioManagerOnWavePrepCountdownStarted += OnWavePrepCountdownStarted;
             GameEventsSystem.OnDashPerformed += OnDashPerformed;
             GameEventsSystem.OnEnemyDeath += OnEnemyDeath;
+            GameEventsSystem.OnPauseButtonClicked += OnGamePaused;
             GameEventsSystem.OnPlayerDeath += OnPlayerDeath;
+            GameEventsSystem.OnResumeButtonClicked += OnGameResumed;
         }
 
         private void OnDisable()
@@ -52,7 +54,9 @@ namespace Game.Scripts.Audio
             GameEventsSystem.AudioManagerOnWavePrepCountdownStarted -= OnWavePrepCountdownStarted;
             GameEventsSystem.OnDashPerformed -= OnDashPerformed;
             GameEventsSystem.OnEnemyDeath -= OnEnemyDeath;
+            GameEventsSystem.OnPauseButtonClicked -= OnGamePaused;
             GameEventsSystem.OnPlayerDeath -= OnPlayerDeath;
+            GameEventsSystem.OnResumeButtonClicked -= OnGameResumed;
         }
 
         #endregion
@@ -77,6 +81,18 @@ namespace Game.Scripts.Audio
         private void OnEnemyDeath()
         {
             PlaySfx(enemyDeathClip);
+        }
+
+        private void OnGamePaused()
+        {
+            if(musicSource) musicSource.Pause();
+            if(sfxSource) sfxSource.Pause();
+        }
+
+        private void OnGameResumed()
+        {
+            if(musicSource) musicSource.UnPause();
+            if(sfxSource) sfxSource.UnPause();
         }
 
         private void OnPlayerDeath()

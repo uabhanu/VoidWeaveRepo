@@ -6,7 +6,7 @@ namespace Game.Scripts.Systems
     using Unity.Mathematics;
     using UnityEngine.InputSystem;
 
-    [UpdateInGroup(typeof(InitializationSystemGroup))]
+    [UpdateInGroup(typeof(GameplaySystemGroup))]
     public partial struct InputSystem : ISystem
     {
         [BurstCompile]

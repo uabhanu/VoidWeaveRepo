@@ -4,7 +4,7 @@ namespace Game.Scripts.Systems
     using Unity.Entities;
     using Unity.Transforms;
 
-    [UpdateInGroup(typeof(PresentationSystemGroup))]
+    [UpdateInGroup(typeof(GameplaySystemGroup))]
     public partial struct DashVfxSystem : ISystem
     {
         public void OnCreate(ref SystemState systemState) { systemState.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>(); }

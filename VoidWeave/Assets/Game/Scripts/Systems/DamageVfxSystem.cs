@@ -5,7 +5,7 @@ namespace Game.Scripts.Systems
     using Unity.Transforms;
     using System.Collections.Generic;
 
-    [UpdateInGroup(typeof(PresentationSystemGroup))]
+    [UpdateInGroup(typeof(GameplaySystemGroup))]
     public partial struct DamageVfxSystem : ISystem
     {
         public void OnCreate(ref SystemState systemState) { systemState.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>(); }
