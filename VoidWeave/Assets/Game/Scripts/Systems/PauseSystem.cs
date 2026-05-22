@@ -21,7 +21,6 @@ namespace Game.Scripts.Systems
                 ecb.AddComponent<GamePausedTag>(entity);
                 ecb.DestroyEntity(entity);
                 systemState.World.GetExistingSystemManaged<GameplaySystemGroup>().Enabled = false;
-                Time.timeScale = 0;
             }
 
             foreach((RefRO<ResumeInputTag> _ , Entity entity) in SystemAPI.Query<RefRO<ResumeInputTag>>().WithEntityAccess())
@@ -29,7 +28,6 @@ namespace Game.Scripts.Systems
                 ecb.RemoveComponent<GamePausedTag>(entity);
                 ecb.DestroyEntity(entity);
                 systemState.World.GetExistingSystemManaged<GameplaySystemGroup>().Enabled = true;
-                Time.timeScale = 1;
             }
         }
     }
