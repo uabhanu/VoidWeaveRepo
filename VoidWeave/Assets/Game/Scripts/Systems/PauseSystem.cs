@@ -18,14 +18,12 @@ namespace Game.Scripts.Systems
 
             foreach((RefRO<PauseInputTag> _ , Entity entity) in SystemAPI.Query<RefRO<PauseInputTag>>().WithEntityAccess())
             {
-                ecb.AddComponent<GamePausedTag>(entity);
                 ecb.DestroyEntity(entity);
                 systemState.World.GetExistingSystemManaged<GameplaySystemGroup>().Enabled = false;
             }
 
             foreach((RefRO<ResumeInputTag> _ , Entity entity) in SystemAPI.Query<RefRO<ResumeInputTag>>().WithEntityAccess())
             {
-                ecb.RemoveComponent<GamePausedTag>(entity);
                 ecb.DestroyEntity(entity);
                 systemState.World.GetExistingSystemManaged<GameplaySystemGroup>().Enabled = true;
             }
