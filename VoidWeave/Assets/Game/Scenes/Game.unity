@@ -155,6 +155,7 @@ MonoBehaviour:
   damageTakenByPlayerClip: {fileID: 8300000, guid: 8377ab171b935f34cb15c4399f4b19a3, type: 3}
   enemyDeathClip: {fileID: 8300000, guid: 3f5669b350e31fd4a8f077400a2607bb, type: 3}
   musicSource: {fileID: 35685486}
+  mutedVolume: 0
   playerDeathClip: {fileID: 8300000, guid: c0b5370c168bd814ea18096fc67c4941, type: 3}
   projectileFiredByEnemyClip: {fileID: 8300000, guid: 9e9d79881f7613244bc83cef51ff355b, type: 3}
   projectileFiredByBeamTurretClip: {fileID: 8300000, guid: 5072479e61cc6fe4d869d167d501b9d6, type: 3}
@@ -162,6 +163,7 @@ MonoBehaviour:
   projectileFiredByStrikerTurretClip: {fileID: 8300000, guid: fb15cffae102ad6469d5d251c2f95bac, type: 3}
   sfxSource: {fileID: 35685487}
   turretCooldownCompleteClip: {fileID: 8300000, guid: a43b17f4d73cb404cb60c076530d24fb, type: 3}
+  unmutedVolume: 1
   wavePrepClip: {fileID: 8300000, guid: 26a9d42d75fb9ff4ba7205558c94a1db, type: 3}
 --- !u!4 &35685485
 Transform:
