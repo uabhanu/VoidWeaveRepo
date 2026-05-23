@@ -280,6 +280,10 @@ MonoBehaviour:
   unlockedTriangleEnemy: 2
   upgradeCostBaseMultiplier: 1
   upgradeCostMultiplier: 1.5
+  wave1Multiplier: 0.2
+  wave2Multiplier: 0.375
+  wave3Multiplier: 1
+  wavesPerLevel: 3
   waveStateCombat: 1
   waveStatePrep: 0
   zeroScale: 0

@@ -26,6 +26,7 @@ namespace Game.Scripts.UI
         private EntityQuery _energyQuery;
         private EntityQuery _healthQuery;
         private EntityQuery _levelQuery;
+        private EntityQuery _waveIndexQuery;
 
         private EntityManager _entityManager;
 
@@ -96,6 +97,7 @@ namespace Game.Scripts.UI
             _energyQuery = _entityManager.CreateEntityQuery(typeof(CurrentEnergyComponent));
             _healthQuery = _entityManager.CreateEntityQuery(typeof(CurrentHealthComponent) , typeof(PlayerTag));
             _levelQuery = _entityManager.CreateEntityQuery(typeof(LevelComponent));
+            _waveIndexQuery = _entityManager.CreateEntityQuery(typeof(WaveIndexComponent));
 
             _rootVisualElement = uiDocument.rootVisualElement;
 
@@ -338,7 +340,17 @@ namespace Game.Scripts.UI
                 _wavePrepLabel.SendToBack();
             }
 
-            _wavePrepLabel.text = $"Next Wave In\n{timer:F0}";
+            _entityManager.CompleteDependencyBeforeRO<WaveIndexComponent>();
+            int waveIndex = _waveIndexQuery.IsEmptyIgnoreFilter ? 0 : _waveIndexQuery.GetSingleton<WaveIndexComponent>().Value;
+
+            string wavePrefix = waveIndex switch
+            {
+                0 => "First Wave" ,
+                1 => "Second Wave" ,
+                _ => "Final Wave"
+            };
+
+            _wavePrepLabel.text = $"{wavePrefix} In\n{timer:F0}";
         }
 
         #endregion
@@ -357,6 +369,7 @@ namespace Game.Scripts.UI
             _energyQuery = _entityManager.CreateEntityQuery(typeof(CurrentEnergyComponent));
             _healthQuery = _entityManager.CreateEntityQuery(typeof(CurrentHealthComponent) , typeof(PlayerTag));
             _levelQuery = _entityManager.CreateEntityQuery(typeof(LevelComponent));
+            _waveIndexQuery = _entityManager.CreateEntityQuery(typeof(WaveIndexComponent));
         }
 
         #endregion
