@@ -21,10 +21,14 @@ namespace Game.Scripts.Systems
             systemState.RequireForUpdate<NoActionComponent>();
             systemState.RequireForUpdate<TimerComponent>();
             systemState.RequireForUpdate<TimerExpiredComponent>();
+            systemState.RequireForUpdate<Wave1MultiplierComponent>();
+            systemState.RequireForUpdate<Wave2MultiplierComponent>();
+            systemState.RequireForUpdate<Wave3MultiplierComponent>();
             systemState.RequireForUpdate<WaveBaseEnemyCountComponent>();
             systemState.RequireForUpdate<WaveEnemyIncrementComponent>();
             systemState.RequireForUpdate<WaveIndexComponent>();
             systemState.RequireForUpdate<WavePrepDurationComponent>();
+            systemState.RequireForUpdate<WavesPerLevelComponent>();
             systemState.RequireForUpdate<WaveStateCombatComponent>();
             systemState.RequireForUpdate<WaveStateComponent>();
             systemState.RequireForUpdate<WaveStatePrepComponent>();
@@ -39,10 +43,28 @@ namespace Game.Scripts.Systems
             int enemiesToKill = SystemAPI.GetSingleton<EnemiesToKillComponent>().Value;
             int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
             float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value;
+            float wave1Multiplier = SystemAPI.GetSingleton<Wave1MultiplierComponent>().Value;
+            float wave2Multiplier = SystemAPI.GetSingleton<Wave2MultiplierComponent>().Value;
+            float wave3Multiplier = SystemAPI.GetSingleton<Wave3MultiplierComponent>().Value;
+            int wavesPerLevel = SystemAPI.GetSingleton<WavesPerLevelComponent>().Value;
             int waveStateCombat = SystemAPI.GetSingleton<WaveStateCombatComponent>().Value;
             int waveStatePrep = SystemAPI.GetSingleton<WaveStatePrepComponent>().Value;
 
-            systemState.Dependency = new WaveStateJob { AliveEnemyCount = _enemyQuery.CalculateEntityCount() , DoAction = doAction , EnemiesKilled = enemiesKilled , EnemiesToKill = enemiesToKill , NoAction = noAction , TimerExpired = timerExpired , WaveStateCombat = waveStateCombat , WaveStatePrep = waveStatePrep }.ScheduleParallel(systemState.Dependency);
+            systemState.Dependency = new WaveStateJob
+            {
+                AliveEnemyCount = _enemyQuery.CalculateEntityCount() ,
+                DoAction = doAction ,
+                EnemiesKilled = enemiesKilled ,
+                EnemiesToKill = enemiesToKill ,
+                NoAction = noAction ,
+                TimerExpired = timerExpired ,
+                Wave1Multiplier = wave1Multiplier ,
+                Wave2Multiplier = wave2Multiplier ,
+                Wave3Multiplier = wave3Multiplier ,
+                WavesPerLevel = wavesPerLevel ,
+                WaveStateCombat = waveStateCombat ,
+                WaveStatePrep = waveStatePrep
+            }.ScheduleParallel(systemState.Dependency);
         }
     }
 
@@ -55,10 +77,14 @@ namespace Game.Scripts.Systems
         public int EnemiesToKill;
         public int NoAction;
         public float TimerExpired;
+        public float Wave1Multiplier;
+        public float Wave2Multiplier;
+        public float Wave3Multiplier;
+        public int WavesPerLevel;
         public int WaveStateCombat;
         public int WaveStatePrep;
 
-        private void Execute(ref TimerComponent timerComponent , in WaveBaseEnemyCountComponent waveBaseEnemyCountComponent , in WaveEnemyIncrementComponent waveEnemyIncrementComponent , ref WaveIndexComponent waveIndexComponent , in WavePrepDurationComponent wavePrepDurationComponent , ref WaveStateComponent waveStateComponent , ref WaveStockComponent waveStockComponent)
+        private void Execute(ref TimerComponent timerComponent , ref WaveIndexComponent waveIndexComponent , in WavePrepDurationComponent wavePrepDurationComponent , ref WaveStateComponent waveStateComponent , ref WaveStockComponent waveStockComponent)
         {
             bool isPrepComplete = waveStateComponent.Value == WaveStatePrep && timerComponent.Value <= TimerExpired;
             bool isWaveClear = waveStateComponent.Value == WaveStateCombat && waveStockComponent.Value <= NoAction && AliveEnemyCount <= NoAction;
@@ -68,9 +94,22 @@ namespace Game.Scripts.Systems
             waveStateComponent.Value = math.select(waveStateComponent.Value , WaveStatePrep , isWaveClear);
 
             int enemiesNeededForLevel = EnemiesToKill - EnemiesKilled - AliveEnemyCount;
-            int calculatedStock = waveBaseEnemyCountComponent.Value + waveIndexComponent.Value * waveEnemyIncrementComponent.Value;
-            int cappedStock = math.max(NoAction , math.min(calculatedStock , enemiesNeededForLevel));
-            
+
+            // Prevent modulo by zero if inspector value is 0
+            int safeWavesPerLevel = math.max(DoAction , WavesPerLevel);
+            int currentWaveInLevel = (waveIndexComponent.Value - DoAction) % safeWavesPerLevel;
+            currentWaveInLevel = math.select(currentWaveInLevel , NoAction , currentWaveInLevel < NoAction);
+
+            float multiplier = math.select(math.select(Wave3Multiplier , Wave2Multiplier , currentWaveInLevel == DoAction) , Wave1Multiplier , currentWaveInLevel == NoAction);
+
+            int calculatedStock = (int)(enemiesNeededForLevel * multiplier);
+
+            // Require at least 1 enemy if the quota is not yet met to prevent softlocks
+            int minRequiredStock = math.select(NoAction , DoAction , enemiesNeededForLevel > NoAction);
+
+            // Clamp the final stock between the minimum required and the absolute maximum needed
+            int cappedStock = math.clamp(calculatedStock , minRequiredStock , enemiesNeededForLevel);
+
             waveStockComponent.Value = math.select(waveStockComponent.Value , cappedStock , isPrepComplete);
             timerComponent.Value = math.select(timerComponent.Value , wavePrepDurationComponent.Value , isWaveClear);
         }

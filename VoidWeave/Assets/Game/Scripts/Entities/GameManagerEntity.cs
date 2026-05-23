@@ -59,6 +59,10 @@ namespace Game.Scripts.Entities
         [SerializeField] private uint unlockedTriangleEnemy; //The What
         [SerializeField] private float upgradeCostBaseMultiplier;
         [SerializeField] private float upgradeCostMultiplier;
+        [SerializeField] private float wave1Multiplier;
+        [SerializeField] private float wave2Multiplier;
+        [SerializeField] private float wave3Multiplier;
+        [SerializeField] private int wavesPerLevel;
         [SerializeField] private int waveStateCombat;
         [SerializeField] private int waveStatePrep;
         [SerializeField] private int zeroScale;
@@ -131,6 +135,10 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new UnlockedTriangleEnemyComponent { Value = authoring.unlockedTriangleEnemy });
                 AddComponent(entity , new UpgradeCostBaseMultiplierComponent { Value = authoring.upgradeCostBaseMultiplier });
                 AddComponent(entity , new UpgradeCostMultiplierComponent { Value = authoring.upgradeCostMultiplier });
+                AddComponent(entity , new Wave1MultiplierComponent { Value = authoring.wave1Multiplier });
+                AddComponent(entity , new Wave2MultiplierComponent { Value = authoring.wave2Multiplier });
+                AddComponent(entity , new Wave3MultiplierComponent { Value = authoring.wave3Multiplier });
+                AddComponent(entity , new WavesPerLevelComponent { Value = authoring.wavesPerLevel });
                 AddComponent(entity , new WaveStateCombatComponent { Value = authoring.waveStateCombat });
                 AddComponent(entity , new WaveStatePrepComponent { Value = authoring.waveStatePrep });
                 AddComponent(entity , new ZeroScaleComponent { Value = authoring.zeroScale });
