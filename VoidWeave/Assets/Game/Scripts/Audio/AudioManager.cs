@@ -45,9 +45,12 @@ namespace Game.Scripts.Audio
 
             if(!_muteQuery.IsEmptyIgnoreFilter)
             {
-                Entity muteEntity = _muteQuery.GetSingletonEntity();
-                int isMuted = _entityManager.GetComponentData<MuteWhileTestingComponent>(muteEntity).Value;
-
+                // Explicitly get all entities matching the query to avoid any ambiguity
+                using var entities = _muteQuery.ToEntityArray(Unity.Collections.Allocator.Temp);
+        
+                // Always take the first one; this is inherently safe even if there are duplicates
+                int isMuted = _entityManager.GetComponentData<MuteWhileTestingComponent>(entities[0]).Value;
+        
                 targetVolume = Mathf.Lerp(unmutedVolume , mutedVolume , isMuted);
             }
 
