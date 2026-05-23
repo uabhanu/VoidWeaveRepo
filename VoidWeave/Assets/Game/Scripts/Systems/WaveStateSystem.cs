@@ -95,13 +95,20 @@ namespace Game.Scripts.Systems
 
             int enemiesNeededForLevel = EnemiesToKill - EnemiesKilled - AliveEnemyCount;
 
-            int currentWaveInLevel = (waveIndexComponent.Value - DoAction) % WavesPerLevel;
+            // Prevent modulo by zero if inspector value is 0
+            int safeWavesPerLevel = math.max(DoAction , WavesPerLevel);
+            int currentWaveInLevel = (waveIndexComponent.Value - DoAction) % safeWavesPerLevel;
             currentWaveInLevel = math.select(currentWaveInLevel , NoAction , currentWaveInLevel < NoAction);
 
             float multiplier = math.select(math.select(Wave3Multiplier , Wave2Multiplier , currentWaveInLevel == DoAction) , Wave1Multiplier , currentWaveInLevel == NoAction);
 
             int calculatedStock = (int)(enemiesNeededForLevel * multiplier);
-            int cappedStock = math.max(NoAction , calculatedStock);
+
+            // Require at least 1 enemy if the quota is not yet met to prevent softlocks
+            int minRequiredStock = math.select(NoAction , DoAction , enemiesNeededForLevel > NoAction);
+
+            // Clamp the final stock between the minimum required and the absolute maximum needed
+            int cappedStock = math.clamp(calculatedStock , minRequiredStock , enemiesNeededForLevel);
 
             waveStockComponent.Value = math.select(waveStockComponent.Value , cappedStock , isPrepComplete);
             timerComponent.Value = math.select(timerComponent.Value , wavePrepDurationComponent.Value , isWaveClear);
