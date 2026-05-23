@@ -24,7 +24,7 @@ namespace Game.Scripts.Audio
         [SerializeField] private AudioClip projectileFiredByScatterTurretClip;
         [SerializeField] private AudioClip projectileFiredByStrikerTurretClip;
         [SerializeField] private AudioSource sfxSource;
-        [SerializeField] private AudioClip turretCooldownCompleteClip;  
+        [SerializeField] private AudioClip turretCooldownCompleteClip;
         [SerializeField] private int unmutedVolume;
         [SerializeField] private AudioClip wavePrepClip;
 
@@ -35,9 +35,22 @@ namespace Game.Scripts.Audio
         private void Start()
         {
             var world = World.DefaultGameObjectInjectionWorld;
+            
             if(world == null) return;
+            
             _entityManager = world.EntityManager;
             _muteQuery = _entityManager.CreateEntityQuery(typeof(MuteWhileTestingComponent));
+            _entityManager.CompleteDependencyBeforeRO<MuteWhileTestingComponent>();
+    
+            float targetVolume = unmutedVolume;
+            
+            if(!_muteQuery.IsEmptyIgnoreFilter)
+            {
+                int isMuted = _muteQuery.GetSingleton<MuteWhileTestingComponent>().Value;
+                targetVolume = Mathf.Lerp(unmutedVolume , mutedVolume , isMuted);
+            }
+
+            AudioListener.volume = targetVolume;
         }
 
         private void OnEnable()
@@ -72,16 +85,6 @@ namespace Game.Scripts.Audio
             GameEventsSystem.OnPauseButtonClicked -= OnGamePaused;
             GameEventsSystem.OnPlayerDeath -= OnPlayerDeath;
             GameEventsSystem.OnResumeButtonClicked -= OnGameResumed;
-        }
-
-        private void Update()
-        {
-            var world = World.DefaultGameObjectInjectionWorld;
-            if(world == null || !world.IsCreated) return;
-            if(_entityManager.World != world) { RefreshEcsReferences(); }
-            _entityManager.CompleteDependencyBeforeRO<MuteWhileTestingComponent>();
-            int isMuted = _muteQuery.IsEmptyIgnoreFilter ? mutedVolume : _muteQuery.GetSingleton<MuteWhileTestingComponent>().Value;
-            AudioListener.volume = unmutedVolume - isMuted;
         }
 
         #endregion
