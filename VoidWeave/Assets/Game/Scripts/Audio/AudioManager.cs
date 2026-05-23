@@ -35,18 +35,19 @@ namespace Game.Scripts.Audio
         private void Start()
         {
             var world = World.DefaultGameObjectInjectionWorld;
-            
-            if(world == null) return;
+            if(world == null || !world.IsCreated) return;
             
             _entityManager = world.EntityManager;
             _muteQuery = _entityManager.CreateEntityQuery(typeof(MuteWhileTestingComponent));
             _entityManager.CompleteDependencyBeforeRO<MuteWhileTestingComponent>();
-    
+
             float targetVolume = unmutedVolume;
-            
+
             if(!_muteQuery.IsEmptyIgnoreFilter)
             {
-                int isMuted = _muteQuery.GetSingleton<MuteWhileTestingComponent>().Value;
+                Entity muteEntity = _muteQuery.GetSingletonEntity();
+                int isMuted = _entityManager.GetComponentData<MuteWhileTestingComponent>(muteEntity).Value;
+
                 targetVolume = Mathf.Lerp(unmutedVolume , mutedVolume , isMuted);
             }
 
