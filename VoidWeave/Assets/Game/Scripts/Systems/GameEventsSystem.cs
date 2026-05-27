@@ -35,6 +35,14 @@ namespace Game.Scripts.Systems
         #endregion
 
         #region Unity Callbacks
+        
+        protected override void OnCreate()
+        {
+            RequireForUpdate<DoActionComponent>();
+            RequireForUpdate<InputNoneComponent>();
+            RequireForUpdate<NoActionComponent>();
+            RequireForUpdate<WaveStateComponent>();
+        }
 
         protected override void OnUpdate()
         {

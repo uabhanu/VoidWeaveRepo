@@ -87,7 +87,10 @@ namespace Game.Scripts.Systems
         private void Execute(ref TimerComponent timerComponent , ref WaveIndexComponent waveIndexComponent , in WavePrepDurationComponent wavePrepDurationComponent , ref WaveStateComponent waveStateComponent , ref WaveStockComponent waveStockComponent)
         {
             bool isPrepComplete = waveStateComponent.Value == WaveStatePrep && timerComponent.Value <= TimerExpired;
-            bool isWaveClear = waveStateComponent.Value == WaveStateCombat && waveStockComponent.Value <= NoAction && AliveEnemyCount <= NoAction;
+
+            // NEW LOGIC: We only transition to the next wave if we still need more kills for the level.
+            bool isLevelOngoing = EnemiesKilled < EnemiesToKill;
+            bool isWaveClear = waveStateComponent.Value == WaveStateCombat && waveStockComponent.Value <= NoAction && AliveEnemyCount <= NoAction && isLevelOngoing;
 
             waveIndexComponent.Value += math.select(NoAction , DoAction , isPrepComplete);
             waveStateComponent.Value = math.select(waveStateComponent.Value , WaveStateCombat , isPrepComplete);

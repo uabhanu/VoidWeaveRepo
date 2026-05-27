@@ -15,15 +15,19 @@ namespace Game.Scripts.UI
 
         private readonly List<Button> _inGameUIButtonsList = new();
         private readonly Dictionary<Entity , Label> _turretCooldownLabelsDictionary = new();
-        
-        private EntityQuery _boundaryYQuery;
 
+        private Button _continueButton;
+        private Button _loseQuitButton;
         private Button _pauseButton;
         private Button _quitButton;
         private Button _restartButton;
         private Button _resumeButton;
+        private Button _retryButton;
 
+        private EntityQuery _boundaryYQuery;
         private EntityQuery _energyQuery;
+        private EntityQuery _gameLostQuery;
+        private EntityQuery _gameWonQuery;
         private EntityQuery _healthQuery;
         private EntityQuery _levelQuery;
         private EntityQuery _waveIndexQuery;
@@ -35,8 +39,10 @@ namespace Game.Scripts.UI
         private Label _levelValueLabel;
         private Label _wavePrepLabel;
 
-        private VisualElement _rootVisualElement;
+        private VisualElement _loseScreenVisualElement;
         private VisualElement _pauseMenuVisualElement;
+        private VisualElement _rootVisualElement;
+        private VisualElement _winScreenVisualElement;
 
         [SerializeField] private Color turretCooldownTimerLabelBorderColour;
         [SerializeField] private Color turretCooldownTimerLabelBgColour;
@@ -95,15 +101,19 @@ namespace Game.Scripts.UI
             _boundaryYQuery = _entityManager.CreateEntityQuery(typeof(ScreenBoundaryYComponent));
 
             _energyQuery = _entityManager.CreateEntityQuery(typeof(CurrentEnergyComponent));
+            _gameLostQuery = _entityManager.CreateEntityQuery(typeof(GameLostTag));
+            _gameWonQuery = _entityManager.CreateEntityQuery(typeof(GameWonTag));
             _healthQuery = _entityManager.CreateEntityQuery(typeof(CurrentHealthComponent) , typeof(PlayerTag));
             _levelQuery = _entityManager.CreateEntityQuery(typeof(LevelComponent));
             _waveIndexQuery = _entityManager.CreateEntityQuery(typeof(WaveIndexComponent));
+
+            _entityManager.CreateEntity(typeof(ResumeInputTag));
 
             _rootVisualElement = uiDocument.rootVisualElement;
 
             _pauseButton = _rootVisualElement.Q<Button>("PauseButton");
             _pauseButton.clicked += () => { GameEventsSystem.OnPauseButtonClicked?.Invoke(); };
-            
+
             _inGameUIButtonsList.Add(_pauseButton);
             _inGameUIButtonsList.AddRange(_rootVisualElement.Q("PauseMenuVisualElement").Query<Button>().ToList());
 
@@ -113,17 +123,45 @@ namespace Game.Scripts.UI
             _levelValueLabel = _rootVisualElement.Q<Label>("LevelValueLabel");
 
             _pauseMenuVisualElement = _rootVisualElement.Q<VisualElement>("PauseMenuVisualElement");
-            
+
             _quitButton = _pauseMenuVisualElement.Q<Button>("QuitButton");
             _quitButton.clicked += () => { GameEventsSystem.OnQuitButtonClicked?.Invoke(); };
-           
+
             _restartButton = _pauseMenuVisualElement.Q<Button>("RestartButton");
             _restartButton.clicked += () => { GameEventsSystem.OnRestartButtonClicked?.Invoke(); };
-           
+
             _resumeButton = _pauseMenuVisualElement.Q<Button>("ResumeButton");
             _resumeButton.clicked += () => { GameEventsSystem.OnResumeButtonClicked?.Invoke(); };
-            
+
             _pauseMenuVisualElement.style.display = DisplayStyle.None;
+
+            _loseScreenVisualElement = _rootVisualElement.Q<VisualElement>("LoseScreenVisualElement");
+
+            if(_loseScreenVisualElement != null)
+            {
+                _inGameUIButtonsList.AddRange(_loseScreenVisualElement.Query<Button>().ToList());
+
+                _loseQuitButton = _loseScreenVisualElement.Q<Button>("QuitButton");
+                if(_loseQuitButton != null) _loseQuitButton.clicked += OnQuitButtonClicked;
+
+                _retryButton = _loseScreenVisualElement.Q<Button>("RetryButton");
+                if(_retryButton != null) _retryButton.clicked += OnRestartButtonClicked;
+
+                _loseScreenVisualElement.style.display = DisplayStyle.None;
+            }
+
+            _winScreenVisualElement = _rootVisualElement.Q<VisualElement>("WinScreenVisualElement");
+
+            if(_winScreenVisualElement != null)
+            {
+                _inGameUIButtonsList.AddRange(_winScreenVisualElement.Query<Button>().ToList());
+
+                _continueButton = _winScreenVisualElement.Q<Button>("ContinueButton");
+
+                if(_continueButton != null) _continueButton.clicked += OnContinueButtonClicked;
+
+                _winScreenVisualElement.style.display = DisplayStyle.None;
+            }
         }
 
         private void OnEnable()
@@ -175,11 +213,43 @@ namespace Game.Scripts.UI
                     button.style.opacity = alpha;
                 }
             }
+
+            if(!_gameWonQuery.IsEmpty && _winScreenVisualElement != null && _winScreenVisualElement.style.display == DisplayStyle.None)
+            {
+                _entityManager.CreateEntity(typeof(PauseInputTag));
+                _pauseButton.SetEnabled(false);
+                _winScreenVisualElement.style.display = DisplayStyle.Flex;
+            }
+
+            else if(!_gameLostQuery.IsEmpty && _loseScreenVisualElement != null && _loseScreenVisualElement.style.display == DisplayStyle.None)
+            {
+                _entityManager.CreateEntity(typeof(PauseInputTag));
+                _pauseButton.SetEnabled(false);
+                _loseScreenVisualElement.style.display = DisplayStyle.Flex;
+            }
         }
 
         #endregion
 
         #region Button Event Callbacks
+
+        private void OnContinueButtonClicked()
+        {
+            Time.timeScale = 1f;
+
+            if(_winScreenVisualElement != null) { _winScreenVisualElement.style.display = DisplayStyle.None; }
+
+            _pauseButton.SetEnabled(true);
+
+            if(!_gameWonQuery.IsEmpty)
+            {
+                Entity spawnerEntity = _entityManager.CreateEntityQuery(typeof(EnemySpawnerTag)).GetSingletonEntity();
+                _entityManager.SetComponentEnabled<GameWonTag>(spawnerEntity , false);
+            }
+
+            _entityManager.CreateEntity(typeof(AdvanceLevelEventTag));
+            _entityManager.CreateEntity(typeof(ResumeInputTag));
+        }
 
         private void OnPauseButtonClicked()
         {
@@ -191,9 +261,14 @@ namespace Game.Scripts.UI
         private void OnQuitButtonClicked()
         {
             Time.timeScale = 1f;
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+
+            #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+            #else
+                Application.Quit();
+            #endif
         }
-        
+
         private void OnRestartButtonClicked()
         {
             Time.timeScale = 1f;
@@ -221,10 +296,10 @@ namespace Game.Scripts.UI
         private void OnHealthValueChanged()
         {
             if(!_entityManager.World.IsCreated) return;
-            
+
             _entityManager.CompleteDependencyBeforeRO<CurrentHealthComponent>();
-            
-            if(!_healthQuery.IsEmptyIgnoreFilter) 
+
+            if(!_healthQuery.IsEmptyIgnoreFilter)
             {
                 float playerHealth = _healthQuery.GetSingleton<CurrentHealthComponent>().Value;
                 _healthValueLabel.text = $"{playerHealth:F0}";
@@ -367,9 +442,13 @@ namespace Game.Scripts.UI
 
             _boundaryYQuery = _entityManager.CreateEntityQuery(typeof(ScreenBoundaryYComponent));
             _energyQuery = _entityManager.CreateEntityQuery(typeof(CurrentEnergyComponent));
+            _gameLostQuery = _entityManager.CreateEntityQuery(typeof(GameLostTag));
+            _gameWonQuery = _entityManager.CreateEntityQuery(typeof(GameWonTag));
             _healthQuery = _entityManager.CreateEntityQuery(typeof(CurrentHealthComponent) , typeof(PlayerTag));
             _levelQuery = _entityManager.CreateEntityQuery(typeof(LevelComponent));
             _waveIndexQuery = _entityManager.CreateEntityQuery(typeof(WaveIndexComponent));
+
+            _entityManager.CreateEntity(typeof(ResumeInputTag));
         }
 
         #endregion
