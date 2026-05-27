@@ -28,6 +28,7 @@ namespace Game.Scripts.Systems
         public static event Action<float> OnEnergyValueChanged;
         public static event Action OnHealthValueChanged;
         public static event Action<int> OnLevelValueChanged;
+        public static event Action<float , float3> OnPlayerDashCooldownStarted;
         public static event Action OnPlayerDeath;
         public static event Action<Entity , float , float3> OnTurretCooldownStarted;
         public static event Action<float , int> OnWavePrepCountdownStarted;
@@ -35,7 +36,7 @@ namespace Game.Scripts.Systems
         #endregion
 
         #region Unity Callbacks
-        
+
         protected override void OnCreate()
         {
             RequireForUpdate<DoActionComponent>();
@@ -75,6 +76,8 @@ namespace Game.Scripts.Systems
             foreach(RefRO<CurrentEnergyComponent> currentEnergyComponent in SystemAPI.Query<RefRO<CurrentEnergyComponent>>().WithChangeFilter<CurrentEnergyComponent>()) OnEnergyValueChanged?.Invoke(currentEnergyComponent.ValueRO.Value);
 
             foreach(var _ in SystemAPI.Query<RefRO<CurrentHealthComponent>>().WithAll<PlayerTag>().WithChangeFilter<CurrentHealthComponent>()) { OnHealthValueChanged?.Invoke(); }
+
+            foreach((RefRO<DashCooldownComponent> cooldownComponent , RefRO<LocalTransform> transform) in SystemAPI.Query<RefRO<DashCooldownComponent> , RefRO<LocalTransform>>().WithAll<PlayerTag>().WithChangeFilter<DashCooldownComponent>()) { OnPlayerDashCooldownStarted?.Invoke(cooldownComponent.ValueRO.Value , transform.ValueRO.Position); }
 
             foreach(var (_ , entity) in SystemAPI.Query<RefRO<DeathTag>>().WithAll<PlayerTag>().WithEntityAccess())
             {

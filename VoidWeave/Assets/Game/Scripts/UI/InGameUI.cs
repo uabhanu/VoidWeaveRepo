@@ -14,6 +14,8 @@ namespace Game.Scripts.UI
         #region Variables
 
         private readonly List<Button> _inGameUIButtonsList = new();
+
+        private readonly Dictionary<Entity , Label> _playerDashCooldownLabelsDictionary = new();
         private readonly Dictionary<Entity , Label> _turretCooldownLabelsDictionary = new();
 
         private Button _continueButton;
@@ -30,6 +32,7 @@ namespace Game.Scripts.UI
         private EntityQuery _gameWonQuery;
         private EntityQuery _healthQuery;
         private EntityQuery _levelQuery;
+        private EntityQuery _playerQuery;
         private EntityQuery _waveIndexQuery;
 
         private EntityManager _entityManager;
@@ -105,6 +108,7 @@ namespace Game.Scripts.UI
             _gameWonQuery = _entityManager.CreateEntityQuery(typeof(GameWonTag));
             _healthQuery = _entityManager.CreateEntityQuery(typeof(CurrentHealthComponent) , typeof(PlayerTag));
             _levelQuery = _entityManager.CreateEntityQuery(typeof(LevelComponent));
+            _playerQuery = _entityManager.CreateEntityQuery(typeof(PlayerTag));
             _waveIndexQuery = _entityManager.CreateEntityQuery(typeof(WaveIndexComponent));
 
             _entityManager.CreateEntity(typeof(ResumeInputTag));
@@ -170,6 +174,7 @@ namespace Game.Scripts.UI
             GameEventsSystem.OnHealthValueChanged += OnHealthValueChanged;
             GameEventsSystem.OnLevelValueChanged += OnLevelValueChanged;
             GameEventsSystem.OnPauseButtonClicked += OnPauseButtonClicked;
+            GameEventsSystem.OnPlayerDashCooldownStarted += OnPlayerDashCooldownStarted;
             GameEventsSystem.OnQuitButtonClicked += OnQuitButtonClicked;
             GameEventsSystem.OnRestartButtonClicked += OnRestartButtonClicked;
             GameEventsSystem.OnResumeButtonClicked += OnResumeButtonClicked;
@@ -183,6 +188,7 @@ namespace Game.Scripts.UI
             GameEventsSystem.OnHealthValueChanged -= OnHealthValueChanged;
             GameEventsSystem.OnLevelValueChanged -= OnLevelValueChanged;
             GameEventsSystem.OnPauseButtonClicked -= OnPauseButtonClicked;
+            GameEventsSystem.OnPlayerDashCooldownStarted -= OnPlayerDashCooldownStarted;
             GameEventsSystem.OnQuitButtonClicked -= OnQuitButtonClicked;
             GameEventsSystem.OnRestartButtonClicked -= OnRestartButtonClicked;
             GameEventsSystem.OnResumeButtonClicked -= OnResumeButtonClicked;
@@ -313,6 +319,74 @@ namespace Game.Scripts.UI
             if(!_levelQuery.IsEmptyIgnoreFilter) _levelValueLabel.text = $"{currentLevel:F0}";
         }
 
+        private void OnPlayerDashCooldownStarted(float timer , float3 worldPosition)
+        {
+            // Failsafe: if the player doesn't exist in memory yet, do nothing
+            if(_playerQuery.IsEmptyIgnoreFilter) return;
+
+            // Grab the entity locally to use as the dictionary key
+            Entity entity = _playerQuery.GetSingletonEntity();
+
+            if(timer <= zeroThreshold)
+            {
+                if(_playerDashCooldownLabelsDictionary.TryGetValue(entity , out Label label))
+                {
+                    _rootVisualElement.Remove(label);
+                    _playerDashCooldownLabelsDictionary.Remove(entity);
+                }
+
+                return;
+            }
+
+            if(!_playerDashCooldownLabelsDictionary.TryGetValue(entity , out Label cooldownLabel))
+            {
+                cooldownLabel = new Label
+                {
+                    style =
+                    {
+                        backgroundColor = turretCooldownTimerLabelBgColour ,
+                        borderBottomColor = turretCooldownTimerLabelBorderColour ,
+                        borderBottomWidth = turretCooldownTimerLabelBorderWidth ,
+                        borderLeftColor = turretCooldownTimerLabelBorderColour ,
+                        borderLeftWidth = turretCooldownTimerLabelBorderWidth ,
+                        borderRightColor = turretCooldownTimerLabelBorderColour ,
+                        borderRightWidth = turretCooldownTimerLabelBorderWidth ,
+                        borderTopColor = turretCooldownTimerLabelBorderColour ,
+                        borderTopWidth = turretCooldownTimerLabelBorderWidth ,
+                        fontSize = turretCooldownTimerLabelFontSize ,
+                        height = turretCooldownTimerLabelHeight ,
+                        left = Length.Percent(turretCooldownTimerLabelAnchorPercent) ,
+                        paddingBottom = turretCooldownTimerLabelPadding ,
+                        paddingLeft = turretCooldownTimerLabelPadding ,
+                        paddingRight = turretCooldownTimerLabelPadding ,
+                        paddingTop = turretCooldownTimerLabelPadding ,
+                        position = Position.Absolute ,
+                        top = Length.Percent(turretCooldownTimerLabelAnchorPercent) ,
+                        translate = new Translate(Length.Percent(turretCooldownTimerLabelTranslatePercentX) , Length.Percent(turretCooldownTimerLabelTranslatePercentY) , turretCooldownTimerLabelTranslatePercentZ) ,
+                        unityFontStyleAndWeight = FontStyle.Bold ,
+                        unityTextAlign = TextAnchor.MiddleCenter ,
+                        width = turretCooldownTimerLabelWidth
+                    }
+                };
+
+                _rootVisualElement.Add(cooldownLabel);
+                cooldownLabel.SendToBack();
+                _playerDashCooldownLabelsDictionary.Add(entity , cooldownLabel);
+            }
+
+            cooldownLabel.text = $"{timer:F0}"; //F0 means Integers only and F1 means float as well
+
+            Vector2 screenPoint = RuntimePanelUtils.CameraTransformWorldToPanel(_rootVisualElement.panel , worldPosition , Camera.main);
+
+            _entityManager.CompleteDependencyBeforeRO<ScreenBoundaryYComponent>();
+            float boundaryY = _boundaryYQuery.GetSingleton<ScreenBoundaryYComponent>().Value;
+
+            if(worldPosition.y >= boundaryY - turretCooldownTimerLabelFlipThreshold) { cooldownLabel.style.top = screenPoint.y + turretCooldownTimerLabelOffsetY; }
+            else { cooldownLabel.style.top = screenPoint.y; }
+
+            cooldownLabel.style.left = screenPoint.x;
+        }
+
         private void OnTurretCooldownStarted(Entity entity , float timer , float3 worldPosition)
         {
             if(timer <= turretCooldownThreshold)
@@ -358,6 +432,7 @@ namespace Game.Scripts.UI
                 };
 
                 _rootVisualElement.Add(cooldownLabel);
+                cooldownLabel.SendToBack();
                 _turretCooldownLabelsDictionary.Add(entity , cooldownLabel);
             }
 
@@ -446,6 +521,7 @@ namespace Game.Scripts.UI
             _gameWonQuery = _entityManager.CreateEntityQuery(typeof(GameWonTag));
             _healthQuery = _entityManager.CreateEntityQuery(typeof(CurrentHealthComponent) , typeof(PlayerTag));
             _levelQuery = _entityManager.CreateEntityQuery(typeof(LevelComponent));
+            _playerQuery = _entityManager.CreateEntityQuery(typeof(PlayerTag));
             _waveIndexQuery = _entityManager.CreateEntityQuery(typeof(WaveIndexComponent));
 
             _entityManager.CreateEntity(typeof(ResumeInputTag));
