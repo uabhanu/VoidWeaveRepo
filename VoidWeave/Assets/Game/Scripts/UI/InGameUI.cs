@@ -37,9 +37,11 @@ namespace Game.Scripts.UI
 
         private EntityManager _entityManager;
 
+        private Label _currentBlinkingLabel;
         private Label _energyValueLabel;
         private Label _healthValueLabel;
         private Label _levelValueLabel;
+        private Label _tutorialLabel;
         private Label _wavePrepLabel;
 
         private VisualElement _loseScreenVisualElement;
@@ -69,6 +71,11 @@ namespace Game.Scripts.UI
         [SerializeField] private float turretCooldownTimerLabelTranslatePercentY;
         [SerializeField] private float turretCooldownTimerLabelTranslatePercentZ;
         [SerializeField] private float turretCooldownTimerLabelWidth;
+        [SerializeField] private float tutorialLabelBottomPercent;
+        [SerializeField] private float tutorialLabelPaddingBottom;
+        [SerializeField] private float tutorialLabelPaddingLeft;
+        [SerializeField] private float tutorialLabelPaddingRight;
+        [SerializeField] private float tutorialLabelPaddingTop;
         [SerializeField] private float wavePrepTimerLabelAnchorPercent;
         [SerializeField] private float wavePrepTimerLabelBorderWidth;
         [SerializeField] private float wavePrepTimerLabelFontSize;
@@ -82,10 +89,24 @@ namespace Game.Scripts.UI
         [SerializeField] private float zeroOpacity;
         [SerializeField] private float zeroThreshold;
 
+        [SerializeField] private int turretIdNone;
+        [SerializeField] private int turretIdStriker;
+        [SerializeField] private int turretIdScatter;
+        [SerializeField] private int turretIdBeam;
+        [SerializeField] private int tutorialLevel1;
+        [SerializeField] private int tutorialLevel2;
         [SerializeField] private int wavePrepLabelPaddingLeft;
         [SerializeField] private int waveStateReadyValue;
 
         [SerializeField] private Sprite hudPanelSprite;
+
+        [SerializeField] [Multiline] private string level1TutorialText;
+        [SerializeField] [Multiline] private string level2TutorialText;
+        [SerializeField] [Multiline] private string level3TutorialText;
+
+        [SerializeField] private string beamTurretName;
+        [SerializeField] private string scatterTurretName;
+        [SerializeField] private string strikerTurretName;
 
         [SerializeField] private UIDocument uiDocument;
 
@@ -116,7 +137,7 @@ namespace Game.Scripts.UI
             _rootVisualElement = uiDocument.rootVisualElement;
 
             _pauseButton = _rootVisualElement.Q<Button>("PauseButton");
-            _pauseButton.clicked += () => { GameEventsSystem.OnPauseButtonClicked?.Invoke(); };
+            _pauseButton.clicked += () => { ManagedEventBridgeSystem.OnPauseButtonClicked?.Invoke(); };
 
             _inGameUIButtonsList.Add(_pauseButton);
             _inGameUIButtonsList.AddRange(_rootVisualElement.Q("PauseMenuVisualElement").Query<Button>().ToList());
@@ -129,13 +150,13 @@ namespace Game.Scripts.UI
             _pauseMenuVisualElement = _rootVisualElement.Q<VisualElement>("PauseMenuVisualElement");
 
             _quitButton = _pauseMenuVisualElement.Q<Button>("QuitButton");
-            _quitButton.clicked += () => { GameEventsSystem.OnQuitButtonClicked?.Invoke(); };
+            _quitButton.clicked += () => { ManagedEventBridgeSystem.OnQuitButtonClicked?.Invoke(); };
 
             _restartButton = _pauseMenuVisualElement.Q<Button>("RestartButton");
-            _restartButton.clicked += () => { GameEventsSystem.OnRestartButtonClicked?.Invoke(); };
+            _restartButton.clicked += () => { ManagedEventBridgeSystem.OnRestartButtonClicked?.Invoke(); };
 
             _resumeButton = _pauseMenuVisualElement.Q<Button>("ResumeButton");
-            _resumeButton.clicked += () => { GameEventsSystem.OnResumeButtonClicked?.Invoke(); };
+            _resumeButton.clicked += () => { ManagedEventBridgeSystem.OnResumeButtonClicked?.Invoke(); };
 
             _pauseMenuVisualElement.style.display = DisplayStyle.None;
 
@@ -170,30 +191,32 @@ namespace Game.Scripts.UI
 
         private void OnEnable()
         {
-            GameEventsSystem.OnEnergyValueChanged += OnEnergyValueChanged;
-            GameEventsSystem.OnHealthValueChanged += OnHealthValueChanged;
-            GameEventsSystem.OnLevelValueChanged += OnLevelValueChanged;
-            GameEventsSystem.OnPauseButtonClicked += OnPauseButtonClicked;
-            GameEventsSystem.OnPlayerDashCooldownStarted += OnPlayerDashCooldownStarted;
-            GameEventsSystem.OnQuitButtonClicked += OnQuitButtonClicked;
-            GameEventsSystem.OnRestartButtonClicked += OnRestartButtonClicked;
-            GameEventsSystem.OnResumeButtonClicked += OnResumeButtonClicked;
-            GameEventsSystem.OnTurretCooldownStarted += OnTurretCooldownStarted;
-            GameEventsSystem.OnWavePrepCountdownStarted += OnWavePrepCountdownStarted;
+            ManagedEventBridgeSystem.OnEnergyValueChanged += OnEnergyValueChanged;
+            ManagedEventBridgeSystem.OnHealthValueChanged += OnHealthValueChanged;
+            ManagedEventBridgeSystem.OnLevelValueChanged += OnLevelValueChanged;
+            ManagedEventBridgeSystem.OnPauseButtonClicked += OnPauseButtonClicked;
+            ManagedEventBridgeSystem.OnPlayerDashCooldownStarted += OnPlayerDashCooldownStarted;
+            ManagedEventBridgeSystem.OnQuitButtonClicked += OnQuitButtonClicked;
+            ManagedEventBridgeSystem.OnRestartButtonClicked += OnRestartButtonClicked;
+            ManagedEventBridgeSystem.OnResumeButtonClicked += OnResumeButtonClicked;
+            ManagedEventBridgeSystem.OnTurretCooldownStarted += OnTurretCooldownStarted;
+            ManagedEventBridgeSystem.OnTutorialStateChanged += OnTutorialStateChanged;
+            ManagedEventBridgeSystem.OnWavePrepCountdownStarted += OnWavePrepCountdownStarted;
         }
 
         private void OnDisable()
         {
-            GameEventsSystem.OnEnergyValueChanged -= OnEnergyValueChanged;
-            GameEventsSystem.OnHealthValueChanged -= OnHealthValueChanged;
-            GameEventsSystem.OnLevelValueChanged -= OnLevelValueChanged;
-            GameEventsSystem.OnPauseButtonClicked -= OnPauseButtonClicked;
-            GameEventsSystem.OnPlayerDashCooldownStarted -= OnPlayerDashCooldownStarted;
-            GameEventsSystem.OnQuitButtonClicked -= OnQuitButtonClicked;
-            GameEventsSystem.OnRestartButtonClicked -= OnRestartButtonClicked;
-            GameEventsSystem.OnResumeButtonClicked -= OnResumeButtonClicked;
-            GameEventsSystem.OnTurretCooldownStarted -= OnTurretCooldownStarted;
-            GameEventsSystem.OnWavePrepCountdownStarted -= OnWavePrepCountdownStarted;
+            ManagedEventBridgeSystem.OnEnergyValueChanged -= OnEnergyValueChanged;
+            ManagedEventBridgeSystem.OnHealthValueChanged -= OnHealthValueChanged;
+            ManagedEventBridgeSystem.OnLevelValueChanged -= OnLevelValueChanged;
+            ManagedEventBridgeSystem.OnPauseButtonClicked -= OnPauseButtonClicked;
+            ManagedEventBridgeSystem.OnPlayerDashCooldownStarted -= OnPlayerDashCooldownStarted;
+            ManagedEventBridgeSystem.OnQuitButtonClicked -= OnQuitButtonClicked;
+            ManagedEventBridgeSystem.OnRestartButtonClicked -= OnRestartButtonClicked;
+            ManagedEventBridgeSystem.OnResumeButtonClicked -= OnResumeButtonClicked;
+            ManagedEventBridgeSystem.OnTurretCooldownStarted -= OnTurretCooldownStarted;
+            ManagedEventBridgeSystem.OnTutorialStateChanged -= OnTutorialStateChanged;
+            ManagedEventBridgeSystem.OnWavePrepCountdownStarted -= OnWavePrepCountdownStarted;
         }
 
         private void Update()
@@ -202,23 +225,6 @@ namespace Game.Scripts.UI
 
             if(world == null || !world.IsCreated) return;
             if(_entityManager.World != world) { RefreshEcsReferences(); }
-
-            float pulse = (Mathf.Sin(Time.unscaledTime * pulseSpeed) + sineOffset) / sineDivisor;
-            float alpha = Mathf.Lerp(minOpacity , maxOpacity , pulse);
-
-            foreach(var button in _inGameUIButtonsList)
-            {
-                if(button != null)
-                {
-                    if(!button.enabledSelf)
-                    {
-                        button.style.opacity = zeroOpacity;
-                        continue;
-                    }
-
-                    button.style.opacity = alpha;
-                }
-            }
 
             if(!_gameWonQuery.IsEmpty && _winScreenVisualElement != null && _winScreenVisualElement.style.display == DisplayStyle.None)
             {
@@ -233,6 +239,13 @@ namespace Game.Scripts.UI
                 _pauseButton.SetEnabled(false);
                 _loseScreenVisualElement.style.display = DisplayStyle.Flex;
             }
+
+            foreach(var button in _inGameUIButtonsList)
+            {
+                Pulse(button);
+            }
+            
+            Pulse(_currentBlinkingLabel);
         }
 
         #endregion
@@ -449,6 +462,63 @@ namespace Game.Scripts.UI
             cooldownLabel.style.left = screenPoint.x;
         }
 
+        private void OnTutorialStateChanged(int currentLevel , bool isActive , int cost , int turretType)
+        {
+            if(isActive)
+            {
+                if(_tutorialLabel == null)
+                {
+                    _tutorialLabel = new Label
+                    {
+                        style =
+                        {
+                            backgroundImage = new StyleBackground(hudPanelSprite) ,
+                            unityBackgroundImageTintColor = wavePrepTimerLabelSpriteTintColour ,
+                            backgroundColor = Color.clear ,
+                            position = Position.Absolute ,
+                            alignSelf = Align.Center ,
+                            bottom = Length.Percent(tutorialLabelBottomPercent) ,
+                            width = StyleKeyword.Auto ,
+                            height = StyleKeyword.Auto ,
+                            whiteSpace = WhiteSpace.NoWrap ,
+                            paddingLeft = tutorialLabelPaddingLeft ,
+                            paddingRight = tutorialLabelPaddingRight ,
+                            paddingTop = tutorialLabelPaddingTop ,
+                            paddingBottom = tutorialLabelPaddingBottom ,
+                            unityTextAlign = TextAnchor.MiddleCenter ,
+                            fontSize = wavePrepTimerLabelFontSize ,
+                            color = Color.white ,
+                            unityFontStyleAndWeight = FontStyle.Bold
+                        }
+                    };
+
+                    _rootVisualElement.Add(_tutorialLabel);
+                    _tutorialLabel.SendToBack();
+                    StartBlinkingLabel(_tutorialLabel);
+                }
+
+                if(turretType == turretIdNone)
+                {
+                    if(currentLevel == tutorialLevel1) { _tutorialLabel.text = level1TutorialText; }
+                    else if(currentLevel == tutorialLevel2) { _tutorialLabel.text = level2TutorialText; }
+                    else { _tutorialLabel.text = level3TutorialText; }
+                }
+                else
+                {
+                    string turretName = turretType == turretIdStriker ? strikerTurretName : turretType == turretIdScatter ? scatterTurretName : turretType == turretIdBeam ? beamTurretName : "Unknown Turret";
+                    _tutorialLabel.text = $"{turretName} Selected.\nPress [E] to deploy (Cost: {cost} Energy)";
+                }
+            }
+            else
+            {
+                if(_tutorialLabel != null)
+                {
+                    _rootVisualElement.Remove(_tutorialLabel);
+                    _tutorialLabel = null;
+                }
+            }
+        }
+
         private void OnWavePrepCountdownStarted(float timer , int waveState)
         {
             if(waveState != waveStateReadyValue || timer <= zeroThreshold)
@@ -507,6 +577,22 @@ namespace Game.Scripts.UI
 
         #region Custom Functions
 
+        private void Pulse(VisualElement element)
+        {
+            if(element == null) return;
+
+            float pulse = (Mathf.Sin(Time.unscaledTime * pulseSpeed) + sineOffset) / sineDivisor;
+            float alpha = Mathf.Lerp(minOpacity , maxOpacity , pulse);
+
+            if(!element.enabledSelf)
+            {
+                element.style.opacity = zeroOpacity;
+                return;
+            }
+
+            element.style.opacity = alpha;
+        }
+
         private void RefreshEcsReferences()
         {
             var world = World.DefaultGameObjectInjectionWorld;
@@ -525,6 +611,18 @@ namespace Game.Scripts.UI
             _waveIndexQuery = _entityManager.CreateEntityQuery(typeof(WaveIndexComponent));
 
             _entityManager.CreateEntity(typeof(ResumeInputTag));
+        }
+
+        private void StartBlinkingLabel(Label label) { _currentBlinkingLabel = label; }
+
+        private void StopBlinkingLabel(Label label)
+        {
+            if(_currentBlinkingLabel == label)
+            {
+                if(_currentBlinkingLabel != null) { _currentBlinkingLabel.style.opacity = maxOpacity; }
+
+                _currentBlinkingLabel = null;
+            }
         }
 
         #endregion

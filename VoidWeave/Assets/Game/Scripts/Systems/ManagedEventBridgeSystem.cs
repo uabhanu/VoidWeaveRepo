@@ -6,9 +6,16 @@ namespace Game.Scripts.Systems
     using Unity.Mathematics;
     using Unity.Transforms;
 
-    public partial class GameEventsSystem : SystemBase
+    public partial class ManagedEventBridgeSystem : SystemBase
     {
         #region Variables
+
+        private bool _previousTutorialState;
+        private Entity _previousSelectedTurretEntity;
+        private EntityQuery _tutorialActiveQuery;
+        private EntityQuery _strikerTurretQuery;
+        private EntityQuery _scatterTurretQuery;
+        private EntityQuery _beamTurretQuery;
 
         public static Action OnPauseButtonClicked;
         public static Action OnQuitButtonClicked;
@@ -31,6 +38,7 @@ namespace Game.Scripts.Systems
         public static event Action<float , float3> OnPlayerDashCooldownStarted;
         public static event Action OnPlayerDeath;
         public static event Action<Entity , float , float3> OnTurretCooldownStarted;
+        public static event Action<int , bool , int , int> OnTutorialStateChanged;
         public static event Action<float , int> OnWavePrepCountdownStarted;
 
         #endregion
@@ -39,18 +47,62 @@ namespace Game.Scripts.Systems
 
         protected override void OnCreate()
         {
+            RequireForUpdate<BeamTurretUnlockLevelComponent>();
             RequireForUpdate<DoActionComponent>();
             RequireForUpdate<InputNoneComponent>();
+            RequireForUpdate<LevelComponent>();
             RequireForUpdate<NoActionComponent>();
+            RequireForUpdate<ScatterTurretUnlockLevelComponent>();
+            RequireForUpdate<SelectedTurretCostComponent>();
+            RequireForUpdate<SelectedTurretEntityComponent>();
             RequireForUpdate<WaveStateComponent>();
+
+            _tutorialActiveQuery = SystemAPI.QueryBuilder().WithAll<EnemySpawnerTag , TutorialActiveTag>().Build();
+
+            _strikerTurretQuery = SystemAPI.QueryBuilder().WithAll<StrikerTurretTag , TurretEntityComponent>().Build();
+            _scatterTurretQuery = SystemAPI.QueryBuilder().WithAll<ScatterTurretTag , TurretEntityComponent>().Build();
+            _beamTurretQuery = SystemAPI.QueryBuilder().WithAll<BeamTurretTag , TurretEntityComponent>().Build();
+
+            RequireForUpdate(_strikerTurretQuery);
+            RequireForUpdate(_scatterTurretQuery);
+            RequireForUpdate(_beamTurretQuery);
         }
 
         protected override void OnUpdate()
         {
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
 
+            int beamTurretUnlockLevel = SystemAPI.GetSingleton<BeamTurretUnlockLevelComponent>().Value;
+            int scatterTurretUnlockLevel = SystemAPI.GetSingleton<ScatterTurretUnlockLevelComponent>().Value;
+
+            Entity strikerTurretEntity = _strikerTurretQuery.GetSingleton<TurretEntityComponent>().Entity;
+            Entity scatterTurretEntity = _scatterTurretQuery.GetSingleton<TurretEntityComponent>().Entity;
+            Entity beamTurretEntity = _beamTurretQuery.GetSingleton<TurretEntityComponent>().Entity;
+
             int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
             int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
+
+            bool currentTutorialState = !_tutorialActiveQuery.IsEmpty;
+            bool tutorialStateToggled = currentTutorialState != _previousTutorialState;
+            _previousTutorialState = currentTutorialState;
+
+            int currentLevel = SystemAPI.GetSingleton<LevelComponent>().Value;
+            int selectedTurretCostComponent = SystemAPI.GetSingleton<SelectedTurretCostComponent>().Value;
+
+            Entity currentSelectedTurretEntity = SystemAPI.GetSingleton<SelectedTurretEntityComponent>().Entity;
+            bool selectionChanged = currentSelectedTurretEntity != _previousSelectedTurretEntity;
+            int turretSelectionChanged = math.select(noAction , doAction , selectionChanged);
+            _previousSelectedTurretEntity = currentSelectedTurretEntity;
+
+            bool isStrikerTurret = currentSelectedTurretEntity == strikerTurretEntity;
+            bool isScatterTurret = currentSelectedTurretEntity == scatterTurretEntity;
+            bool isBeamTurret = currentSelectedTurretEntity == beamTurretEntity;
+
+            int strikerTurretID = math.select(noAction , doAction , isStrikerTurret);
+            int scatterTurretID = math.select(noAction , scatterTurretUnlockLevel , isScatterTurret);
+            int beamTurretID = math.select(noAction , beamTurretUnlockLevel , isBeamTurret);
+
+            int turretType = strikerTurretID + scatterTurretID + beamTurretID;
 
             foreach(var (_ , _ , entity) in SystemAPI.Query<RefRO<CurrentHealthComponent> , RefRO<DamageEventComponent>>().WithEntityAccess())
             {
@@ -110,14 +162,19 @@ namespace Game.Scripts.Systems
                 for(int i = startLoop ; i < endLoop ; i++) { AudioManagerOnTurretCooldownFinished?.Invoke(); }
             }
 
+            for(int i = noAction ; i < math.select(noAction , doAction , tutorialStateToggled || (currentTutorialState && turretSelectionChanged == doAction)) ; i++) { OnTutorialStateChanged?.Invoke(currentLevel , currentTutorialState , selectedTurretCostComponent , turretType); }
+
             foreach((RefRO<TimerComponent> timerComponent , RefRO<WaveStateComponent> waveStateComponent) in SystemAPI.Query<RefRO<TimerComponent> , RefRO<WaveStateComponent>>().WithChangeFilter<TimerComponent>())
             {
-                OnWavePrepCountdownStarted?.Invoke(timerComponent.ValueRO.Value , waveStateComponent.ValueRO.Value);
+                for(int t = noAction ; t < math.select(doAction , noAction , currentTutorialState) ; t++)
+                {
+                    OnWavePrepCountdownStarted?.Invoke(timerComponent.ValueRO.Value , waveStateComponent.ValueRO.Value);
 
-                int startLoop = SystemAPI.GetSingleton<WaveStateComponent>().Value;
-                int endLoop = math.select(startLoop , 1 , waveStateComponent.ValueRO.Value == startLoop && timerComponent.ValueRO.Value > SystemAPI.GetSingleton<InputNoneComponent>().Value && (int)timerComponent.ValueRO.Value != (int)(timerComponent.ValueRO.Value + SystemAPI.Time.DeltaTime));
+                    int startLoop = SystemAPI.GetSingleton<WaveStateComponent>().Value;
+                    int endLoop = math.select(startLoop , 1 , waveStateComponent.ValueRO.Value == startLoop && timerComponent.ValueRO.Value > SystemAPI.GetSingleton<InputNoneComponent>().Value && (int)timerComponent.ValueRO.Value != (int)(timerComponent.ValueRO.Value + SystemAPI.Time.DeltaTime));
 
-                for(int i = startLoop ; i < endLoop ; i++) { AudioManagerOnWavePrepCountdownStarted?.Invoke(); }
+                    for(int i = startLoop ; i < endLoop ; i++) { AudioManagerOnWavePrepCountdownStarted?.Invoke(); }
+                }
             }
         }
 

@@ -59,36 +59,36 @@ namespace Game.Scripts.Audio
 
         private void OnEnable()
         {
-            GameEventsSystem.AudioManagerOnDamageTakenByEnemy += OnDamageTakenByEnemy;
-            GameEventsSystem.AudioManagerOnDamageTakenByPlayer += OnDamageTakenByPlayer;
-            GameEventsSystem.AudioManagerOnProjectileFiredByEnemy += OnProjectileFiredByEnemy;
-            GameEventsSystem.AudioManagerOnProjectileFiredByBeamTurret += OnProjectileFiredByBeamTurret;
-            GameEventsSystem.AudioManagerOnProjectileFiredByScatterTurret += OnProjectileFiredByScatterTurret;
-            GameEventsSystem.AudioManagerOnProjectileFiredByStrikerTurret += OnProjectileFiredByStrikerTurret;
-            GameEventsSystem.AudioManagerOnTurretCooldownFinished += OnTurretCooldownFinished;
-            GameEventsSystem.AudioManagerOnWavePrepCountdownStarted += OnWavePrepCountdownStarted;
-            GameEventsSystem.OnDashPerformed += OnDashPerformed;
-            GameEventsSystem.OnEnemyDeath += OnEnemyDeath;
-            GameEventsSystem.OnPauseButtonClicked += OnGamePaused;
-            GameEventsSystem.OnPlayerDeath += OnPlayerDeath;
-            GameEventsSystem.OnResumeButtonClicked += OnGameResumed;
+            ManagedEventBridgeSystem.AudioManagerOnDamageTakenByEnemy += OnDamageTakenByEnemy;
+            ManagedEventBridgeSystem.AudioManagerOnDamageTakenByPlayer += OnDamageTakenByPlayer;
+            ManagedEventBridgeSystem.AudioManagerOnProjectileFiredByEnemy += OnProjectileFiredByEnemy;
+            ManagedEventBridgeSystem.AudioManagerOnProjectileFiredByBeamTurret += OnProjectileFiredByBeamTurret;
+            ManagedEventBridgeSystem.AudioManagerOnProjectileFiredByScatterTurret += OnProjectileFiredByScatterTurret;
+            ManagedEventBridgeSystem.AudioManagerOnProjectileFiredByStrikerTurret += OnProjectileFiredByStrikerTurret;
+            ManagedEventBridgeSystem.AudioManagerOnTurretCooldownFinished += OnTurretCooldownFinished;
+            ManagedEventBridgeSystem.AudioManagerOnWavePrepCountdownStarted += OnWavePrepCountdownStarted;
+            ManagedEventBridgeSystem.OnDashPerformed += OnDashPerformed;
+            ManagedEventBridgeSystem.OnEnemyDeath += OnEnemyDeath;
+            ManagedEventBridgeSystem.OnPauseButtonClicked += OnGamePaused;
+            ManagedEventBridgeSystem.OnPlayerDeath += OnPlayerDeath;
+            ManagedEventBridgeSystem.OnResumeButtonClicked += OnGameResumed;
         }
 
         private void OnDisable()
         {
-            GameEventsSystem.AudioManagerOnDamageTakenByEnemy -= OnDamageTakenByEnemy;
-            GameEventsSystem.AudioManagerOnDamageTakenByPlayer -= OnDamageTakenByPlayer;
-            GameEventsSystem.AudioManagerOnProjectileFiredByEnemy -= OnProjectileFiredByEnemy;
-            GameEventsSystem.AudioManagerOnProjectileFiredByBeamTurret -= OnProjectileFiredByBeamTurret;
-            GameEventsSystem.AudioManagerOnProjectileFiredByScatterTurret -= OnProjectileFiredByScatterTurret;
-            GameEventsSystem.AudioManagerOnProjectileFiredByStrikerTurret -= OnProjectileFiredByStrikerTurret;
-            GameEventsSystem.AudioManagerOnTurretCooldownFinished -= OnTurretCooldownFinished;
-            GameEventsSystem.AudioManagerOnWavePrepCountdownStarted -= OnWavePrepCountdownStarted;
-            GameEventsSystem.OnDashPerformed -= OnDashPerformed;
-            GameEventsSystem.OnEnemyDeath -= OnEnemyDeath;
-            GameEventsSystem.OnPauseButtonClicked -= OnGamePaused;
-            GameEventsSystem.OnPlayerDeath -= OnPlayerDeath;
-            GameEventsSystem.OnResumeButtonClicked -= OnGameResumed;
+            ManagedEventBridgeSystem.AudioManagerOnDamageTakenByEnemy -= OnDamageTakenByEnemy;
+            ManagedEventBridgeSystem.AudioManagerOnDamageTakenByPlayer -= OnDamageTakenByPlayer;
+            ManagedEventBridgeSystem.AudioManagerOnProjectileFiredByEnemy -= OnProjectileFiredByEnemy;
+            ManagedEventBridgeSystem.AudioManagerOnProjectileFiredByBeamTurret -= OnProjectileFiredByBeamTurret;
+            ManagedEventBridgeSystem.AudioManagerOnProjectileFiredByScatterTurret -= OnProjectileFiredByScatterTurret;
+            ManagedEventBridgeSystem.AudioManagerOnProjectileFiredByStrikerTurret -= OnProjectileFiredByStrikerTurret;
+            ManagedEventBridgeSystem.AudioManagerOnTurretCooldownFinished -= OnTurretCooldownFinished;
+            ManagedEventBridgeSystem.AudioManagerOnWavePrepCountdownStarted -= OnWavePrepCountdownStarted;
+            ManagedEventBridgeSystem.OnDashPerformed -= OnDashPerformed;
+            ManagedEventBridgeSystem.OnEnemyDeath -= OnEnemyDeath;
+            ManagedEventBridgeSystem.OnPauseButtonClicked -= OnGamePaused;
+            ManagedEventBridgeSystem.OnPlayerDeath -= OnPlayerDeath;
+            ManagedEventBridgeSystem.OnResumeButtonClicked -= OnGameResumed;
         }
 
         #endregion
@@ -136,14 +136,6 @@ namespace Game.Scripts.Audio
         private void PlaySfx(AudioClip clip)
         {
             if(sfxSource && clip) { sfxSource.PlayOneShot(clip); }
-        }
-
-        private void RefreshEcsReferences()
-        {
-            var world = World.DefaultGameObjectInjectionWorld;
-            if(world is not { IsCreated: true }) return;
-            _entityManager = world.EntityManager;
-            _muteQuery = _entityManager.CreateEntityQuery(typeof(MuteWhileTestingComponent));
         }
 
         #endregion

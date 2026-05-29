@@ -9,11 +9,13 @@ namespace Game.Scripts.Systems
     public partial struct WaveStateSystem : ISystem
     {
         private EntityQuery _enemyQuery;
+        private EntityQuery _tutorialActiveQuery;
 
         [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
             _enemyQuery = SystemAPI.QueryBuilder().WithAll<EnemyTag , TeamComponent>().Build();
+            _tutorialActiveQuery = SystemAPI.QueryBuilder().WithAll<EnemySpawnerTag , TutorialActiveTag>().Build();
 
             systemState.RequireForUpdate<DoActionComponent>();
             systemState.RequireForUpdate<EnemiesKilledComponent>();
@@ -41,6 +43,7 @@ namespace Game.Scripts.Systems
             int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
             int enemiesKilled = SystemAPI.GetSingleton<EnemiesKilledComponent>().Value;
             int enemiesToKill = SystemAPI.GetSingleton<EnemiesToKillComponent>().Value;
+            bool isTutorialActive = !_tutorialActiveQuery.IsEmpty;
             int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
             float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value;
             float wave1Multiplier = SystemAPI.GetSingleton<Wave1MultiplierComponent>().Value;
@@ -56,6 +59,7 @@ namespace Game.Scripts.Systems
                 DoAction = doAction ,
                 EnemiesKilled = enemiesKilled ,
                 EnemiesToKill = enemiesToKill ,
+                IsTutorialActive = isTutorialActive ,
                 NoAction = noAction ,
                 TimerExpired = timerExpired ,
                 Wave1Multiplier = wave1Multiplier ,
@@ -75,6 +79,7 @@ namespace Game.Scripts.Systems
         public int DoAction;
         public int EnemiesKilled;
         public int EnemiesToKill;
+        public bool IsTutorialActive;
         public int NoAction;
         public float TimerExpired;
         public float Wave1Multiplier;
@@ -86,9 +91,9 @@ namespace Game.Scripts.Systems
 
         private void Execute(ref TimerComponent timerComponent , ref WaveIndexComponent waveIndexComponent , in WavePrepDurationComponent wavePrepDurationComponent , ref WaveStateComponent waveStateComponent , ref WaveStockComponent waveStockComponent)
         {
-            bool isPrepComplete = waveStateComponent.Value == WaveStatePrep && timerComponent.Value <= TimerExpired;
+            bool isPrepComplete = waveStateComponent.Value == WaveStatePrep && timerComponent.Value <= TimerExpired && !IsTutorialActive;
 
-            // NEW LOGIC: We only transition to the next wave if we still need more kills for the level.
+            // We only transition to the next wave if we still need more kills for the level.
             bool isLevelOngoing = EnemiesKilled < EnemiesToKill;
             bool isWaveClear = waveStateComponent.Value == WaveStateCombat && waveStockComponent.Value <= NoAction && AliveEnemyCount <= NoAction && isLevelOngoing;
 
