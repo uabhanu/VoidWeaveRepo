@@ -608,27 +608,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e7a3e84cb19ba24e829216d6da27252, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.InGameUI
-  turretCooldownTimerLabelBorderColour: {r: 0, g: 0, b: 0, a: 1}
-  turretCooldownTimerLabelBgColour: {r: 1, g: 1, b: 1, a: 1}
+  playerDashCooldownTimerLabelBgColour: {r: 0, g: 1, b: 1, a: 1}
+  playerDashCooldownTimerLabelBorderColour: {r: 0, g: 0, b: 1, a: 1}
+  playerDashCooldownTimerLabelTextColour: {r: 0, g: 0, b: 1, a: 1}
+  beamTurretCooldownTimerLabelBgColour: {r: 0.59607846, g: 0.80392164, b: 0.8862746, a: 1}
+  beamTurretCooldownTimerLabelBorderColour: {r: 0, g: 0, b: 0, a: 1}
+  scatterTurretCooldownTimerLabelBgColour: {r: 0.77647066, g: 0.74509805, b: 0.003921569, a: 1}
+  scatterTurretCooldownTimerLabelBorderColour: {r: 0, g: 0, b: 0, a: 1}
+  strikerTurretCooldownTimerLabelBgColour: {r: 0.47450984, g: 0.69803923, b: 0.43921572, a: 1}
+  strikerTurretCooldownTimerLabelBorderColour: {r: 0, g: 0, b: 0, a: 1}
   wavePrepTimerLabelSpriteTintColour: {r: 1, g: 0, b: 0, a: 1}
+  characterCooldownTimerLabelAnchorPercent: 50
+  characterCooldownTimerLabelBorderWidth: 5.5
+  characterCooldownTimerLabelFlipThreshold: 0
+  characterCooldownTimerLabelFontSize: 50
+  characterCooldownTimerLabelHeight: 100
+  characterCooldownTimerLabelOffsetX: 0
+  characterCooldownTimerLabelOffsetY: 330.5
+  characterCooldownTimerLabelPadding: 6.5
+  characterCooldownTimerLabelTranslatePercentX: -60
+  characterCooldownTimerLabelTranslatePercentY: -220
+  characterCooldownTimerLabelTranslatePercentZ: 0
+  characterCooldownTimerLabelWidth: 100
   maxOpacity: 1
   minOpacity: 0.1
   pulseSpeed: 3.5
   sineDivisor: 2
   sineOffset: 1
-  turretCooldownThreshold: 1
-  turretCooldownTimerLabelAnchorPercent: 50
-  turretCooldownTimerLabelBorderWidth: 5.5
-  turretCooldownTimerLabelFlipThreshold: 0
-  turretCooldownTimerLabelFontSize: 50
-  turretCooldownTimerLabelHeight: 100
-  turretCooldownTimerLabelOffsetX: 0
-  turretCooldownTimerLabelOffsetY: 330.5
-  turretCooldownTimerLabelPadding: 6.5
-  turretCooldownTimerLabelTranslatePercentX: -60
-  turretCooldownTimerLabelTranslatePercentY: -220
-  turretCooldownTimerLabelTranslatePercentZ: 0
-  turretCooldownTimerLabelWidth: 100
+  turretCooldownTime: 1
   tutorialLabelBottomPercent: 40
   tutorialLabelPaddingBottom: 15
   tutorialLabelPaddingLeft: 160
@@ -654,6 +661,7 @@ MonoBehaviour:
   tutorialLevel2: 2
   tutorialLevel3: 3
   tutorialLevel4: 4
+  wave0Index: 0
   wavePrepLabelPaddingLeft: 40
   waveStateReadyValue: 0
   hudPanelSprite: {fileID: 21300000, guid: d673b2ca11fb9d447910e14d3f666f64, type: 3}

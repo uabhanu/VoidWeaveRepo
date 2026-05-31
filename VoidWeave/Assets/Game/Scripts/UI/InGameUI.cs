@@ -12,7 +12,7 @@ namespace Game.Scripts.UI
     public class InGameUI : MonoBehaviour
     {
         #region Variables
-        
+
         private const int Wave1Index = 0;
         private const int Wave2Index = 1;
 
@@ -52,28 +52,35 @@ namespace Game.Scripts.UI
         private VisualElement _rootVisualElement;
         private VisualElement _winScreenVisualElement;
 
-        [SerializeField] private Color turretCooldownTimerLabelBorderColour;
-        [SerializeField] private Color turretCooldownTimerLabelBgColour;
+        [SerializeField] private Color playerDashCooldownTimerLabelBgColour;
+        [SerializeField] private Color playerDashCooldownTimerLabelBorderColour;
+        [SerializeField] private Color playerDashCooldownTimerLabelTextColour;
+        [SerializeField] private Color beamTurretCooldownTimerLabelBgColour;
+        [SerializeField] private Color beamTurretCooldownTimerLabelBorderColour;
+        [SerializeField] private Color scatterTurretCooldownTimerLabelBgColour;
+        [SerializeField] private Color scatterTurretCooldownTimerLabelBorderColour;
+        [SerializeField] private Color strikerTurretCooldownTimerLabelBgColour;
+        [SerializeField] private Color strikerTurretCooldownTimerLabelBorderColour;
         [SerializeField] private Color wavePrepTimerLabelSpriteTintColour;
 
+        [SerializeField] private float characterCooldownTimerLabelAnchorPercent;
+        [SerializeField] private float characterCooldownTimerLabelBorderWidth;
+        [SerializeField] private float characterCooldownTimerLabelFlipThreshold;
+        [SerializeField] private float characterCooldownTimerLabelFontSize;
+        [SerializeField] private float characterCooldownTimerLabelHeight;
+        [SerializeField] private float characterCooldownTimerLabelOffsetX;
+        [SerializeField] private float characterCooldownTimerLabelOffsetY;
+        [SerializeField] private float characterCooldownTimerLabelPadding;
+        [SerializeField] private float characterCooldownTimerLabelTranslatePercentX;
+        [SerializeField] private float characterCooldownTimerLabelTranslatePercentY;
+        [SerializeField] private float characterCooldownTimerLabelTranslatePercentZ;
+        [SerializeField] private float characterCooldownTimerLabelWidth;
         [SerializeField] private float maxOpacity;
         [SerializeField] private float minOpacity;
         [SerializeField] private float pulseSpeed;
         [SerializeField] private float sineDivisor;
         [SerializeField] private float sineOffset;
-        [SerializeField] private float turretCooldownThreshold;
-        [SerializeField] private float turretCooldownTimerLabelAnchorPercent;
-        [SerializeField] private float turretCooldownTimerLabelBorderWidth;
-        [SerializeField] private float turretCooldownTimerLabelFlipThreshold;
-        [SerializeField] private float turretCooldownTimerLabelFontSize;
-        [SerializeField] private float turretCooldownTimerLabelHeight;
-        [SerializeField] private float turretCooldownTimerLabelOffsetX;
-        [SerializeField] private float turretCooldownTimerLabelOffsetY;
-        [SerializeField] private float turretCooldownTimerLabelPadding;
-        [SerializeField] private float turretCooldownTimerLabelTranslatePercentX;
-        [SerializeField] private float turretCooldownTimerLabelTranslatePercentY;
-        [SerializeField] private float turretCooldownTimerLabelTranslatePercentZ;
-        [SerializeField] private float turretCooldownTimerLabelWidth;
+        [SerializeField] private float turretCooldownTime;
         [SerializeField] private float tutorialLabelBottomPercent;
         [SerializeField] private float tutorialLabelPaddingBottom;
         [SerializeField] private float tutorialLabelPaddingLeft;
@@ -250,11 +257,8 @@ namespace Game.Scripts.UI
                 _loseScreenVisualElement.style.display = DisplayStyle.Flex;
             }
 
-            foreach(var button in _inGameUIButtonsList)
-            {
-                Pulse(button);
-            }
-            
+            foreach(var button in _inGameUIButtonsList) { Pulse(button); }
+
             Pulse(_currentBlinkingLabel);
         }
 
@@ -367,28 +371,29 @@ namespace Game.Scripts.UI
                 {
                     style =
                     {
-                        backgroundColor = turretCooldownTimerLabelBgColour ,
-                        borderBottomColor = turretCooldownTimerLabelBorderColour ,
-                        borderBottomWidth = turretCooldownTimerLabelBorderWidth ,
-                        borderLeftColor = turretCooldownTimerLabelBorderColour ,
-                        borderLeftWidth = turretCooldownTimerLabelBorderWidth ,
-                        borderRightColor = turretCooldownTimerLabelBorderColour ,
-                        borderRightWidth = turretCooldownTimerLabelBorderWidth ,
-                        borderTopColor = turretCooldownTimerLabelBorderColour ,
-                        borderTopWidth = turretCooldownTimerLabelBorderWidth ,
-                        fontSize = turretCooldownTimerLabelFontSize ,
-                        height = turretCooldownTimerLabelHeight ,
-                        left = Length.Percent(turretCooldownTimerLabelAnchorPercent) ,
-                        paddingBottom = turretCooldownTimerLabelPadding ,
-                        paddingLeft = turretCooldownTimerLabelPadding ,
-                        paddingRight = turretCooldownTimerLabelPadding ,
-                        paddingTop = turretCooldownTimerLabelPadding ,
+                        backgroundColor = playerDashCooldownTimerLabelBgColour ,
+                        borderBottomColor = playerDashCooldownTimerLabelBorderColour ,
+                        borderBottomWidth = characterCooldownTimerLabelBorderWidth ,
+                        borderLeftColor = playerDashCooldownTimerLabelBorderColour ,
+                        borderLeftWidth = characterCooldownTimerLabelBorderWidth ,
+                        borderRightColor = playerDashCooldownTimerLabelBorderColour ,
+                        borderRightWidth = characterCooldownTimerLabelBorderWidth ,
+                        borderTopColor = playerDashCooldownTimerLabelBorderColour ,
+                        borderTopWidth = characterCooldownTimerLabelBorderWidth ,
+                        color = playerDashCooldownTimerLabelTextColour ,
+                        fontSize = characterCooldownTimerLabelFontSize ,
+                        height = characterCooldownTimerLabelHeight ,
+                        left = Length.Percent(characterCooldownTimerLabelAnchorPercent) ,
+                        paddingBottom = characterCooldownTimerLabelPadding ,
+                        paddingLeft = characterCooldownTimerLabelPadding ,
+                        paddingRight = characterCooldownTimerLabelPadding ,
+                        paddingTop = characterCooldownTimerLabelPadding ,
                         position = Position.Absolute ,
-                        top = Length.Percent(turretCooldownTimerLabelAnchorPercent) ,
-                        translate = new Translate(Length.Percent(turretCooldownTimerLabelTranslatePercentX) , Length.Percent(turretCooldownTimerLabelTranslatePercentY) , turretCooldownTimerLabelTranslatePercentZ) ,
+                        top = Length.Percent(characterCooldownTimerLabelAnchorPercent) ,
+                        translate = new Translate(Length.Percent(characterCooldownTimerLabelTranslatePercentX) , Length.Percent(characterCooldownTimerLabelTranslatePercentY) , characterCooldownTimerLabelTranslatePercentZ) ,
                         unityFontStyleAndWeight = FontStyle.Bold ,
                         unityTextAlign = TextAnchor.MiddleCenter ,
-                        width = turretCooldownTimerLabelWidth
+                        width = characterCooldownTimerLabelWidth
                     }
                 };
 
@@ -404,7 +409,7 @@ namespace Game.Scripts.UI
             _entityManager.CompleteDependencyBeforeRO<ScreenBoundaryYComponent>();
             float boundaryY = _boundaryYQuery.GetSingleton<ScreenBoundaryYComponent>().Value;
 
-            if(worldPosition.y >= boundaryY - turretCooldownTimerLabelFlipThreshold) { cooldownLabel.style.top = screenPoint.y + turretCooldownTimerLabelOffsetY; }
+            if(worldPosition.y >= boundaryY - characterCooldownTimerLabelFlipThreshold) { cooldownLabel.style.top = screenPoint.y + characterCooldownTimerLabelOffsetY; }
             else { cooldownLabel.style.top = screenPoint.y; }
 
             cooldownLabel.style.left = screenPoint.x;
@@ -412,7 +417,7 @@ namespace Game.Scripts.UI
 
         private void OnTurretCooldownStarted(Entity entity , float timer , float3 worldPosition)
         {
-            if(timer <= turretCooldownThreshold)
+            if(timer <= turretCooldownTime)
             {
                 if(_turretCooldownLabelsDictionary.TryGetValue(entity , out Label label))
                 {
@@ -425,32 +430,47 @@ namespace Game.Scripts.UI
 
             if(!_turretCooldownLabelsDictionary.TryGetValue(entity , out Label cooldownLabel))
             {
+                Color bgColor = strikerTurretCooldownTimerLabelBgColour;
+                Color borderColor = strikerTurretCooldownTimerLabelBorderColour;
+
+                if(_entityManager.HasComponent<ScatterTurretTag>(entity))
+                {
+                    bgColor = scatterTurretCooldownTimerLabelBgColour;
+                    borderColor = scatterTurretCooldownTimerLabelBorderColour;
+                }
+                
+                else if(_entityManager.HasComponent<BeamTurretTag>(entity))
+                {
+                    bgColor = beamTurretCooldownTimerLabelBgColour;
+                    borderColor = beamTurretCooldownTimerLabelBorderColour;
+                }
+
                 cooldownLabel = new Label
                 {
                     style =
                     {
-                        backgroundColor = turretCooldownTimerLabelBgColour ,
-                        borderBottomColor = turretCooldownTimerLabelBorderColour ,
-                        borderBottomWidth = turretCooldownTimerLabelBorderWidth ,
-                        borderLeftColor = turretCooldownTimerLabelBorderColour ,
-                        borderLeftWidth = turretCooldownTimerLabelBorderWidth ,
-                        borderRightColor = turretCooldownTimerLabelBorderColour ,
-                        borderRightWidth = turretCooldownTimerLabelBorderWidth ,
-                        borderTopColor = turretCooldownTimerLabelBorderColour ,
-                        borderTopWidth = turretCooldownTimerLabelBorderWidth ,
-                        fontSize = turretCooldownTimerLabelFontSize ,
-                        height = turretCooldownTimerLabelHeight ,
-                        left = Length.Percent(turretCooldownTimerLabelAnchorPercent) ,
-                        paddingBottom = turretCooldownTimerLabelPadding ,
-                        paddingLeft = turretCooldownTimerLabelPadding ,
-                        paddingRight = turretCooldownTimerLabelPadding ,
-                        paddingTop = turretCooldownTimerLabelPadding ,
+                        backgroundColor = bgColor ,
+                        borderBottomColor = borderColor ,
+                        borderBottomWidth = characterCooldownTimerLabelBorderWidth ,
+                        borderLeftColor = borderColor ,
+                        borderLeftWidth = characterCooldownTimerLabelBorderWidth ,
+                        borderRightColor = borderColor ,
+                        borderRightWidth = characterCooldownTimerLabelBorderWidth ,
+                        borderTopColor = borderColor ,
+                        borderTopWidth = characterCooldownTimerLabelBorderWidth ,
+                        fontSize = characterCooldownTimerLabelFontSize ,
+                        height = characterCooldownTimerLabelHeight ,
+                        left = Length.Percent(characterCooldownTimerLabelAnchorPercent) ,
+                        paddingBottom = characterCooldownTimerLabelPadding ,
+                        paddingLeft = characterCooldownTimerLabelPadding ,
+                        paddingRight = characterCooldownTimerLabelPadding ,
+                        paddingTop = characterCooldownTimerLabelPadding ,
                         position = Position.Absolute ,
-                        top = Length.Percent(turretCooldownTimerLabelAnchorPercent) ,
-                        translate = new Translate(Length.Percent(turretCooldownTimerLabelTranslatePercentX) , Length.Percent(turretCooldownTimerLabelTranslatePercentY) , turretCooldownTimerLabelTranslatePercentZ) ,
+                        top = Length.Percent(characterCooldownTimerLabelAnchorPercent) ,
+                        translate = new Translate(Length.Percent(characterCooldownTimerLabelTranslatePercentX) , Length.Percent(characterCooldownTimerLabelTranslatePercentY) , characterCooldownTimerLabelTranslatePercentZ) ,
                         unityFontStyleAndWeight = FontStyle.Bold ,
                         unityTextAlign = TextAnchor.MiddleCenter ,
-                        width = turretCooldownTimerLabelWidth
+                        width = characterCooldownTimerLabelWidth
                     }
                 };
 
@@ -466,7 +486,7 @@ namespace Game.Scripts.UI
             _entityManager.CompleteDependencyBeforeRO<ScreenBoundaryYComponent>();
             float boundaryY = _boundaryYQuery.GetSingleton<ScreenBoundaryYComponent>().Value;
 
-            if(worldPosition.y >= boundaryY - turretCooldownTimerLabelFlipThreshold) { cooldownLabel.style.top = screenPoint.y + turretCooldownTimerLabelOffsetY; }
+            if(worldPosition.y >= boundaryY - characterCooldownTimerLabelFlipThreshold) { cooldownLabel.style.top = screenPoint.y + characterCooldownTimerLabelOffsetY; }
             else { cooldownLabel.style.top = screenPoint.y; }
 
             cooldownLabel.style.left = screenPoint.x;
@@ -512,7 +532,7 @@ namespace Game.Scripts.UI
                     if(currentLevel == tutorialLevel1) { _tutorialLabel.text = level1TutorialText; }
                     else if(currentLevel == tutorialLevel2) { _tutorialLabel.text = level2TutorialText; }
                     else if(currentLevel == tutorialLevel3) { _tutorialLabel.text = level3TutorialText; }
-                    else if(currentLevel == tutorialLevel4) { _tutorialLabel.text = level4TutorialText; } 
+                    else if(currentLevel == tutorialLevel4) { _tutorialLabel.text = level4TutorialText; }
                 }
                 else
                 {
@@ -587,7 +607,7 @@ namespace Game.Scripts.UI
         #endregion
 
         #region Custom Functions
-        
+
         private void AddLabelToPulse(Label label) { _currentBlinkingLabel = label; }
 
         private void Pulse(VisualElement element)
