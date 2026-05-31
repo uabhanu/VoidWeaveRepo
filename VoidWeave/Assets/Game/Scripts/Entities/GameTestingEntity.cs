@@ -19,7 +19,7 @@ namespace Game.Scripts.Entities
             public override void Bake(GameTestingEntity authoring)
             {
                 Entity entity = GetEntity(TransformUsageFlags.None);
-                int isMuted = System.Convert.ToInt32(authoring.isTesting && authoring.muteWhileTesting);
+                int isMuted = System.Convert.ToInt32(authoring.muteWhileTesting);
 
                 AddComponent(entity , new CurrentEnergyWhileTestingComponent { Value = authoring.currentEnergyWhileTesting });
                 AddComponent(entity , new IsTestingComponent { Value = authoring.isTesting });

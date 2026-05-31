@@ -9,6 +9,8 @@ namespace Game.Scripts.Systems
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     public partial struct InputSystem : ISystem
     {
+        private EntityQuery _tutorialActiveQuery;
+        
         [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
@@ -26,6 +28,7 @@ namespace Game.Scripts.Systems
             systemState.RequireForUpdate<InputTurret3Component>();
             systemState.RequireForUpdate<InputUpComponent>();
             systemState.RequireForUpdate<LeftKeyComponent>();
+            systemState.RequireForUpdate<LevelComponent>();
             systemState.RequireForUpdate<RightKeyComponent>();
             systemState.RequireForUpdate<Turret1KeyComponent>();
             systemState.RequireForUpdate<Turret2KeyComponent>();
@@ -33,10 +36,19 @@ namespace Game.Scripts.Systems
             systemState.RequireForUpdate<UpKeyComponent>();
 
             systemState.RequireForUpdate<PlayerTag>();
+            
+            _tutorialActiveQuery = SystemAPI.QueryBuilder().WithAll<EnemySpawnerTag , TutorialActiveTag>().Build();
         }
 
         public void OnUpdate(ref SystemState systemState)
         {
+            int currentLevel = SystemAPI.GetSingleton<LevelComponent>().Value;
+            bool isTutorialActive = !_tutorialActiveQuery.IsEmpty;
+            
+            bool canPress1 = !isTutorialActive || currentLevel == 1 || currentLevel >= 4;
+            bool canPress2 = !isTutorialActive || currentLevel == 2 || currentLevel >= 4;
+            bool canPress3 = !isTutorialActive || currentLevel == 3 || currentLevel >= 4;
+            
             Keyboard keyboard = Keyboard.current;
 
             Key dashKey = SystemAPI.GetSingleton<DashKeyComponent>().Value;
@@ -76,9 +88,9 @@ namespace Game.Scripts.Systems
             selectedInput |= math.select(noneValue , rightValue , keyboard[rightKey].isPressed);
             selectedInput |= math.select(noneValue , dashValue , keyboard[dashKey].wasPressedThisFrame);
             selectedInput |= math.select(noneValue , deployValue , keyboard[deployKey].wasPressedThisFrame);
-            selectedInput |= math.select(noneValue , turret1Value , keyboard[turret1Key].wasPressedThisFrame);
-            selectedInput |= math.select(noneValue , turret2Value , keyboard[turret2Key].wasPressedThisFrame);
-            selectedInput |= math.select(noneValue , turret3Value , keyboard[turret3Key].wasPressedThisFrame);
+            selectedInput |= math.select(noneValue , turret1Value , keyboard[turret1Key].wasPressedThisFrame && canPress1);
+            selectedInput |= math.select(noneValue , turret2Value , keyboard[turret2Key].wasPressedThisFrame && canPress2);
+            selectedInput |= math.select(noneValue , turret3Value , keyboard[turret3Key].wasPressedThisFrame && canPress3);
 
             foreach(RefRW<PlayerInputComponent> playerInputComponent in SystemAPI.Query<RefRW<PlayerInputComponent>>().WithAll<PlayerTag>()) playerInputComponent.ValueRW.Value = selectedInput;
         }

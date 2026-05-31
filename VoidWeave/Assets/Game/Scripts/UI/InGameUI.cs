@@ -12,6 +12,9 @@ namespace Game.Scripts.UI
     public class InGameUI : MonoBehaviour
     {
         #region Variables
+        
+        private const int Wave1Index = 0;
+        private const int Wave2Index = 1;
 
         private readonly List<Button> _inGameUIButtonsList = new();
 
@@ -95,6 +98,9 @@ namespace Game.Scripts.UI
         [SerializeField] private int turretIdBeam;
         [SerializeField] private int tutorialLevel1;
         [SerializeField] private int tutorialLevel2;
+        [SerializeField] private int tutorialLevel3;
+        [SerializeField] private int tutorialLevel4;
+        [SerializeField] private int wave0Index;
         [SerializeField] private int wavePrepLabelPaddingLeft;
         [SerializeField] private int waveStateReadyValue;
 
@@ -103,10 +109,14 @@ namespace Game.Scripts.UI
         [SerializeField] [Multiline] private string level1TutorialText;
         [SerializeField] [Multiline] private string level2TutorialText;
         [SerializeField] [Multiline] private string level3TutorialText;
+        [SerializeField] [Multiline] private string level4TutorialText;
 
         [SerializeField] private string beamTurretName;
         [SerializeField] private string scatterTurretName;
         [SerializeField] private string strikerTurretName;
+        [SerializeField] private string wave1Text;
+        [SerializeField] private string wave2Text;
+        [SerializeField] private string wave3Text;
 
         [SerializeField] private UIDocument uiDocument;
 
@@ -494,14 +504,15 @@ namespace Game.Scripts.UI
 
                     _rootVisualElement.Add(_tutorialLabel);
                     _tutorialLabel.SendToBack();
-                    StartBlinkingLabel(_tutorialLabel);
+                    AddLabelToPulse(_tutorialLabel);
                 }
 
                 if(turretType == turretIdNone)
                 {
                     if(currentLevel == tutorialLevel1) { _tutorialLabel.text = level1TutorialText; }
                     else if(currentLevel == tutorialLevel2) { _tutorialLabel.text = level2TutorialText; }
-                    else { _tutorialLabel.text = level3TutorialText; }
+                    else if(currentLevel == tutorialLevel3) { _tutorialLabel.text = level3TutorialText; }
+                    else if(currentLevel == tutorialLevel4) { _tutorialLabel.text = level4TutorialText; } 
                 }
                 else
                 {
@@ -561,13 +572,13 @@ namespace Game.Scripts.UI
             }
 
             _entityManager.CompleteDependencyBeforeRO<WaveIndexComponent>();
-            int waveIndex = _waveIndexQuery.IsEmptyIgnoreFilter ? 0 : _waveIndexQuery.GetSingleton<WaveIndexComponent>().Value;
+            int waveIndex = _waveIndexQuery.IsEmptyIgnoreFilter ? wave0Index : _waveIndexQuery.GetSingleton<WaveIndexComponent>().Value;
 
             string wavePrefix = waveIndex switch
             {
-                0 => "First Wave" ,
-                1 => "Second Wave" ,
-                _ => "Final Wave"
+                Wave1Index => wave1Text ,
+                Wave2Index => wave2Text ,
+                _ => wave3Text
             };
 
             _wavePrepLabel.text = $"{wavePrefix} In\n{timer:F0}";
@@ -576,6 +587,8 @@ namespace Game.Scripts.UI
         #endregion
 
         #region Custom Functions
+        
+        private void AddLabelToPulse(Label label) { _currentBlinkingLabel = label; }
 
         private void Pulse(VisualElement element)
         {
@@ -611,18 +624,6 @@ namespace Game.Scripts.UI
             _waveIndexQuery = _entityManager.CreateEntityQuery(typeof(WaveIndexComponent));
 
             _entityManager.CreateEntity(typeof(ResumeInputTag));
-        }
-
-        private void StartBlinkingLabel(Label label) { _currentBlinkingLabel = label; }
-
-        private void StopBlinkingLabel(Label label)
-        {
-            if(_currentBlinkingLabel == label)
-            {
-                if(_currentBlinkingLabel != null) { _currentBlinkingLabel.style.opacity = maxOpacity; }
-
-                _currentBlinkingLabel = null;
-            }
         }
 
         #endregion

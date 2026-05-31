@@ -151,16 +151,22 @@ namespace Game.Scripts.Systems
 
                 ecb.RemoveComponent<ProjectileFiredEventTag>(entity);
             }
-
-            foreach((RefRO<CooldownComponent> cooldownComponent , RefRO<LocalTransform> transform , Entity turretEntity) in SystemAPI.Query<RefRO<CooldownComponent> , RefRO<LocalTransform>>().WithAny<BeamTurretTag , ScatterTurretTag , StrikerTurretTag>().WithChangeFilter<CooldownComponent>().WithEntityAccess())
+            
+            // DEPLOYMENT SOUND (Runs ONLY for new turrets) ---
+            foreach((RefRO<CooldownComponent> cooldownComponent , Entity turretEntity) in SystemAPI.Query<RefRO<CooldownComponent>>().WithAll<DeployingTurretTag>().WithEntityAccess())
             {
-                OnTurretCooldownStarted?.Invoke(turretEntity , cooldownComponent.ValueRO.Value , transform.ValueRO.Position);
-
-                int startLoop = (int)SystemAPI.GetSingleton<InputNoneComponent>().Value;
-                int endLoop = math.select(startLoop , 1 , cooldownComponent.ValueRO.Value > SystemAPI.GetSingleton<InputNoneComponent>().Value && (int)cooldownComponent.ValueRO.Value != (int)(cooldownComponent.ValueRO.Value + SystemAPI.Time.DeltaTime));
-
-                for(int i = startLoop ; i < endLoop ; i++) { AudioManagerOnTurretCooldownFinished?.Invoke(); }
+                int turretCooldownFinished = math.select(noAction , doAction , cooldownComponent.ValueRO.Value <= doAction);
+                
+                for(int i = noAction ; i < turretCooldownFinished ; i++)
+                {
+                    AudioManagerOnTurretCooldownFinished?.Invoke();
+                    ecb.RemoveComponent<DeployingTurretTag>(turretEntity);
+                }
             }
+
+            // UI TIMERS (Runs for ALL turrets) ---
+            // Because this query doesn't filter by the new tag, your UI still updates perfectly for both deployment and combat!
+            foreach((RefRO<CooldownComponent> cooldownComponent , RefRO<LocalTransform> transform , Entity turretEntity) in SystemAPI.Query<RefRO<CooldownComponent> , RefRO<LocalTransform>>().WithAny<BeamTurretTag , ScatterTurretTag , StrikerTurretTag>().WithChangeFilter<CooldownComponent>().WithEntityAccess()) { OnTurretCooldownStarted?.Invoke(turretEntity , cooldownComponent.ValueRO.Value , transform.ValueRO.Position); }
 
             for(int i = noAction ; i < math.select(noAction , doAction , tutorialStateToggled || (currentTutorialState && turretSelectionChanged == doAction)) ; i++) { OnTutorialStateChanged?.Invoke(currentLevel , currentTutorialState , selectedTurretCostComponent , turretType); }
 
@@ -171,7 +177,7 @@ namespace Game.Scripts.Systems
                     OnWavePrepCountdownStarted?.Invoke(timerComponent.ValueRO.Value , waveStateComponent.ValueRO.Value);
 
                     int startLoop = SystemAPI.GetSingleton<WaveStateComponent>().Value;
-                    int endLoop = math.select(startLoop , 1 , waveStateComponent.ValueRO.Value == startLoop && timerComponent.ValueRO.Value > SystemAPI.GetSingleton<InputNoneComponent>().Value && (int)timerComponent.ValueRO.Value != (int)(timerComponent.ValueRO.Value + SystemAPI.Time.DeltaTime));
+                    int endLoop = math.select(startLoop , doAction , waveStateComponent.ValueRO.Value == startLoop && timerComponent.ValueRO.Value > SystemAPI.GetSingleton<InputNoneComponent>().Value && (int)timerComponent.ValueRO.Value != (int)(timerComponent.ValueRO.Value + SystemAPI.Time.DeltaTime));
 
                     for(int i = startLoop ; i < endLoop ; i++) { AudioManagerOnWavePrepCountdownStarted?.Invoke(); }
                 }

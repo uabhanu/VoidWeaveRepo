@@ -65,6 +65,12 @@ namespace Game.Scripts.Systems
             Entity playerEntity = SystemAPI.GetSingletonEntity<PlayerTag>();
             RefRW<CurrentHealthComponent> currentHealthComponent = SystemAPI.GetComponentRW<CurrentHealthComponent>(playerEntity);
             RefRW<MaxHealthComponent> maxHealthComponent = SystemAPI.GetComponentRW<MaxHealthComponent>(playerEntity);
+            
+            RefRW<SelectedTurretEntityComponent> selectedTurretEntityComponent = SystemAPI.GetComponentRW<SelectedTurretEntityComponent>(playerEntity);
+            RefRW<SelectedTurretCostComponent> selectedTurretCostComponent = SystemAPI.GetComponentRW<SelectedTurretCostComponent>(playerEntity);
+
+            selectedTurretEntityComponent.ValueRW.Entity = isLevelComplete ? Entity.Null : selectedTurretEntityComponent.ValueRO.Entity;
+            selectedTurretCostComponent.ValueRW.Value = math.select(selectedTurretCostComponent.ValueRO.Value , noAction , isLevelComplete);
 
             currentHealthComponent.ValueRW.Value = math.select(currentHealthComponent.ValueRO.Value , maxHealthComponent.ValueRO.Value , isLevelComplete);
 

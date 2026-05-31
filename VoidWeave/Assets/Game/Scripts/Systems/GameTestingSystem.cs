@@ -5,10 +5,7 @@ namespace Game.Scripts.Systems
     using Unity.Entities;
     using Unity.Mathematics;
 
-    [UpdateInGroup(typeof(GameplaySystemGroup))]
-    [UpdateBefore(typeof(LevelProgressionSystem))]
-    [UpdateBefore(typeof(WaveStateSystem))]
-    [UpdateBefore(typeof(EnemySpawningSystem))]
+    [UpdateInGroup(typeof(InitializationSystemGroup))]
     public partial struct GameTestingSystem : ISystem
     {
         private EntityQuery _enemyQuery;

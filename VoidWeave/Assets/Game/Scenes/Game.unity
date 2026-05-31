@@ -652,21 +652,28 @@ MonoBehaviour:
   turretIdBeam: 3
   tutorialLevel1: 1
   tutorialLevel2: 2
+  tutorialLevel3: 3
+  tutorialLevel4: 4
   wavePrepLabelPaddingLeft: 40
   waveStateReadyValue: 0
   hudPanelSprite: {fileID: 21300000, guid: d673b2ca11fb9d447910e14d3f666f64, type: 3}
   level1TutorialText: 'Press [1]
 
-    to select a Striker Turret'
-  level2TutorialText: 'Press [1] or [2]
+    to select the Striker Turret'
+  level2TutorialText: 'Press [2]
 
-    to select a Turret'
-  level3TutorialText: 'Press [1], [2], or [3]
+    to select the Scatter Turret'
+  level3TutorialText: 'Press [3]
 
-    to select a Turret'
+    to select the Beam Turret'
+  level4TutorialText: "You can now select 1, 2, or 3 \nto select a turret of your
+    choosing.\nPress ANY KEY to continue."
   beamTurretName: Beam Turret
   scatterTurretName: Scatter Turret
   strikerTurretName: Striker Turret
+  wave1Text: First Wave
+  wave2Text: Second Wave
+  wave3Text: Final Wave
   uiDocument: {fileID: 1711150510}
 --- !u!1 &619394800
 GameObject:

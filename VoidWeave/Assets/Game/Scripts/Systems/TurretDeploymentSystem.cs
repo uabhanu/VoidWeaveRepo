@@ -86,6 +86,7 @@ namespace Game.Scripts.Systems
             for(var i = 0 ; i < spawnCount ; i++)
             {
                 Entity newTurret = EntityCommandBuffer.Instantiate(entityInQueryIndex , selectedTurretEntityComponent.Entity);
+                EntityCommandBuffer.AddComponent<DeployingTurretTag>(entityInQueryIndex , newTurret);
                 EntityCommandBuffer.SetComponent(entityInQueryIndex , newTurret , LocalTransform.FromPosition(localTransform.Position));
             }
 

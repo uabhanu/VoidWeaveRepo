@@ -6,46 +6,66 @@ namespace Game.Scripts.Systems
     using Unity.Mathematics;
 
     [UpdateInGroup(typeof(GameplaySystemGroup))]
-    [UpdateBefore(typeof(LevelProgressionSystem))] // Evaluate before the advance event entity is destroyed
+    [UpdateBefore(typeof(LevelProgressionSystem))]
     public partial struct TutorialSystem : ISystem
     {
-        private EntityQuery _turretQuery;
         private EntityQuery _advanceLevelQuery;
 
         [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
+            systemState.RequireForUpdate<Level3EnergyForTutorialComponent>();
+            systemState.RequireForUpdate<Level2EnergyForTutorialComponent>();
+            systemState.RequireForUpdate<Level1EnergyForTutorialComponent>();
             systemState.RequireForUpdate<DoActionComponent>();
+            systemState.RequireForUpdate<InputNoneComponent>();
+            systemState.RequireForUpdate<InputDeployComponent>();
             systemState.RequireForUpdate<LevelComponent>();
+            systemState.RequireForUpdate<MaxLevelsForTutorialsComponent>();
             systemState.RequireForUpdate<NoActionComponent>();
+            systemState.RequireForUpdate<PlayerInputComponent>();
+            systemState.RequireForUpdate<SelectedTurretEntityComponent>();
 
-            _turretQuery = SystemAPI.QueryBuilder().WithAll<TurretTag>().Build();
             _advanceLevelQuery = SystemAPI.QueryBuilder().WithAll<AdvanceLevelEventTag>().Build();
         }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
-            int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
             int currentLevel = SystemAPI.GetSingleton<LevelComponent>().Value;
+            int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
+            uint inputNone = SystemAPI.GetSingleton<InputNoneComponent>().Value;
+            uint inputDeploy = SystemAPI.GetSingleton<InputDeployComponent>().Value;
+            int level1 = SystemAPI.GetSingleton<Level1EnergyForTutorialComponent>().Value;
+            int level2 = SystemAPI.GetSingleton<Level2EnergyForTutorialComponent>().Value;
+            int level3 = SystemAPI.GetSingleton<Level3EnergyForTutorialComponent>().Value;
+            int maxTutorialLevelComponent = SystemAPI.GetSingleton<MaxLevelsForTutorialsComponent>().Value;
+            int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
 
-            // Is there a turret deployed? (1 if empty/no turrets, 0 if a turret exists)
-            int tutorialActiveByDeployment = math.select(noAction , doAction , _turretQuery.IsEmpty);
+            bool levelAdvanced = !_advanceLevelQuery.IsEmpty;
+            int isLevelAdvanced = math.select(noAction , doAction , levelAdvanced);
+            int evaluatedLevel = currentLevel + math.select(noAction , doAction , levelAdvanced);
+            int isLevel1 = math.select(noAction , doAction , evaluatedLevel == doAction);
+            int isLevel2 = math.select(noAction , doAction , evaluatedLevel == 2);
+            int isLevel3 = math.select(noAction , doAction , evaluatedLevel >= 3);
+            int minEnergy = isLevel1 * level1 + isLevel2 * level2 + isLevel3 * level3;
 
-            // Did we just progress to a new level on this exact frame? (1 if event entity exists, 0 if not)
-            int levelJustAdvanced = math.select(noAction , doAction , !_advanceLevelQuery.IsEmpty);
+            uint playerInput = SystemAPI.GetSingleton<PlayerInputComponent>().Value;
+            bool hasTurretSelected = SystemAPI.GetSingleton<SelectedTurretEntityComponent>().Entity != Entity.Null;
+            bool deployPressed = ((playerInput & inputDeploy) != inputNone) & hasTurretSelected;
+            bool anyKeyPressed = playerInput != inputNone;
 
-            // Is the upcoming tutorial state permitted by the level rules? (1 if currentLevel <= 3, 0 if level >= 4)
-            int tutorialAllowedByLevel = math.select(doAction , noAction , currentLevel >= 4);
+            bool shouldDisable = (evaluatedLevel < maxTutorialLevelComponent & deployPressed) | (evaluatedLevel >= maxTutorialLevelComponent & anyKeyPressed) | (evaluatedLevel > maxTutorialLevelComponent);
+            bool shouldEnable = levelAdvanced & (evaluatedLevel <= maxTutorialLevelComponent);
 
-            // Force the state back to true if a level up occurs, otherwise tie it to turret presence
-            int calculatedState = math.select(tutorialActiveByDeployment , doAction , levelJustAdvanced == doAction);
+            foreach(RefRW<CurrentEnergyComponent> energy in SystemAPI.Query<RefRW<CurrentEnergyComponent>>()) { energy.ValueRW.Value = math.select(energy.ValueRO.Value , minEnergy , isLevelAdvanced == doAction); }
 
-            // Hard lock to false if we hit Level 4+
-            bool finalTutorialState = (calculatedState * tutorialAllowedByLevel) == doAction;
-
-            foreach(var (_ , entity) in SystemAPI.Query<RefRO<EnemySpawnerTag>>().WithOptions(EntityQueryOptions.IgnoreComponentEnabledState).WithEntityAccess()) { SystemAPI.SetComponentEnabled<TutorialActiveTag>(entity , finalTutorialState); }
+            foreach(var (_ , entity) in SystemAPI.Query<RefRO<EnemySpawnerTag>>().WithOptions(EntityQueryOptions.IgnoreComponentEnabledState).WithEntityAccess())
+            {
+                bool currentlyActive = SystemAPI.IsComponentEnabled<TutorialActiveTag>(entity);
+                bool finalState = shouldEnable | (currentlyActive & !shouldDisable);
+                SystemAPI.SetComponentEnabled<TutorialActiveTag>(entity , finalState);
+            }
         }
     }
 }
