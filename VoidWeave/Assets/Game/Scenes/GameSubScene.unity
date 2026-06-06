@@ -150,10 +150,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.GameTestingEntity
   currentEnergyWhileTesting: 1000
   isTesting: 0
-  levelWhileTesting: 3
+  levelWhileTesting: 5
+  muteWhileTesting: 0
   timerWhileTesting: 0
   waveStateWhileTesting: 1
-  waveStockWhileTesting: 5
+  waveStockWhileTesting: 1
 --- !u!4 &64175127
 Transform:
   m_ObjectHideFlags: 0
@@ -247,10 +248,15 @@ MonoBehaviour:
   healthMultiplierPerLevel: 0.3
   healthValueForDeath: 0
   inputEntityPrefab: {fileID: 6464459571194226029, guid: 7defc3eb64b3d2e418ff6dbec472138b, type: 3}
+  level1EnergyForTutorial: 100
+  level2EnergyForTutorial: 150
+  level3EnergyForTutorial: 200
   lineEnemyUnlockLevel: 1
   lootMultiplierPerLevel: 0.2
   lootPickupRadius: 0.5
+  lootSpawnedFirstTime: 0
   mainMenuState: 0
+  maxLevelForTutorials: 4
   minEnemiesToKill: 0
   minOverlapDistance: 0.01
   minStartingLevel: 0
@@ -269,7 +275,6 @@ MonoBehaviour:
   spreadZero: 0
   squareEnemyUnlockLevel: 3
   startingLevel: 1
-  startingResources: 100
   targetDefaultPosition: 100000
   timerExpired: 0
   triangleEnemyUnlockLevel: 2

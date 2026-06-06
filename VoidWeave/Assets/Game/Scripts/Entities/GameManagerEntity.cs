@@ -26,10 +26,15 @@ namespace Game.Scripts.Entities
         [SerializeField] private float healthMultiplierPerLevel;
         [SerializeField] private float healthValueForDeath;
         [SerializeField] private GameObject inputEntityPrefab;
+        [SerializeField] private int level1EnergyForTutorial;
+        [SerializeField] private int level2EnergyForTutorial;
+        [SerializeField] private int level3EnergyForTutorial;
         [SerializeField] private int lineEnemyUnlockLevel; //The When
         [SerializeField] private float lootMultiplierPerLevel;
         [SerializeField] private float lootPickupRadius;
+        [SerializeField] private int lootSpawnedFirstTime;
         [SerializeField] private int mainMenuState;
+        [SerializeField] private int maxLevelForTutorials;
         [SerializeField] private int minEnemiesToKill;
         [SerializeField] private float minOverlapDistance;
         [SerializeField] private int minStartingLevel;
@@ -48,7 +53,6 @@ namespace Game.Scripts.Entities
         [SerializeField] private float spreadZero;
         [SerializeField] private int squareEnemyUnlockLevel; //The When
         [SerializeField] private int startingLevel;
-        [SerializeField] private int startingResources;
         [Tooltip("Chosen this high value on purpose to make turret shoot nothing when there is no target")] [SerializeField] private float targetDefaultPosition;
         [SerializeField] private float timerExpired;
         [SerializeField] private int triangleEnemyUnlockLevel; //The When
@@ -68,7 +72,7 @@ namespace Game.Scripts.Entities
         [SerializeField] private int zeroScale;
 
         #endregion
-        
+
         #region Baker
 
         private class GameManagerBaker : Baker<GameManagerEntity>
@@ -90,7 +94,7 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new CameraOrthographicSizeComponent { Value = authoring.cameraOrthographicSize });
                 AddComponent(entity , new CollisionActiveComponent { Value = authoring.collisionActive });
                 AddComponent(entity , new CollisionNoneComponent { Value = authoring.collisionNone });
-                AddComponent(entity , new CurrentEnergyComponent { Value = authoring.startingResources });
+                AddComponent(entity , new CurrentEnergyComponent { Value = authoring.level1EnergyForTutorial });
                 AddComponent(entity , new DamageMultiplierComponent { Value = authoring.damageMultiplierPerLevel });
                 AddComponent(entity , new DashCooldownDefaultComponent { Value = authoring.dashCooldownDefault });
                 AddComponent(entity , new DashDurationDefaultComponent { Value = authoring.dashDurationDefault });
@@ -104,12 +108,17 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new HealthValueForDeathComponent { Value = authoring.healthValueForDeath });
                 AddComponent(entity , new InputEntityComponent { Entity = GetEntity(authoring.inputEntityPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new LevelComponent { Value = authoring.startingLevel });
+                AddComponent(entity , new Level1EnergyForTutorialComponent { Value = authoring.level1EnergyForTutorial });
+                AddComponent(entity , new Level2EnergyForTutorialComponent { Value = authoring.level2EnergyForTutorial });
+                AddComponent(entity , new Level3EnergyForTutorialComponent { Value = authoring.level3EnergyForTutorial });
                 AddComponent(entity , new LevelToUnlockLineEnemyComponent { Value = authoring.lineEnemyUnlockLevel });
                 AddComponent(entity , new LevelToUnlockSquareEnemyComponent { Value = authoring.squareEnemyUnlockLevel });
                 AddComponent(entity , new LevelToUnlockTriangleEnemyComponent { Value = authoring.triangleEnemyUnlockLevel });
                 AddComponent(entity , new LootMultiplierComponent { Value = authoring.lootMultiplierPerLevel });
                 AddComponent(entity , new LootPickupRadiusComponent { Value = authoring.lootPickupRadius });
+                AddComponent(entity , new LootSpawnedFirstTimeComponent { Value = authoring.lootSpawnedFirstTime });
                 AddComponent(entity , new MainMenuStateComponent { Value = authoring.mainMenuState });
+                AddComponent(entity , new MaxLevelsForTutorialsComponent { Value = authoring.maxLevelForTutorials });
                 AddComponent(entity , new MinOverlapDistanceComponent { Value = authoring.minOverlapDistance });
                 AddComponent(entity , new MovementActiveComponent { Value = authoring.movementActive });
                 AddComponent(entity , new MovementNoneComponent { Value = authoring.movementNone });

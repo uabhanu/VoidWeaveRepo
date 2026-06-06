@@ -6,7 +6,7 @@ namespace Game.Scripts.Systems
     using Unity.Mathematics;
     using Unity.Transforms;
 
-    [UpdateInGroup(typeof(PresentationSystemGroup))]
+    [UpdateInGroup(typeof(GameplaySystemGroup))]
     [BurstCompile]
     public partial struct MovementVfxSystem : ISystem
     {
@@ -29,6 +29,7 @@ namespace Game.Scripts.Systems
                     ecb.SetComponent(trailVfxEntity , localTransform);
 
                     var lifetimeData = SystemAPI.GetComponent<LifetimeComponent>(movementVfxComponent.Value);
+                    ecb.AddComponent<VfxUpdateTag>(trailVfxEntity);
                     ecb.SetComponent(trailVfxEntity , lifetimeData);
 
                     lastSpawnPositionComponent.ValueRW.Value = localTransform.Position;

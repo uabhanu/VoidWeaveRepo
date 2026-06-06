@@ -8,19 +8,26 @@ namespace Game.Scripts.Systems
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     public partial struct TimerSystem : ISystem
     {
+        private EntityQuery _tutorialActiveQuery;
+        
         [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
+            systemState.RequireForUpdate<NoActionComponent>();
             systemState.RequireForUpdate<TimerComponent>();
             systemState.RequireForUpdate<TimerExpiredComponent>();
+            
+            _tutorialActiveQuery = SystemAPI.QueryBuilder().WithAll<EnemySpawnerTag , TurretsTutorialActiveTag>().Build();
         }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
+            int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
             float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value;
+            bool isTutorialActive = !_tutorialActiveQuery.IsEmpty;
 
-            systemState.Dependency = new TimerJob { DeltaTime = SystemAPI.Time.DeltaTime , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
+            systemState.Dependency = new TimerJob { DeltaTime = SystemAPI.Time.DeltaTime , IsTutorialActive = isTutorialActive , NoAction = noAction , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
         }
     }
 
@@ -28,11 +35,13 @@ namespace Game.Scripts.Systems
     public partial struct TimerJob : IJobEntity
     {
         public float DeltaTime;
+        public int NoAction;
+        public bool IsTutorialActive;
         public float TimerExpired;
 
         private void Execute(ref TimerComponent timerComponent)
         {
-            timerComponent.Value -= DeltaTime;
+            timerComponent.Value -= math.select(DeltaTime , NoAction , IsTutorialActive);
             timerComponent.Value = math.max(TimerExpired , timerComponent.Value);
         }
     }

@@ -135,3 +135,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8751f446251923b41b365f0fb1c274a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entities.LootEntity
+  lifetime: 20
+  timeBeforeEntityPulse: 4.5

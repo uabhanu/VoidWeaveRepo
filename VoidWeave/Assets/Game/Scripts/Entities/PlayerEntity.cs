@@ -60,6 +60,7 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new RotationSpeedComponent { Value = authoring.rotationSpeed });
                 AddComponent(entity , new SelectedTurretCostComponent());
                 AddComponent(entity , new SelectedTurretEntityComponent { Entity = Entity.Null });
+                AddComponent(entity , new SelectedTurretIndexComponent());
                 AddComponent(entity , new TeamComponent { Value = authoring.teamID });
                 AddComponent(entity , new VfxColorComponent { Value = new float3(authoring.vfxColor.r , authoring.vfxColor.g , authoring.vfxColor.b) });
                 AddComponent(entity , new VfxScaleComponent { Value = bodyVisualScale });

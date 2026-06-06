@@ -29,6 +29,8 @@ namespace Game.Scripts.Systems
         private void Execute(in DeathVfxComponent deathVfxComponent , [EntityIndexInQuery] int entityIndexInQuery , in LocalTransform localTransform)
         {
             Entity vfxEntity = ECB.Instantiate(entityIndexInQuery , deathVfxComponent.Value);
+            
+            ECB.AddComponent<VfxUpdateTag>(entityIndexInQuery , vfxEntity);
             ECB.SetComponent(entityIndexInQuery , vfxEntity , localTransform);
         }
     }

@@ -136,7 +136,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d0f14928652cc04d95f6b771dbef7ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entities.ScatterTurretEntity
-  attackRate: 0.5
+  attackRate: 0.6
   bulletPrefab: {fileID: 7884734006532612169, guid: a34abe5c560aeac4b861daec3f6f2095, type: 3}
   cooldownTime: 2.5
   collisionRadius: 0.6

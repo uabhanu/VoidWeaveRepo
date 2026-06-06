@@ -10,13 +10,9 @@ namespace Game.Scripts.Systems
     [UpdateBefore(typeof(EnemySpawningSystem))]
     public partial struct LevelProgressionSystem : ISystem
     {
-        private EntityQuery _enemyEntityInTheSceneQuery;
-        
         [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
-            _enemyEntityInTheSceneQuery = systemState.GetEntityQuery(ComponentType.ReadOnly<EnemyTag>());
-            
             systemState.RequireForUpdate<DoActionComponent>();
             systemState.RequireForUpdate<EnemiesKilledComponent>();
             systemState.RequireForUpdate<EnemiesToKillComponent>();
@@ -34,6 +30,8 @@ namespace Game.Scripts.Systems
             systemState.RequireForUpdate<UnlockedSquareEnemyComponent>();
             systemState.RequireForUpdate<UnlockedTriangleEnemyComponent>();
             systemState.RequireForUpdate<WaveIndexComponent>();
+
+            systemState.RequireForUpdate<AdvanceLevelEventTag>();
         }
 
         [BurstCompile]
@@ -42,7 +40,6 @@ namespace Game.Scripts.Systems
             systemState.Dependency.Complete();
 
             int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
-            int enemyEntitiesCount = _enemyEntityInTheSceneQuery.CalculateEntityCount();
             int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
             int levelToUnlockLineEnemy = SystemAPI.GetSingleton<LevelToUnlockLineEnemyComponent>().Value;
             int levelToUnlockSquareEnemy = SystemAPI.GetSingleton<LevelToUnlockSquareEnemyComponent>().Value;
@@ -59,14 +56,9 @@ namespace Game.Scripts.Systems
             RefRW<UnlockedEnemiesComponent> unlockedEnemiesComponent = SystemAPI.GetSingletonRW<UnlockedEnemiesComponent>();
             RefRW<WaveIndexComponent> waveIndexComponent = SystemAPI.GetSingletonRW<WaveIndexComponent>();
 
-            bool killsReached = enemiesKilledComponent.ValueRO.Value >= enemiesToKillComponent.ValueRW.Value;
-            bool noEnemiesLeft = enemyEntitiesCount == 0;
-            
-            // Check if Kill Value meets the Entity Threshold
-            bool isLevelComplete = killsReached && noEnemiesLeft;
+            bool isLevelComplete = true;
             bool isTesting = SystemAPI.GetSingleton<IsTestingComponent>().Value;
 
-            // Reset Kill Value for the new level
             enemiesKilledComponent.ValueRW.Value = math.select(enemiesKilledComponent.ValueRO.Value , noAction , isLevelComplete);
             enemiesToKillComponent.ValueRW.Value += math.select(noAction , enemiesToKillIncrementComponent.Value , isLevelComplete);
 
@@ -74,12 +66,19 @@ namespace Game.Scripts.Systems
             RefRW<CurrentHealthComponent> currentHealthComponent = SystemAPI.GetComponentRW<CurrentHealthComponent>(playerEntity);
             RefRW<MaxHealthComponent> maxHealthComponent = SystemAPI.GetComponentRW<MaxHealthComponent>(playerEntity);
 
+            RefRW<SelectedTurretEntityComponent> selectedTurretEntityComponent = SystemAPI.GetComponentRW<SelectedTurretEntityComponent>(playerEntity);
+            RefRW<SelectedTurretCostComponent> selectedTurretCostComponent = SystemAPI.GetComponentRW<SelectedTurretCostComponent>(playerEntity);
+
+            int turretEntityIndex = math.select(selectedTurretEntityComponent.ValueRO.Entity.Index , -doAction , isLevelComplete);
+            int turretEntityVersion = math.select(selectedTurretEntityComponent.ValueRO.Entity.Version , noAction , isLevelComplete);
+            
+            selectedTurretEntityComponent.ValueRW.Entity = new Entity { Index = turretEntityIndex , Version = turretEntityVersion };
+            selectedTurretCostComponent.ValueRW.Value = math.select(selectedTurretCostComponent.ValueRO.Value , noAction , isLevelComplete);
+
             currentHealthComponent.ValueRW.Value = math.select(currentHealthComponent.ValueRO.Value , maxHealthComponent.ValueRO.Value , isLevelComplete);
 
-            // Increment Entity
             levelComponent.ValueRW.Value += math.select(noAction , doAction , isLevelComplete);
 
-            //Update Unlocks (Triangle Enemy unlocks at Entity 2, Square Enemy at Entity 3)
             uint bitMask = unlockedNone;
             bitMask |= (uint)math.select(noAction , unlockedLineEnemy , levelComponent.ValueRO.Value >= levelToUnlockLineEnemy);
             bitMask |= (uint)math.select(noAction , unlockedTriangleEnemy , levelComponent.ValueRO.Value >= levelToUnlockTriangleEnemy);
@@ -88,6 +87,9 @@ namespace Game.Scripts.Systems
             bool shouldUpdateMask = isLevelComplete || isTesting;
             unlockedEnemiesComponent.ValueRW.Value = math.select(unlockedEnemiesComponent.ValueRO.Value , bitMask , shouldUpdateMask);
             waveIndexComponent.ValueRW.Value = math.select(waveIndexComponent.ValueRO.Value , noAction , isLevelComplete);
+
+            var advanceLevelQuery = SystemAPI.QueryBuilder().WithAll<AdvanceLevelEventTag>().Build();
+            systemState.EntityManager.DestroyEntity(advanceLevelQuery);
         }
     }
 }

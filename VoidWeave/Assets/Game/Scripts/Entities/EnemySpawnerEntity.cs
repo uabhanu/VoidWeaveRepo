@@ -58,6 +58,14 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new WavePrepDurationComponent { Value = authoring.wavePrepDuration });
                 AddComponent(entity , new WaveStateComponent());
                 AddComponent(entity , new WaveStockComponent());
+                
+                AddComponent<GameLostTag>(entity);
+                SetComponentEnabled<GameLostTag>(entity , false);
+                
+                AddComponent<GameWonTag>(entity);
+                SetComponentEnabled<GameWonTag>(entity , false);
+                
+                AddComponent(entity , new TurretsTutorialActiveTag());
             }
         }
     }

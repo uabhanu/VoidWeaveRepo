@@ -4,7 +4,7 @@ namespace Game.Scripts.Systems
     using Unity.Entities;
     using UnityEngine.VFX;
 
-    [UpdateInGroup(typeof(PresentationSystemGroup))]
+    [UpdateInGroup(typeof(GameplaySystemGroup))]
     public partial struct VfxUpdateSystem : ISystem
     {
         public void OnCreate(ref SystemState systemState) { systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>(); }

@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 707fea688c5afee4d86ae1062c97ce01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entities.BeamTurretEntity
-  attackRate: 0
+  attackRate: 0.2
   bulletPrefab: {fileID: 5278438526807469363, guid: 8973a6bc2c34da34da2e944e8cfcef38, type: 3}
   cooldownTime: 1.5
   collisionRadius: 0.5
