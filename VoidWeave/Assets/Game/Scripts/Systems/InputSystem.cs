@@ -37,7 +37,7 @@ namespace Game.Scripts.Systems
 
             systemState.RequireForUpdate<PlayerTag>();
             
-            _tutorialActiveQuery = SystemAPI.QueryBuilder().WithAll<EnemySpawnerTag , TutorialActiveTag>().Build();
+            _tutorialActiveQuery = SystemAPI.QueryBuilder().WithAll<EnemySpawnerTag , TurretsTutorialActiveTag>().Build();
         }
 
         public void OnUpdate(ref SystemState systemState)

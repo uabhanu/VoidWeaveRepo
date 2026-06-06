@@ -630,12 +630,19 @@ MonoBehaviour:
   characterCooldownTimerLabelTranslatePercentY: -220
   characterCooldownTimerLabelTranslatePercentZ: 0
   characterCooldownTimerLabelWidth: 100
+  lootTutorialLabelPaddingBottom: 15
+  lootTutorialLabelPaddingLeft: 15
+  lootTutorialLabelPaddingRight: 15
+  lootTutorialLabelPaddingTop: 15
+  lootTutorialLabelIconSize: 50
+  lootTutorialLabelIconMarginRight: 10
   maxOpacity: 1
   minOpacity: 0.1
   pulseSpeed: 3.5
   sineDivisor: 2
   sineOffset: 1
   turretCooldownTime: 1
+  tutorialLabelFontSize: 50
   tutorialLabelBottomPercent: 40
   tutorialLabelPaddingBottom: 15
   tutorialLabelPaddingLeft: 160
@@ -676,12 +683,17 @@ MonoBehaviour:
     to select the Beam Turret'
   level4TutorialText: "You can now select 1, 2, or 3 \nto select a turret of your
     choosing.\nPress ANY KEY to continue."
+  lootTutorialTextP1: 'Pick up '
+  lootTutorialTextP2: " to revive energy. You better hurry up because \nthey don't
+    stay forever.\""
+  turretsTutorialText: "{0} Selected. \nPress [E] to deploy \n(Cost: {1} Energy)"
   beamTurretName: Beam Turret
   scatterTurretName: Scatter Turret
   strikerTurretName: Striker Turret
   wave1Text: First Wave
   wave2Text: Second Wave
   wave3Text: Final Wave
+  lootTutorialTexture2D: {fileID: 2800000, guid: 2fcf57f452a38344ea4e787898474191, type: 3}
   uiDocument: {fileID: 1711150510}
 --- !u!1 &619394800
 GameObject:

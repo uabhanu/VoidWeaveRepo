@@ -14,14 +14,17 @@ namespace Game.Scripts.Systems
         [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
-            systemState.RequireForUpdate<Level3EnergyForTutorialComponent>();
-            systemState.RequireForUpdate<Level2EnergyForTutorialComponent>();
-            systemState.RequireForUpdate<Level1EnergyForTutorialComponent>();
+            systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
+
             systemState.RequireForUpdate<DoActionComponent>();
-            systemState.RequireForUpdate<InputNoneComponent>();
             systemState.RequireForUpdate<InputDeployComponent>();
+            systemState.RequireForUpdate<InputNoneComponent>();
             systemState.RequireForUpdate<LevelComponent>();
+            systemState.RequireForUpdate<Level1EnergyForTutorialComponent>();
+            systemState.RequireForUpdate<Level2EnergyForTutorialComponent>();
+            systemState.RequireForUpdate<Level3EnergyForTutorialComponent>();
             systemState.RequireForUpdate<MaxLevelsForTutorialsComponent>();
+            systemState.RequireForUpdate<MovementNoneComponent>();
             systemState.RequireForUpdate<NoActionComponent>();
             systemState.RequireForUpdate<PlayerInputComponent>();
             systemState.RequireForUpdate<SelectedTurretEntityComponent>();
@@ -55,16 +58,25 @@ namespace Game.Scripts.Systems
             bool deployPressed = ((playerInput & inputDeploy) != inputNone) & hasTurretSelected;
             bool anyKeyPressed = playerInput != inputNone;
 
-            bool shouldDisable = (evaluatedLevel < maxTutorialLevelComponent & deployPressed) | (evaluatedLevel >= maxTutorialLevelComponent & anyKeyPressed) | (evaluatedLevel > maxTutorialLevelComponent);
-            bool shouldEnable = levelAdvanced & (evaluatedLevel <= maxTutorialLevelComponent);
+            bool shouldDisableTurretsTutorial = (evaluatedLevel < maxTutorialLevelComponent & deployPressed) | (evaluatedLevel >= maxTutorialLevelComponent & anyKeyPressed) | (evaluatedLevel > maxTutorialLevelComponent);
+            bool shouldEnableTurretsTutorial = levelAdvanced & (evaluatedLevel <= maxTutorialLevelComponent);
+
+            bool shouldDisableLootTutorial = anyKeyPressed;
 
             foreach(RefRW<CurrentEnergyComponent> energy in SystemAPI.Query<RefRW<CurrentEnergyComponent>>()) { energy.ValueRW.Value = math.select(energy.ValueRO.Value , minEnergy , isLevelAdvanced == doAction); }
 
+            foreach(var (_ , entity) in SystemAPI.Query<LootTutorialActiveTag>().WithOptions(EntityQueryOptions.IgnoreComponentEnabledState).WithEntityAccess())
+            {
+                bool currentlyActive = SystemAPI.IsComponentEnabled<LootTutorialActiveTag>(entity);
+                bool finalState = currentlyActive & !shouldDisableLootTutorial;
+                SystemAPI.SetComponentEnabled<LootTutorialActiveTag>(entity , finalState);
+            }
+
             foreach(var (_ , entity) in SystemAPI.Query<RefRO<EnemySpawnerTag>>().WithOptions(EntityQueryOptions.IgnoreComponentEnabledState).WithEntityAccess())
             {
-                bool currentlyActive = SystemAPI.IsComponentEnabled<TutorialActiveTag>(entity);
-                bool finalState = shouldEnable | (currentlyActive & !shouldDisable);
-                SystemAPI.SetComponentEnabled<TutorialActiveTag>(entity , finalState);
+                bool currentlyActive = SystemAPI.IsComponentEnabled<TurretsTutorialActiveTag>(entity);
+                bool finalState = shouldEnableTurretsTutorial | (currentlyActive & !shouldDisableTurretsTutorial);
+                SystemAPI.SetComponentEnabled<TurretsTutorialActiveTag>(entity , finalState);
             }
         }
     }

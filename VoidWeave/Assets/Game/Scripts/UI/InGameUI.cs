@@ -40,13 +40,14 @@ namespace Game.Scripts.UI
 
         private EntityManager _entityManager;
 
-        private Label _currentBlinkingLabel;
         private Label _energyValueLabel;
         private Label _healthValueLabel;
         private Label _levelValueLabel;
-        private Label _tutorialLabel;
+        private Label _turretsTutorialLabel;
         private Label _wavePrepLabel;
 
+        private VisualElement _currentBlinkingVisualElement;
+        private VisualElement _lootTutorialLabel;
         private VisualElement _loseScreenVisualElement;
         private VisualElement _pauseMenuVisualElement;
         private VisualElement _rootVisualElement;
@@ -75,12 +76,19 @@ namespace Game.Scripts.UI
         [SerializeField] private float characterCooldownTimerLabelTranslatePercentY;
         [SerializeField] private float characterCooldownTimerLabelTranslatePercentZ;
         [SerializeField] private float characterCooldownTimerLabelWidth;
+        [SerializeField] private float lootTutorialLabelPaddingBottom;
+        [SerializeField] private float lootTutorialLabelPaddingLeft;
+        [SerializeField] private float lootTutorialLabelPaddingRight;
+        [SerializeField] private float lootTutorialLabelPaddingTop;
+        [SerializeField] private float lootTutorialLabelIconSize;
+        [SerializeField] private float lootTutorialLabelIconMarginRight;
         [SerializeField] private float maxOpacity;
         [SerializeField] private float minOpacity;
         [SerializeField] private float pulseSpeed;
         [SerializeField] private float sineDivisor;
         [SerializeField] private float sineOffset;
         [SerializeField] private float turretCooldownTime;
+        [SerializeField] private float tutorialLabelFontSize;
         [SerializeField] private float tutorialLabelBottomPercent;
         [SerializeField] private float tutorialLabelPaddingBottom;
         [SerializeField] private float tutorialLabelPaddingLeft;
@@ -117,6 +125,9 @@ namespace Game.Scripts.UI
         [SerializeField] [Multiline] private string level2TutorialText;
         [SerializeField] [Multiline] private string level3TutorialText;
         [SerializeField] [Multiline] private string level4TutorialText;
+        [SerializeField] [Multiline] private string lootTutorialTextP1;
+        [SerializeField] [Multiline] private string lootTutorialTextP2;
+        [SerializeField] [Multiline] private string turretsTutorialText;
 
         [SerializeField] private string beamTurretName;
         [SerializeField] private string scatterTurretName;
@@ -124,6 +135,8 @@ namespace Game.Scripts.UI
         [SerializeField] private string wave1Text;
         [SerializeField] private string wave2Text;
         [SerializeField] private string wave3Text;
+
+        [SerializeField] private Texture2D lootTutorialTexture2D;
 
         [SerializeField] private UIDocument uiDocument;
 
@@ -211,13 +224,14 @@ namespace Game.Scripts.UI
             ManagedEventBridgeSystem.OnEnergyValueChanged += OnEnergyValueChanged;
             ManagedEventBridgeSystem.OnHealthValueChanged += OnHealthValueChanged;
             ManagedEventBridgeSystem.OnLevelValueChanged += OnLevelValueChanged;
+            ManagedEventBridgeSystem.OnLootTutorialStateChanged += OnLootTutorialStateChanged;
             ManagedEventBridgeSystem.OnPauseButtonClicked += OnPauseButtonClicked;
             ManagedEventBridgeSystem.OnPlayerDashCooldownStarted += OnPlayerDashCooldownStarted;
             ManagedEventBridgeSystem.OnQuitButtonClicked += OnQuitButtonClicked;
             ManagedEventBridgeSystem.OnRestartButtonClicked += OnRestartButtonClicked;
             ManagedEventBridgeSystem.OnResumeButtonClicked += OnResumeButtonClicked;
             ManagedEventBridgeSystem.OnTurretCooldownStarted += OnTurretCooldownStarted;
-            ManagedEventBridgeSystem.OnTutorialStateChanged += OnTutorialStateChanged;
+            ManagedEventBridgeSystem.OnTurretsTutorialStateChanged += OnTurretsTutorialStateChanged;
             ManagedEventBridgeSystem.OnWavePrepCountdownStarted += OnWavePrepCountdownStarted;
         }
 
@@ -226,13 +240,14 @@ namespace Game.Scripts.UI
             ManagedEventBridgeSystem.OnEnergyValueChanged -= OnEnergyValueChanged;
             ManagedEventBridgeSystem.OnHealthValueChanged -= OnHealthValueChanged;
             ManagedEventBridgeSystem.OnLevelValueChanged -= OnLevelValueChanged;
+            ManagedEventBridgeSystem.OnLootTutorialStateChanged -= OnLootTutorialStateChanged;
             ManagedEventBridgeSystem.OnPauseButtonClicked -= OnPauseButtonClicked;
             ManagedEventBridgeSystem.OnPlayerDashCooldownStarted -= OnPlayerDashCooldownStarted;
             ManagedEventBridgeSystem.OnQuitButtonClicked -= OnQuitButtonClicked;
             ManagedEventBridgeSystem.OnRestartButtonClicked -= OnRestartButtonClicked;
             ManagedEventBridgeSystem.OnResumeButtonClicked -= OnResumeButtonClicked;
             ManagedEventBridgeSystem.OnTurretCooldownStarted -= OnTurretCooldownStarted;
-            ManagedEventBridgeSystem.OnTutorialStateChanged -= OnTutorialStateChanged;
+            ManagedEventBridgeSystem.OnTurretsTutorialStateChanged -= OnTurretsTutorialStateChanged;
             ManagedEventBridgeSystem.OnWavePrepCountdownStarted -= OnWavePrepCountdownStarted;
         }
 
@@ -259,7 +274,7 @@ namespace Game.Scripts.UI
 
             foreach(var button in _inGameUIButtonsList) { Pulse(button); }
 
-            Pulse(_currentBlinkingLabel);
+            Pulse(_currentBlinkingVisualElement);
         }
 
         #endregion
@@ -268,8 +283,6 @@ namespace Game.Scripts.UI
 
         private void OnContinueButtonClicked()
         {
-            Time.timeScale = 1f;
-
             if(_winScreenVisualElement != null) { _winScreenVisualElement.style.display = DisplayStyle.None; }
 
             _pauseButton.SetEnabled(true);
@@ -293,8 +306,6 @@ namespace Game.Scripts.UI
 
         private void OnQuitButtonClicked()
         {
-            Time.timeScale = 1f;
-
             #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
             #else
@@ -302,11 +313,7 @@ namespace Game.Scripts.UI
             #endif
         }
 
-        private void OnRestartButtonClicked()
-        {
-            Time.timeScale = 1f;
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        }
+        private void OnRestartButtonClicked() { SceneManager.LoadScene(SceneManager.GetActiveScene().name); }
 
         private void OnResumeButtonClicked()
         {
@@ -344,6 +351,59 @@ namespace Game.Scripts.UI
             if(!_entityManager.World.IsCreated) return;
             _entityManager.CompleteDependencyBeforeRO<LevelComponent>();
             if(!_levelQuery.IsEmptyIgnoreFilter) _levelValueLabel.text = $"{currentLevel:F0}";
+        }
+
+        private void OnLootTutorialStateChanged(bool isActive)
+        {
+            if(isActive)
+            {
+                if(_lootTutorialLabel == null)
+                {
+                    _lootTutorialLabel = new Label
+                    {
+                        style =
+                        {
+                            backgroundImage = new StyleBackground(hudPanelSprite) ,
+                            unityBackgroundImageTintColor = wavePrepTimerLabelSpriteTintColour ,
+                            backgroundColor = Color.clear ,
+                            position = Position.Absolute ,
+                            alignSelf = Align.Center ,
+                            flexDirection = FlexDirection.Column ,
+                            bottom = Length.Percent(tutorialLabelBottomPercent) ,
+                            width = StyleKeyword.Auto ,
+                            height = StyleKeyword.Auto ,
+                            whiteSpace = WhiteSpace.Normal ,
+                            paddingLeft = tutorialLabelPaddingLeft ,
+                            paddingRight = tutorialLabelPaddingRight ,
+                            paddingTop = tutorialLabelPaddingTop ,
+                            paddingBottom = tutorialLabelPaddingBottom ,
+                            unityTextAlign = TextAnchor.MiddleCenter ,
+                            fontSize = tutorialLabelFontSize ,
+                            color = Color.white ,
+                            unityFontStyleAndWeight = FontStyle.Bold
+                        }
+                    };
+
+                    var inlineRow = new VisualElement { style = { flexDirection = FlexDirection.Row , alignItems = Align.Center , justifyContent = Justify.Center } };
+                    inlineRow.Add(new Label { text = lootTutorialTextP1 , style = { fontSize = tutorialLabelFontSize , color = Color.white , unityFontStyleAndWeight = FontStyle.Bold } });
+                    inlineRow.Add(new VisualElement { style = { backgroundImage = new StyleBackground(lootTutorialTexture2D) , width = lootTutorialLabelIconSize , height = lootTutorialLabelIconSize , marginLeft = lootTutorialLabelIconMarginRight } });
+                    _lootTutorialLabel.Add(inlineRow);
+
+                    _lootTutorialLabel.Add(new Label { text = lootTutorialTextP2 , style = { fontSize = tutorialLabelFontSize , color = Color.white , unityFontStyleAndWeight = FontStyle.Bold , unityTextAlign = TextAnchor.MiddleCenter } });
+
+                    _rootVisualElement.Add(_lootTutorialLabel);
+                    _lootTutorialLabel.SendToBack();
+                    AddVisualElementToPulse(_lootTutorialLabel);
+                }
+            }
+            else
+            {
+                if(_lootTutorialLabel != null)
+                {
+                    _rootVisualElement.Remove(_lootTutorialLabel);
+                    _lootTutorialLabel = null;
+                }
+            }
         }
 
         private void OnPlayerDashCooldownStarted(float timer , float3 worldPosition)
@@ -438,7 +498,7 @@ namespace Game.Scripts.UI
                     bgColor = scatterTurretCooldownTimerLabelBgColour;
                     borderColor = scatterTurretCooldownTimerLabelBorderColour;
                 }
-                
+
                 else if(_entityManager.HasComponent<BeamTurretTag>(entity))
                 {
                     bgColor = beamTurretCooldownTimerLabelBgColour;
@@ -492,13 +552,13 @@ namespace Game.Scripts.UI
             cooldownLabel.style.left = screenPoint.x;
         }
 
-        private void OnTutorialStateChanged(int currentLevel , bool isActive , int cost , int turretType)
+        private void OnTurretsTutorialStateChanged(int currentLevel , bool isActive , int cost , string turretName , int turretType)
         {
             if(isActive)
             {
-                if(_tutorialLabel == null)
+                if(_turretsTutorialLabel == null)
                 {
-                    _tutorialLabel = new Label
+                    _turretsTutorialLabel = new Label
                     {
                         style =
                         {
@@ -516,36 +576,32 @@ namespace Game.Scripts.UI
                             paddingTop = tutorialLabelPaddingTop ,
                             paddingBottom = tutorialLabelPaddingBottom ,
                             unityTextAlign = TextAnchor.MiddleCenter ,
-                            fontSize = wavePrepTimerLabelFontSize ,
+                            fontSize = tutorialLabelFontSize ,
                             color = Color.white ,
                             unityFontStyleAndWeight = FontStyle.Bold
                         }
                     };
 
-                    _rootVisualElement.Add(_tutorialLabel);
-                    _tutorialLabel.SendToBack();
-                    AddLabelToPulse(_tutorialLabel);
+                    _rootVisualElement.Add(_turretsTutorialLabel);
+                    _turretsTutorialLabel.SendToBack();
+                    AddVisualElementToPulse(_turretsTutorialLabel);
                 }
 
                 if(turretType == turretIdNone)
                 {
-                    if(currentLevel == tutorialLevel1) { _tutorialLabel.text = level1TutorialText; }
-                    else if(currentLevel == tutorialLevel2) { _tutorialLabel.text = level2TutorialText; }
-                    else if(currentLevel == tutorialLevel3) { _tutorialLabel.text = level3TutorialText; }
-                    else if(currentLevel == tutorialLevel4) { _tutorialLabel.text = level4TutorialText; }
+                    if(currentLevel == tutorialLevel1) { _turretsTutorialLabel.text = level1TutorialText; }
+                    else if(currentLevel == tutorialLevel2) { _turretsTutorialLabel.text = level2TutorialText; }
+                    else if(currentLevel == tutorialLevel3) { _turretsTutorialLabel.text = level3TutorialText; }
+                    else if(currentLevel == tutorialLevel4) { _turretsTutorialLabel.text = level4TutorialText; }
                 }
-                else
-                {
-                    string turretName = turretType == turretIdStriker ? strikerTurretName : turretType == turretIdScatter ? scatterTurretName : turretType == turretIdBeam ? beamTurretName : "Unknown Turret";
-                    _tutorialLabel.text = $"{turretName} Selected.\nPress [E] to deploy (Cost: {cost} Energy)";
-                }
+                else { _turretsTutorialLabel.text = string.Format(turretsTutorialText , turretName , cost); }
             }
             else
             {
-                if(_tutorialLabel != null)
+                if(_turretsTutorialLabel != null)
                 {
-                    _rootVisualElement.Remove(_tutorialLabel);
-                    _tutorialLabel = null;
+                    _rootVisualElement.Remove(_turretsTutorialLabel);
+                    _turretsTutorialLabel = null;
                 }
             }
         }
@@ -608,22 +664,22 @@ namespace Game.Scripts.UI
 
         #region Custom Functions
 
-        private void AddLabelToPulse(Label label) { _currentBlinkingLabel = label; }
+        private void AddVisualElementToPulse(VisualElement visualElement) { _currentBlinkingVisualElement = visualElement; }
 
-        private void Pulse(VisualElement element)
+        private void Pulse(VisualElement visualElement)
         {
-            if(element == null) return;
+            if(visualElement == null) return;
 
             float pulse = (Mathf.Sin(Time.unscaledTime * pulseSpeed) + sineOffset) / sineDivisor;
             float alpha = Mathf.Lerp(minOpacity , maxOpacity , pulse);
 
-            if(!element.enabledSelf)
+            if(!visualElement.enabledSelf)
             {
-                element.style.opacity = zeroOpacity;
+                visualElement.style.opacity = zeroOpacity;
                 return;
             }
 
-            element.style.opacity = alpha;
+            visualElement.style.opacity = alpha;
         }
 
         private void RefreshEcsReferences()

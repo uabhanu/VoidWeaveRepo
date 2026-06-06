@@ -10,12 +10,17 @@ namespace Game.Scripts.Systems
     {
         #region Variables
 
-        private bool _previousTutorialState;
+        private bool _previousLootTutorialState;
+        private bool _previousTurretsTutorialState;
+
         private Entity _previousSelectedTurretEntity;
-        private EntityQuery _tutorialActiveQuery;
-        private EntityQuery _strikerTurretQuery;
-        private EntityQuery _scatterTurretQuery;
+
         private EntityQuery _beamTurretQuery;
+        private EntityQuery _scatterTurretQuery;
+        private EntityQuery _strikerTurretQuery;
+
+        private EntityQuery _lootTutorialActiveQuery;
+        private EntityQuery _turretsTutorialActiveQuery;
 
         public static Action OnPauseButtonClicked;
         public static Action OnQuitButtonClicked;
@@ -35,10 +40,11 @@ namespace Game.Scripts.Systems
         public static event Action<float> OnEnergyValueChanged;
         public static event Action OnHealthValueChanged;
         public static event Action<int> OnLevelValueChanged;
+        public static event Action<bool> OnLootTutorialStateChanged;
         public static event Action<float , float3> OnPlayerDashCooldownStarted;
         public static event Action OnPlayerDeath;
         public static event Action<Entity , float , float3> OnTurretCooldownStarted;
-        public static event Action<int , bool , int , int> OnTutorialStateChanged;
+        public static event Action<int , bool , int , string , int> OnTurretsTutorialStateChanged;
         public static event Action<float , int> OnWavePrepCountdownStarted;
 
         #endregion
@@ -57,7 +63,8 @@ namespace Game.Scripts.Systems
             RequireForUpdate<SelectedTurretEntityComponent>();
             RequireForUpdate<WaveStateComponent>();
 
-            _tutorialActiveQuery = SystemAPI.QueryBuilder().WithAll<EnemySpawnerTag , TutorialActiveTag>().Build();
+            _lootTutorialActiveQuery = SystemAPI.QueryBuilder().WithAll<LootTutorialActiveTag>().Build();
+            _turretsTutorialActiveQuery = SystemAPI.QueryBuilder().WithAll<EnemySpawnerTag , TurretsTutorialActiveTag>().Build();
 
             _strikerTurretQuery = SystemAPI.QueryBuilder().WithAll<StrikerTurretTag , TurretEntityComponent>().Build();
             _scatterTurretQuery = SystemAPI.QueryBuilder().WithAll<ScatterTurretTag , TurretEntityComponent>().Build();
@@ -82,9 +89,13 @@ namespace Game.Scripts.Systems
             int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
             int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
 
-            bool currentTutorialState = !_tutorialActiveQuery.IsEmpty;
-            bool tutorialStateToggled = currentTutorialState != _previousTutorialState;
-            _previousTutorialState = currentTutorialState;
+            bool currentLootTutorialState = !_lootTutorialActiveQuery.IsEmpty;
+            bool lootTutorialStateToggled = currentLootTutorialState != _previousLootTutorialState;
+            _previousLootTutorialState = currentLootTutorialState;
+
+            bool currentTurretsTutorialState = !_turretsTutorialActiveQuery.IsEmpty;
+            bool turretsTutorialStateToggled = currentTurretsTutorialState != _previousTurretsTutorialState;
+            _previousTurretsTutorialState = currentTurretsTutorialState;
 
             int currentLevel = SystemAPI.GetSingleton<LevelComponent>().Value;
             int selectedTurretCostComponent = SystemAPI.GetSingleton<SelectedTurretCostComponent>().Value;
@@ -103,6 +114,7 @@ namespace Game.Scripts.Systems
             int beamTurretID = math.select(noAction , beamTurretUnlockLevel , isBeamTurret);
 
             int turretType = strikerTurretID + scatterTurretID + beamTurretID;
+            string turretName = isStrikerTurret ? "Striker Turret" : (isScatterTurret ? "Scatter Turret" : (isBeamTurret ? "Beam Turret" : "Unknown"));
 
             foreach(var (_ , _ , entity) in SystemAPI.Query<RefRO<CurrentHealthComponent> , RefRO<DamageEventComponent>>().WithEntityAccess())
             {
@@ -129,6 +141,8 @@ namespace Game.Scripts.Systems
 
             foreach(var _ in SystemAPI.Query<RefRO<CurrentHealthComponent>>().WithAll<PlayerTag>().WithChangeFilter<CurrentHealthComponent>()) { OnHealthValueChanged?.Invoke(); }
 
+            for(int i = noAction ; i < math.select(noAction , doAction , lootTutorialStateToggled) ; i++) { OnLootTutorialStateChanged?.Invoke(currentLootTutorialState); }
+
             foreach((RefRO<DashCooldownComponent> cooldownComponent , RefRO<LocalTransform> transform) in SystemAPI.Query<RefRO<DashCooldownComponent> , RefRO<LocalTransform>>().WithAll<PlayerTag>().WithChangeFilter<DashCooldownComponent>()) { OnPlayerDashCooldownStarted?.Invoke(cooldownComponent.ValueRO.Value , transform.ValueRO.Position); }
 
             foreach(var (_ , entity) in SystemAPI.Query<RefRO<DeathTag>>().WithAll<PlayerTag>().WithEntityAccess())
@@ -151,12 +165,12 @@ namespace Game.Scripts.Systems
 
                 ecb.RemoveComponent<ProjectileFiredEventTag>(entity);
             }
-            
+
             // DEPLOYMENT SOUND (Runs ONLY for new turrets) ---
             foreach((RefRO<CooldownComponent> cooldownComponent , Entity turretEntity) in SystemAPI.Query<RefRO<CooldownComponent>>().WithAll<DeployingTurretTag>().WithEntityAccess())
             {
                 int turretCooldownFinished = math.select(noAction , doAction , cooldownComponent.ValueRO.Value <= doAction);
-                
+
                 for(int i = noAction ; i < turretCooldownFinished ; i++)
                 {
                     AudioManagerOnTurretCooldownFinished?.Invoke();
@@ -168,11 +182,11 @@ namespace Game.Scripts.Systems
             // Because this query doesn't filter by the new tag, your UI still updates perfectly for both deployment and combat!
             foreach((RefRO<CooldownComponent> cooldownComponent , RefRO<LocalTransform> transform , Entity turretEntity) in SystemAPI.Query<RefRO<CooldownComponent> , RefRO<LocalTransform>>().WithAny<BeamTurretTag , ScatterTurretTag , StrikerTurretTag>().WithChangeFilter<CooldownComponent>().WithEntityAccess()) { OnTurretCooldownStarted?.Invoke(turretEntity , cooldownComponent.ValueRO.Value , transform.ValueRO.Position); }
 
-            for(int i = noAction ; i < math.select(noAction , doAction , tutorialStateToggled || (currentTutorialState && turretSelectionChanged == doAction)) ; i++) { OnTutorialStateChanged?.Invoke(currentLevel , currentTutorialState , selectedTurretCostComponent , turretType); }
+            for(int i = noAction ; i < math.select(noAction , doAction , turretsTutorialStateToggled || (currentTurretsTutorialState && turretSelectionChanged == doAction)) ; i++) { OnTurretsTutorialStateChanged?.Invoke(currentLevel , currentTurretsTutorialState , selectedTurretCostComponent , turretName , turretType); }
 
             foreach((RefRO<TimerComponent> timerComponent , RefRO<WaveStateComponent> waveStateComponent) in SystemAPI.Query<RefRO<TimerComponent> , RefRO<WaveStateComponent>>().WithChangeFilter<TimerComponent>())
             {
-                for(int t = noAction ; t < math.select(doAction , noAction , currentTutorialState) ; t++)
+                for(int t = noAction ; t < math.select(doAction , noAction , currentTurretsTutorialState) ; t++)
                 {
                     OnWavePrepCountdownStarted?.Invoke(timerComponent.ValueRO.Value , waveStateComponent.ValueRO.Value);
 

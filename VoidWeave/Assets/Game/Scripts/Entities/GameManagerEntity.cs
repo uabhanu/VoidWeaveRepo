@@ -32,6 +32,7 @@ namespace Game.Scripts.Entities
         [SerializeField] private int lineEnemyUnlockLevel; //The When
         [SerializeField] private float lootMultiplierPerLevel;
         [SerializeField] private float lootPickupRadius;
+        [SerializeField] private bool lootSpawnedFirstTime;
         [SerializeField] private int mainMenuState;
         [SerializeField] private int maxLevelForTutorials;
         [SerializeField] private int minEnemiesToKill;
@@ -115,6 +116,7 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new LevelToUnlockTriangleEnemyComponent { Value = authoring.triangleEnemyUnlockLevel });
                 AddComponent(entity , new LootMultiplierComponent { Value = authoring.lootMultiplierPerLevel });
                 AddComponent(entity , new LootPickupRadiusComponent { Value = authoring.lootPickupRadius });
+                AddComponent(entity , new LootSpawnedFirstTimeComponent { Value = authoring.lootSpawnedFirstTime });
                 AddComponent(entity , new MainMenuStateComponent { Value = authoring.mainMenuState });
                 AddComponent(entity , new MaxLevelsForTutorialsComponent { Value = authoring.maxLevelForTutorials });
                 AddComponent(entity , new MinOverlapDistanceComponent { Value = authoring.minOverlapDistance });

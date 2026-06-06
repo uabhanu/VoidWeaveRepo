@@ -65,7 +65,7 @@ namespace Game.Scripts.Entities
                 AddComponent<GameWonTag>(entity);
                 SetComponentEnabled<GameWonTag>(entity , false);
                 
-                AddComponent(entity , new TutorialActiveTag());
+                AddComponent(entity , new TurretsTutorialActiveTag());
             }
         }
     }

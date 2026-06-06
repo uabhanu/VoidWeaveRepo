@@ -15,7 +15,7 @@ namespace Game.Scripts.Systems
         public void OnCreate(ref SystemState systemState)
         {
             _enemyQuery = SystemAPI.QueryBuilder().WithAll<EnemyTag , TeamComponent>().Build();
-            _tutorialActiveQuery = SystemAPI.QueryBuilder().WithAll<EnemySpawnerTag , TutorialActiveTag>().Build();
+            _tutorialActiveQuery = SystemAPI.QueryBuilder().WithAll<EnemySpawnerTag , TurretsTutorialActiveTag>().Build();
 
             systemState.RequireForUpdate<DoActionComponent>();
             systemState.RequireForUpdate<EnemiesKilledComponent>();

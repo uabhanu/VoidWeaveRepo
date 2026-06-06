@@ -17,7 +17,7 @@ namespace Game.Scripts.Systems
             systemState.RequireForUpdate<TimerComponent>();
             systemState.RequireForUpdate<TimerExpiredComponent>();
             
-            _tutorialActiveQuery = SystemAPI.QueryBuilder().WithAll<EnemySpawnerTag , TutorialActiveTag>().Build();
+            _tutorialActiveQuery = SystemAPI.QueryBuilder().WithAll<EnemySpawnerTag , TurretsTutorialActiveTag>().Build();
         }
 
         [BurstCompile]
