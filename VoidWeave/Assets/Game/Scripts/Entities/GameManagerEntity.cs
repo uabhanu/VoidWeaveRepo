@@ -32,7 +32,7 @@ namespace Game.Scripts.Entities
         [SerializeField] private int lineEnemyUnlockLevel; //The When
         [SerializeField] private float lootMultiplierPerLevel;
         [SerializeField] private float lootPickupRadius;
-        [SerializeField] private bool lootSpawnedFirstTime;
+        [SerializeField] private int lootSpawnedFirstTime;
         [SerializeField] private int mainMenuState;
         [SerializeField] private int maxLevelForTutorials;
         [SerializeField] private int minEnemiesToKill;

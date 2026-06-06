@@ -24,13 +24,16 @@ namespace Game.Scripts.Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
+            var lootQuery = SystemAPI.QueryBuilder().WithAll<LootTutorialActiveTag>().Build();
+
             int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
             int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
+            
+            int lootSpawnedFirstTimeValue = SystemAPI.GetSingleton<LootSpawnedFirstTimeComponent>().Value;
+            bool shouldUpdate = !lootQuery.IsEmpty;
+            SystemAPI.SetSingleton(new LootSpawnedFirstTimeComponent { Value = math.select(lootSpawnedFirstTimeValue , doAction , shouldUpdate) });
 
-            Entity lootSpawnedFirstTimeEntity = SystemAPI.GetSingletonEntity<LootSpawnedFirstTimeComponent>();
-            bool lootSpawnedFirstTimeValue = SystemAPI.GetSingleton<LootSpawnedFirstTimeComponent>().Value;
-
-            new SpawnLootJob { DoAction = doAction , ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , LootSpawnedFirstTimeEntity = lootSpawnedFirstTimeEntity , LootSpawnedFirstTimeValue = lootSpawnedFirstTimeValue , NoAction = noAction }.ScheduleParallel();
+            new SpawnLootJob { DoAction = doAction , ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , LootSpawnedFirstTimeValue = lootSpawnedFirstTimeValue , NoAction = noAction }.ScheduleParallel();
         }
     }
 
@@ -40,8 +43,7 @@ namespace Game.Scripts.Systems
     {
         public int DoAction;
         public EntityCommandBuffer.ParallelWriter ECB;
-        public Entity LootSpawnedFirstTimeEntity;
-        public bool LootSpawnedFirstTimeValue;
+        public int LootSpawnedFirstTimeValue;
         public int NoAction;
 
         private void Execute([EntityIndexInQuery] int entityIndexInQuery , in LocalTransform localToWorld , in LootAmountComponent lootAmountComponent , in LootEntityComponent lootEntityComponent)
@@ -51,14 +53,12 @@ namespace Game.Scripts.Systems
             ECB.SetComponent(entityIndexInQuery , newLoot , LocalTransform.FromPosition(localToWorld.Position));
             ECB.SetComponent(entityIndexInQuery , newLoot , new LootAmountComponent { Value = lootAmountComponent.Value });
 
-            int isFirstLoot = math.select(NoAction , DoAction , LootSpawnedFirstTimeValue == false);
+            int isFirstLoot = math.select(NoAction , DoAction , LootSpawnedFirstTimeValue == NoAction);
 
             for(int i = NoAction ; i < isFirstLoot ; i++)
             {
                 ECB.AddComponent(entityIndexInQuery , newLoot , new LootTutorialActiveTag());
                 ECB.AddComponent(entityIndexInQuery , ECB.CreateEntity(entityIndexInQuery) , new LootTutorialPauseTag());
-                
-                ECB.SetComponent(entityIndexInQuery , LootSpawnedFirstTimeEntity , new LootSpawnedFirstTimeComponent { Value = true });
             }
         }
     }

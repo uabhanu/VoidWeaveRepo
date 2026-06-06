@@ -169,7 +169,7 @@ namespace Game.Scripts.Systems
             // DEPLOYMENT SOUND (Runs ONLY for new turrets) ---
             foreach((RefRO<CooldownComponent> cooldownComponent , Entity turretEntity) in SystemAPI.Query<RefRO<CooldownComponent>>().WithAll<DeployingTurretTag>().WithEntityAccess())
             {
-                int turretCooldownFinished = math.select(noAction , doAction , cooldownComponent.ValueRO.Value <= doAction);
+                int turretCooldownFinished = math.select(noAction , doAction , cooldownComponent.ValueRO.Value <= noAction);
 
                 for(int i = noAction ; i < turretCooldownFinished ; i++)
                 {
