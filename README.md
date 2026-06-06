@@ -232,7 +232,7 @@ Level 1 (Base) → Level 2 (+50%) → Level 3 (+100%)
 - [x] UI/UX implementation
 - [x] Visual effects
 - [x] Audio
-- [ ] Tutorial
+- [x] Tutorial
 
 ### 📅 Phase 5: Content & Balance
 - [ ] Additional turret/enemy types
