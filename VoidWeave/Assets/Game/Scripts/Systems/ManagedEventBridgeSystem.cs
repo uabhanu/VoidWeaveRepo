@@ -180,7 +180,7 @@ namespace Game.Scripts.Systems
 
             // UI TIMERS (Runs for ALL turrets) ---
             // Because this query doesn't filter by the new tag, your UI still updates perfectly for both deployment and combat!
-            foreach((RefRO<CooldownComponent> cooldownComponent , RefRO<LocalTransform> transform , Entity turretEntity) in SystemAPI.Query<RefRO<CooldownComponent> , RefRO<LocalTransform>>().WithAny<BeamTurretTag , ScatterTurretTag , StrikerTurretTag>().WithChangeFilter<CooldownComponent>().WithEntityAccess()) { OnTurretCooldownStarted?.Invoke(turretEntity , cooldownComponent.ValueRO.Value , transform.ValueRO.Position); }
+            foreach((RefRO<CooldownComponent> cooldownComponent , RefRO<LocalTransform> transform , Entity turretEntity) in SystemAPI.Query<RefRO<CooldownComponent> , RefRO<LocalTransform>>().WithAll<DeployingTurretTag>().WithAny<BeamTurretTag , ScatterTurretTag , StrikerTurretTag>().WithChangeFilter<CooldownComponent>().WithEntityAccess()) { OnTurretCooldownStarted?.Invoke(turretEntity , cooldownComponent.ValueRO.Value , transform.ValueRO.Position); }
 
             for(int i = noAction ; i < math.select(noAction , doAction , turretsTutorialStateToggled || (currentTurretsTutorialState && turretSelectionChanged == doAction)) ; i++) { OnTurretsTutorialStateChanged?.Invoke(currentLevel , currentTurretsTutorialState , selectedTurretCostComponent , turretName , turretType); }
 

@@ -136,8 +136,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entities.PlayerEntity
   collisionRadius: 0.5
-  dashCooldownTimer: 30
-  dashDuration: 0.2
+  dashCooldownDefault: 15
+  dashDurationDefault: 0.2
   dashMultiplier: 4.9
   damageVfxPrefab: {fileID: 1368701968718810599, guid: 8dc44daca9daa1f438266e873fee7c24, type: 3}
   dashVfxPrefab: {fileID: 5996436315431693226, guid: 126f537ccfc91ce4296565f6e3fdc714, type: 3}

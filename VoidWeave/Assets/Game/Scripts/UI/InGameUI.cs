@@ -87,7 +87,6 @@ namespace Game.Scripts.UI
         [SerializeField] private float pulseSpeed;
         [SerializeField] private float sineDivisor;
         [SerializeField] private float sineOffset;
-        [SerializeField] private float turretCooldownTime;
         [SerializeField] private float tutorialLabelFontSize;
         [SerializeField] private float tutorialLabelBottomPercent;
         [SerializeField] private float tutorialLabelPaddingBottom;
@@ -477,7 +476,7 @@ namespace Game.Scripts.UI
 
         private void OnTurretCooldownStarted(Entity entity , float timer , float3 worldPosition)
         {
-            if(timer <= turretCooldownTime)
+            if(timer <= zeroThreshold)
             {
                 if(_turretCooldownLabelsDictionary.TryGetValue(entity , out Label label))
                 {
