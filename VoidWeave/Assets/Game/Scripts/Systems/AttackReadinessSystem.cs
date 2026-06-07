@@ -42,7 +42,7 @@ namespace Game.Scripts.Systems
 
     [BurstCompile]
     [WithAll(typeof(AttackRateComponent))]
-    [WithNone(typeof(CanMeleeAttackTag))]
+    [WithNone(typeof(CanMeleeAttackTag) , typeof(DeployingTurretTag))]
     public partial struct CanMeleeAttackJob : IJobEntity
     {
         public int DoAction;
@@ -73,6 +73,7 @@ namespace Game.Scripts.Systems
 
     [BurstCompile]
     [WithAll(typeof(AttackRateComponent) , typeof(HasTargetTag) , typeof(RotationCompleteTag))]
+    [WithNone(typeof(DeployingTurretTag))]
     public partial struct CanRangeAttackJob : IJobEntity
     {
         public int DoAction;

@@ -10,8 +10,8 @@ namespace Game.Scripts.Entities
         #region Variables
         
         [SerializeField] private float collisionRadius; // Defines the radius of the hitbox used for collision detection
-        [SerializeField] private float dashCooldownTimer; // Time before next dash   
-        [SerializeField] private float dashDuration; // Length of dash   
+        [SerializeField] private float dashCooldownDefault; // This is the value that is constant and used to set the value of the timer
+        [SerializeField] private float dashDurationDefault;
         [SerializeField] private float dashMultiplier; // Speed boost (5 * 5 = 25 units/sec)
         [SerializeField] private GameObject damageVfxPrefab;
         [SerializeField] private GameObject dashVfxPrefab;
@@ -45,8 +45,10 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new CollisionRadiusComponent { Value = authoring.collisionRadius });
                 AddComponent(entity , new CurrentHealthComponent { Value = authoring.maxHealth });
                 AddComponent(entity , new DamageVfxComponent { Value = GetEntity(authoring.damageVfxPrefab , TransformUsageFlags.Dynamic) });
-                AddComponent(entity , new DashCooldownComponent { Value = authoring.dashCooldownTimer });
-                AddComponent(entity , new DashDurationComponent { Value = authoring.dashDuration });
+                AddComponent(entity , new DashCooldownComponent { Value = authoring.dashCooldownDefault });
+                AddComponent(entity , new DashCooldownDefaultComponent { Value = authoring.dashCooldownDefault });
+                AddComponent(entity , new DashDurationComponent { Value = authoring.dashDurationDefault });
+                AddComponent(entity , new DashDurationDefaultComponent { Value = authoring.dashDurationDefault });
                 AddComponent(entity , new DashMultiplierComponent { Value = authoring.dashMultiplier });
                 AddComponent(entity , new DashVfxComponent { Value = GetEntity(authoring.dashVfxPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new DeathVfxComponent { Value = GetEntity(authoring.deathVfxPrefab , TransformUsageFlags.Dynamic) });

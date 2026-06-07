@@ -16,8 +16,6 @@ namespace Game.Scripts.Entities
         [SerializeField] private int collisionActive;
         [SerializeField] private int collisionNone;
         [SerializeField] private float damageMultiplierPerLevel;
-        [SerializeField] private float dashCooldownDefault;
-        [SerializeField] private float dashDurationDefault;
         [SerializeField] private int doAction;
         [SerializeField] private int noAction;
         [SerializeField] private int enemiesToKill;
@@ -96,8 +94,6 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new CollisionNoneComponent { Value = authoring.collisionNone });
                 AddComponent(entity , new CurrentEnergyComponent { Value = authoring.level1EnergyForTutorial });
                 AddComponent(entity , new DamageMultiplierComponent { Value = authoring.damageMultiplierPerLevel });
-                AddComponent(entity , new DashCooldownDefaultComponent { Value = authoring.dashCooldownDefault });
-                AddComponent(entity , new DashDurationDefaultComponent { Value = authoring.dashDurationDefault });
                 AddComponent(entity , new DoActionComponent { Value = authoring.doAction });
                 AddComponent(entity , new EnemiesToKillComponent { Value = enemiesToKill });
                 AddComponent(entity , new EnemiesKilledComponent());
