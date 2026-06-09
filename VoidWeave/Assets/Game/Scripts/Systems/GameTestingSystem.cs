@@ -5,7 +5,9 @@ namespace Game.Scripts.Systems
     using Unity.Entities;
     using Unity.Mathematics;
 
-    [UpdateInGroup(typeof(InitializationSystemGroup))]
+    [UpdateInGroup(typeof(SimulationSystemGroup))]
+    [UpdateAfter(typeof(BeginSimulationEntityCommandBufferSystem))]
+    [UpdateBefore(typeof(GameplaySystemGroup))]
     public partial struct GameTestingSystem : ISystem
     {
         private EntityQuery _enemyQuery;
