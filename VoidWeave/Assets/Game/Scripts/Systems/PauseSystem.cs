@@ -14,7 +14,8 @@ namespace Game.Scripts.Systems
         public void OnCreate(ref SystemState systemState)
         {
             systemState.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
-            
+
+            systemState.RequireForUpdate<DashKeyComponent>();
             systemState.RequireForUpdate<DoActionComponent>();
             systemState.RequireForUpdate<NoActionComponent>();
         }
@@ -23,26 +24,36 @@ namespace Game.Scripts.Systems
         {
             EntityCommandBuffer ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);
 
+            Key dashKey = SystemAPI.GetSingleton<DashKeyComponent>().Value;
             int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
             int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
-            
+
             bool isPaused = !systemState.World.GetExistingSystemManaged<GameplaySystemGroup>().Enabled;
             bool hasLootTag = !SystemAPI.QueryBuilder().WithAll<LootTutorialActiveTag>().Build().IsEmpty;
-            bool anyKeyPressed = Keyboard.current != null && Keyboard.current.anyKey.wasPressedThisFrame;
+            bool dashKeyPressed = Keyboard.current != null && Keyboard.current[dashKey].wasPressedThisFrame;
 
-            // Any Key Generator: ONLY trigger if NOT manually paused
-            int triggerLootResume = math.select(noAction , doAction , isPaused & hasLootTag & anyKeyPressed & !_isManualPaused);
-            for(int i = noAction ; i < triggerLootResume ; i++) ecb.AddComponent<LootTutorialResumeTag>(ecb.CreateEntity());
+            int triggerLootResume = math.select(noAction , doAction , isPaused & hasLootTag & dashKeyPressed & !_isManualPaused);
+            
+            for(int i = noAction ; i < triggerLootResume ; i++)
+            {
+                ecb.AddComponent<LootTutorialResumeTag>(ecb.CreateEntity());
 
-            // Loot Pause
+                foreach(var (_ , activeEntity) in SystemAPI.Query<RefRO<LootTutorialActiveTag>>().WithEntityAccess()) { SystemAPI.SetComponentEnabled<LootTutorialActiveTag>(activeEntity , false); }
+            }
+
             foreach((RefRO<LootTutorialPauseTag> _ , Entity entity) in SystemAPI.Query<RefRO<LootTutorialPauseTag>>().WithEntityAccess())
             {
                 ecb.DestroyEntity(entity);
-                systemState.World.GetExistingSystemManaged<GameplaySystemGroup>().Enabled = false;
-                foreach(var vfx in SystemAPI.Query<SystemAPI.ManagedAPI.UnityEngineComponent<VisualEffect>>()) { vfx.Value.pause = true; }
+
+                int executePause = math.select(noAction , doAction , hasLootTag);
+
+                for(int i = noAction ; i < executePause ; i++)
+                {
+                    systemState.World.GetExistingSystemManaged<GameplaySystemGroup>().Enabled = false;
+                    foreach(var vfx in SystemAPI.Query<SystemAPI.ManagedAPI.UnityEngineComponent<VisualEffect>>()) { vfx.Value.pause = true; }
+                }
             }
 
-            // Manual Pause
             foreach((RefRO<PauseInputTag> _ , Entity entity) in SystemAPI.Query<RefRO<PauseInputTag>>().WithEntityAccess())
             {
                 ecb.DestroyEntity(entity);
@@ -51,7 +62,6 @@ namespace Game.Scripts.Systems
                 foreach(var vfx in SystemAPI.Query<SystemAPI.ManagedAPI.UnityEngineComponent<VisualEffect>>()) { vfx.Value.pause = true; }
             }
 
-            // Loot Resume
             foreach((RefRO<LootTutorialResumeTag> _ , Entity entity) in SystemAPI.Query<RefRO<LootTutorialResumeTag>>().WithEntityAccess())
             {
                 ecb.DestroyEntity(entity);
@@ -59,7 +69,6 @@ namespace Game.Scripts.Systems
                 foreach(var vfx in SystemAPI.Query<SystemAPI.ManagedAPI.UnityEngineComponent<VisualEffect>>()) { vfx.Value.pause = false; }
             }
 
-            // Manual Resume
             foreach((RefRO<ResumeInputTag> _ , Entity entity) in SystemAPI.Query<RefRO<ResumeInputTag>>().WithEntityAccess())
             {
                 ecb.DestroyEntity(entity);

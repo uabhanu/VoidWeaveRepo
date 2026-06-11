@@ -17,6 +17,7 @@ namespace Game.Scripts.Systems
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
 
             systemState.RequireForUpdate<DoActionComponent>();
+            systemState.RequireForUpdate<InputDashComponent>();
             systemState.RequireForUpdate<InputDeployComponent>();
             systemState.RequireForUpdate<InputNoneComponent>();
             systemState.RequireForUpdate<LevelComponent>();
@@ -37,6 +38,7 @@ namespace Game.Scripts.Systems
         {
             int currentLevel = SystemAPI.GetSingleton<LevelComponent>().Value;
             int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
+            uint inputDash = SystemAPI.GetSingleton<InputDashComponent>().Value;
             uint inputNone = SystemAPI.GetSingleton<InputNoneComponent>().Value;
             uint inputDeploy = SystemAPI.GetSingleton<InputDeployComponent>().Value;
             int level1 = SystemAPI.GetSingleton<Level1EnergyForTutorialComponent>().Value;
@@ -55,13 +57,14 @@ namespace Game.Scripts.Systems
 
             uint playerInput = SystemAPI.GetSingleton<PlayerInputComponent>().Value;
             bool hasTurretSelected = SystemAPI.GetSingleton<SelectedTurretEntityComponent>().Entity != Entity.Null;
-            bool deployPressed = ((playerInput & inputDeploy) != inputNone) & hasTurretSelected;
             bool anyKeyPressed = playerInput != inputNone;
+            bool dashKeyPressed = (playerInput & inputDash) != inputNone;
+            bool deployPressed = ((playerInput & inputDeploy) != inputNone) & hasTurretSelected;
 
             bool shouldDisableTurretsTutorial = (evaluatedLevel < maxTutorialLevelComponent & deployPressed) | (evaluatedLevel >= maxTutorialLevelComponent & anyKeyPressed) | (evaluatedLevel > maxTutorialLevelComponent);
             bool shouldEnableTurretsTutorial = levelAdvanced & (evaluatedLevel <= maxTutorialLevelComponent);
 
-            bool shouldDisableLootTutorial = anyKeyPressed;
+            bool shouldDisableLootTutorial = dashKeyPressed;
 
             foreach(RefRW<CurrentEnergyComponent> energy in SystemAPI.Query<RefRW<CurrentEnergyComponent>>()) { energy.ValueRW.Value = math.select(energy.ValueRO.Value , minEnergy , isLevelAdvanced == doAction); }
 
