@@ -24,7 +24,7 @@ Platform: PC (Unity 6) | Type: Single-Player Action Strategy | Status: 🔧 Prot
 
 ## Overview
 
-**Void Weave** is a tactical bullet-hell tower defence game where players strategically deploy autonomous turret nodes while dodging geometric enemy patterns in a minimalist sci-fi arena.
+**Void Weave** is a tactical bullet-hell arena survival game where players strategically deploy autonomous weapon nodes while dodging geometric enemy patterns in a minimalist sci-fi arena.
 
 **Key Features:**
 - Hybrid Gameplay: Strategic turret placement meets skill-based bullet-hell dodging
