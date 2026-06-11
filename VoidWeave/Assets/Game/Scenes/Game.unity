@@ -641,7 +641,6 @@ MonoBehaviour:
   pulseSpeed: 3.5
   sineDivisor: 2
   sineOffset: 1
-  turretCooldownTime: 1
   tutorialLabelFontSize: 50
   tutorialLabelBottomPercent: 40
   tutorialLabelPaddingBottom: 15
@@ -685,7 +684,7 @@ MonoBehaviour:
     choosing.\nPress ANY KEY to continue."
   lootTutorialTextP1: 'Pick up '
   lootTutorialTextP2: " to revive energy. You better hurry up because \nthey don't
-    stay forever.\""
+    stay forever. Press Space Bar to Continue"
   turretsTutorialText: "{0} Selected. \nPress [E] to deploy \n(Cost: {1} Energy)"
   beamTurretName: Beam Turret
   scatterTurretName: Scatter Turret

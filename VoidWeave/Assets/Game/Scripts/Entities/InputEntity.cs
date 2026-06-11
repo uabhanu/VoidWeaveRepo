@@ -7,6 +7,30 @@ namespace Game.Scripts.Entities
 
     public class InputEntity : MonoBehaviour
     {
+        #region Variables
+        
+        [SerializeField] private uint inputDash;
+        [SerializeField] private uint inputDeploy;
+        [SerializeField] private uint inputDown;
+        [SerializeField] private uint inputLeft;
+        [SerializeField] private uint inputRight;
+        [SerializeField] private uint inputTurret1;
+        [SerializeField] private uint inputTurret2;
+        [SerializeField] private uint inputTurret3;
+        [SerializeField] private uint inputUp;
+        
+        [SerializeField] private Key dashKey;
+        [SerializeField] private Key deployKey;
+        [SerializeField] private Key downKey;
+        [SerializeField] private Key leftKey;
+        [SerializeField] private Key rightKey;
+        [SerializeField] private Key turret1Key;
+        [SerializeField] private Key turret2Key;
+        [SerializeField] private Key turret3Key;
+        [SerializeField] private Key upKey;
+
+        #endregion
+        
         #region Baker
 
         private class InputConfigBaker : Baker<InputEntity>
@@ -36,33 +60,6 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new UpKeyComponent { Value = authoring.upKey });
             }
         }
-
-        #endregion
-        #region Variables
-
-        [Header("Input Bitmask Constants")]
-        [SerializeField] private uint inputDash = 16;
-
-        [SerializeField] private uint inputDeploy = 32;
-        [SerializeField] private uint inputDown = 2;
-        [SerializeField] private uint inputLeft = 4;
-        [SerializeField] private uint inputRight = 8;
-        [SerializeField] private uint inputTurret1 = 64;
-        [SerializeField] private uint inputTurret2 = 128;
-        [SerializeField] private uint inputTurret3 = 256;
-        [SerializeField] private uint inputUp = 1;
-
-        [Header("Key Bindings")]
-        [SerializeField] private Key dashKey = Key.LeftShift;
-
-        [SerializeField] private Key deployKey = Key.Space;
-        [SerializeField] private Key downKey = Key.S;
-        [SerializeField] private Key leftKey = Key.A;
-        [SerializeField] private Key rightKey = Key.D;
-        [SerializeField] private Key turret1Key = Key.Digit1;
-        [SerializeField] private Key turret2Key = Key.Digit2;
-        [SerializeField] private Key turret3Key = Key.Digit3;
-        [SerializeField] private Key upKey = Key.W;
 
         #endregion
     }
