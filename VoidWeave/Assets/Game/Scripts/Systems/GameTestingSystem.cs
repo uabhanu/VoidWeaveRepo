@@ -18,8 +18,10 @@ namespace Game.Scripts.Systems
         {
             _enemyQuery = SystemAPI.QueryBuilder().WithAll<EnemyTag>().Build();
 
+            systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
             systemState.RequireForUpdate<CurrentEnergyComponent>();
             systemState.RequireForUpdate<CurrentEnergyWhileTestingComponent>();
+            systemState.RequireForUpdate<DoActionComponent>();
             systemState.RequireForUpdate<IsTestingComponent>();
             systemState.RequireForUpdate<LevelComponent>();
             systemState.RequireForUpdate<LevelWhileTestingComponent>();
@@ -37,28 +39,37 @@ namespace Game.Scripts.Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            var isTestingComponent = SystemAPI.GetSingleton<IsTestingComponent>().Value;
-            var currentEnergyComponent = SystemAPI.GetSingletonRW<CurrentEnergyComponent>();
-            int currentEnergyWhileTestingComponent = SystemAPI.GetSingleton<CurrentEnergyWhileTestingComponent>().Value;
+            int currentEnergyWhileTesting = SystemAPI.GetSingleton<CurrentEnergyWhileTestingComponent>().Value;
+            int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
+            EntityCommandBuffer ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);
             int enemiesInTheSceneCount = _enemyQuery.CalculateEntityCount();
-            var levelComponent = SystemAPI.GetSingletonRW<LevelComponent>();
-            int levelWhileTestingComponent = SystemAPI.GetSingleton<LevelWhileTestingComponent>().Value;
-            int noActionComponent = SystemAPI.GetSingleton<NoActionComponent>().Value;
-            float timerWhileTestingComponent = SystemAPI.GetSingleton<TimerWhileTestingComponent>().Value;
-            int waveStateWhileTestingComponent = SystemAPI.GetSingleton<WaveStateWhileTestingComponent>().Value;
-            int waveStockWhileTestingComponent = SystemAPI.GetSingleton<WaveStockWhileTestingComponent>().Value;
+            int isTesting = SystemAPI.GetSingleton<IsTestingComponent>().Value;
+            bool isTestingBool = isTesting == doAction;
+            int levelWhileTesting = SystemAPI.GetSingleton<LevelWhileTestingComponent>().Value;
+            int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
+            float timerWhileTesting = SystemAPI.GetSingleton<TimerWhileTestingComponent>().Value;
+            int waveStateWhileTesting = SystemAPI.GetSingleton<WaveStateWhileTestingComponent>().Value;
+            int waveStockWhileTesting = SystemAPI.GetSingleton<WaveStockWhileTestingComponent>().Value;
 
-            currentEnergyComponent.ValueRW.Value = math.select(currentEnergyComponent.ValueRO.Value , currentEnergyWhileTestingComponent , isTestingComponent);
-            levelComponent.ValueRW.Value = math.select(levelComponent.ValueRO.Value , levelWhileTestingComponent , isTestingComponent);
-
-            foreach(var (timerComponent , waveIndexComponent , waveStateComponent , waveStockComponent) in SystemAPI.Query<RefRW<TimerComponent> , RefRW<WaveIndexComponent> , RefRW<WaveStateComponent> , RefRW<WaveStockComponent>>().WithAll<EnemySpawnerTag>())
+            foreach(var (_ , entity) in SystemAPI.Query<RefRO<IsTestingTag>>().WithEntityAccess())
             {
-                timerComponent.ValueRW.Value = math.select(timerComponent.ValueRO.Value , timerWhileTestingComponent , isTestingComponent);
-                waveIndexComponent.ValueRW.Value = math.select(waveIndexComponent.ValueRO.Value , noActionComponent , isTestingComponent);
-                waveStateComponent.ValueRW.Value = math.select(waveStateComponent.ValueRO.Value , waveStateWhileTestingComponent , isTestingComponent);
+                SystemAPI.GetSingletonRW<CurrentEnergyComponent>().ValueRW.Value = math.select(SystemAPI.GetSingleton<CurrentEnergyComponent>().Value , currentEnergyWhileTesting , isTestingBool);
+                SystemAPI.GetSingletonRW<LevelComponent>().ValueRW.Value = math.select(SystemAPI.GetSingleton<LevelComponent>().Value , levelWhileTesting , isTestingBool);
 
-                bool shouldSpawn = isTestingComponent && enemiesInTheSceneCount <= noActionComponent;
-                waveStockComponent.ValueRW.Value = math.select(waveStockComponent.ValueRO.Value , waveStockWhileTestingComponent , shouldSpawn);
+                foreach(var (timerComponent , waveIndexComponent , waveStateComponent) in SystemAPI.Query<RefRW<TimerComponent> , RefRW<WaveIndexComponent> , RefRW<WaveStateComponent>>().WithAll<EnemySpawnerTag>())
+                {
+                    timerComponent.ValueRW.Value = math.select(timerComponent.ValueRO.Value , timerWhileTesting , isTestingBool);
+                    waveIndexComponent.ValueRW.Value = math.select(waveIndexComponent.ValueRO.Value , noAction , isTestingBool);
+                    waveStateComponent.ValueRW.Value = math.select(waveStateComponent.ValueRO.Value , waveStateWhileTesting , isTestingBool);
+                }
+
+                ecb.RemoveComponent<IsTestingTag>(entity);
+            }
+
+            foreach(var waveStockComponent in SystemAPI.Query<RefRW<WaveStockComponent>>().WithAll<EnemySpawnerTag>())
+            {
+                bool shouldSpawn = isTestingBool & (enemiesInTheSceneCount <= noAction);
+                waveStockComponent.ValueRW.Value = math.select(waveStockComponent.ValueRO.Value , waveStockWhileTesting , shouldSpawn);
             }
         }
     }

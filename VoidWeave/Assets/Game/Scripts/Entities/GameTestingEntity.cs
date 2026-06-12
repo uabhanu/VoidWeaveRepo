@@ -20,14 +20,17 @@ namespace Game.Scripts.Entities
             {
                 Entity entity = GetEntity(TransformUsageFlags.None);
                 int isMuted = System.Convert.ToInt32(authoring.muteWhileTesting);
+                int isTesting = System.Convert.ToInt32(authoring.isTesting);
 
                 AddComponent(entity , new CurrentEnergyWhileTestingComponent { Value = authoring.currentEnergyWhileTesting });
-                AddComponent(entity , new IsTestingComponent { Value = authoring.isTesting });
+                AddComponent(entity , new IsTestingComponent { Value = isTesting });
                 AddComponent(entity , new LevelWhileTestingComponent { Value = authoring.levelWhileTesting });
                 AddComponent(entity , new MuteWhileTestingComponent { Value = isMuted });
                 AddComponent(entity , new TimerWhileTestingComponent { Value = authoring.timerWhileTesting });
                 AddComponent(entity , new WaveStateWhileTestingComponent { Value = authoring.waveStateWhileTesting });
                 AddComponent(entity , new WaveStockWhileTestingComponent { Value = authoring.waveStockWhileTesting });
+                
+                AddComponent(entity , new IsTestingTag());
             }
         }
     }

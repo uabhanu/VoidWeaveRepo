@@ -40,6 +40,8 @@ namespace Game.Scripts.Systems
             systemState.Dependency.Complete();
 
             int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
+            int isTesting = SystemAPI.GetSingleton<IsTestingComponent>().Value;
+            bool isTestingBool = isTesting == doAction;
             int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
             int levelToUnlockLineEnemy = SystemAPI.GetSingleton<LevelToUnlockLineEnemyComponent>().Value;
             int levelToUnlockSquareEnemy = SystemAPI.GetSingleton<LevelToUnlockSquareEnemyComponent>().Value;
@@ -57,7 +59,6 @@ namespace Game.Scripts.Systems
             RefRW<WaveIndexComponent> waveIndexComponent = SystemAPI.GetSingletonRW<WaveIndexComponent>();
 
             bool isLevelComplete = true;
-            bool isTesting = SystemAPI.GetSingleton<IsTestingComponent>().Value;
 
             enemiesKilledComponent.ValueRW.Value = math.select(enemiesKilledComponent.ValueRO.Value , noAction , isLevelComplete);
             enemiesToKillComponent.ValueRW.Value += math.select(noAction , enemiesToKillIncrementComponent.Value , isLevelComplete);
@@ -84,7 +85,7 @@ namespace Game.Scripts.Systems
             bitMask |= (uint)math.select(noAction , unlockedTriangleEnemy , levelComponent.ValueRO.Value >= levelToUnlockTriangleEnemy);
             bitMask |= (uint)math.select(noAction , unlockedSquareEnemy , levelComponent.ValueRO.Value >= levelToUnlockSquareEnemy);
 
-            bool shouldUpdateMask = isLevelComplete || isTesting;
+            bool shouldUpdateMask = isLevelComplete || isTestingBool;
             unlockedEnemiesComponent.ValueRW.Value = math.select(unlockedEnemiesComponent.ValueRO.Value , bitMask , shouldUpdateMask);
             waveIndexComponent.ValueRW.Value = math.select(waveIndexComponent.ValueRO.Value , noAction , isLevelComplete);
 

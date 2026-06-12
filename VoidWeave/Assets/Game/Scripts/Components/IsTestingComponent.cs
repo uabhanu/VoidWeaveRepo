@@ -4,6 +4,6 @@ namespace Game.Scripts.Components
 
     public struct IsTestingComponent : IComponentData
     {
-        public bool Value;
+        public int Value;
     }
 }
