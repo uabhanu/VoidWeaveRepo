@@ -31,6 +31,7 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new WaveStockWhileTestingComponent { Value = authoring.waveStockWhileTesting });
                 
                 AddComponent(entity , new IsTestingTag());
+                SetComponentEnabled<IsTestingTag>(entity , authoring.isTesting);
             }
         }
     }

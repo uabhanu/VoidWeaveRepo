@@ -63,7 +63,7 @@ namespace Game.Scripts.Systems
                     waveStateComponent.ValueRW.Value = math.select(waveStateComponent.ValueRO.Value , waveStateWhileTesting , isTestingBool);
                 }
 
-                ecb.RemoveComponent<IsTestingTag>(entity);
+                ecb.SetComponentEnabled<IsTestingTag>(entity , false);
             }
 
             foreach(var waveStockComponent in SystemAPI.Query<RefRW<WaveStockComponent>>().WithAll<EnemySpawnerTag>())
