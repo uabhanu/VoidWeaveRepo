@@ -17,6 +17,10 @@ namespace Game.Scripts.Entities
         [SerializeField] private int collisionNone;
         [SerializeField] private float damageMultiplierPerLevel;
         [SerializeField] private int doAction;
+        [SerializeField] private float eliteStatMultiplier;
+        [SerializeField] private int maxCampaignLevel;
+        [SerializeField] private int maxTurretLevel;
+        [SerializeField] private float normalStatMultiplier;
         [SerializeField] private int noAction;
         [SerializeField] private int enemiesToKill;
         [SerializeField] private int enemiesToKillIncrement;
@@ -95,6 +99,7 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new CurrentEnergyComponent { Value = authoring.level1EnergyForTutorial });
                 AddComponent(entity , new DamageMultiplierComponent { Value = authoring.damageMultiplierPerLevel });
                 AddComponent(entity , new DoActionComponent { Value = authoring.doAction });
+                AddComponent(entity , new EliteStatMultiplierComponent { Value = authoring.eliteStatMultiplier });
                 AddComponent(entity , new EnemiesToKillComponent { Value = enemiesToKill });
                 AddComponent(entity , new EnemiesKilledComponent());
                 AddComponent(entity , new EnemiesToKillIncrementComponent { Value = authoring.enemiesToKillIncrement });
@@ -115,10 +120,13 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new LootSpawnedFirstTimeComponent { Value = authoring.lootSpawnedFirstTime });
                 AddComponent(entity , new MainMenuStateComponent { Value = authoring.mainMenuState });
                 AddComponent(entity , new MaxLevelsForTutorialsComponent { Value = authoring.maxLevelForTutorials });
+                AddComponent(entity , new MaxCampaignLevelComponent { Value = authoring.maxCampaignLevel });
+                AddComponent(entity , new MaxTurretLevelComponent { Value = authoring.maxTurretLevel });
                 AddComponent(entity , new MinOverlapDistanceComponent { Value = authoring.minOverlapDistance });
                 AddComponent(entity , new MovementActiveComponent { Value = authoring.movementActive });
                 AddComponent(entity , new MovementNoneComponent { Value = authoring.movementNone });
                 AddComponent(entity , new NoActionComponent { Value = authoring.noAction });
+                AddComponent(entity , new NormalStatMultiplierComponent { Value = authoring.normalStatMultiplier });
                 AddComponent(entity , new OneScaleComponent { Value = authoring.oneScale });
                 AddComponent(entity , new PlayerEntityComponent { Entity = GetEntity(authoring.playerEntityPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new PlayingStateComponent { Value = authoring.playingState });
