@@ -72,16 +72,17 @@ namespace Game.Scripts.Systems
         private void Execute(ref CurrentHealthComponent currentHealthComponent , ref DamageComponent damageComponent , in EnemyJustSpawnedTag enemyJustSpawnedTag , Entity entity , [EntityIndexInQuery] int entityIndexInQuery , ref LootAmountComponent lootAmountComponent , ref MaxHealthComponent maxHealthComponent)
         {
             int cappedLevel = math.min(CurrentLevel , MaxCampaignLevel);
-            float eliteMultiplier = math.select(NormalStatMultiplier , EliteStatMultiplier , CurrentLevel == MaxCampaignLevel);
-            float levelMultiplier = math.max(ScalingMinLevel , CurrentLevel - ScalingLevelOffset);
+            float levelMultiplier = math.max(ScalingMinLevel , cappedLevel - ScalingLevelOffset);
+            float eliteMultiplier = math.select(NormalStatMultiplier , EliteStatMultiplier , cappedLevel >= MaxCampaignLevel);
+            float totalMultiplier = ScalingBase + levelMultiplier * eliteMultiplier;
 
-            damageComponent.Value = (int)math.ceil(damageComponent.Value * (ScalingBase + levelMultiplier * DamageMultiplier));
+            damageComponent.Value = (int)math.ceil(damageComponent.Value * totalMultiplier);
 
-            var newHealth = (int)math.ceil(maxHealthComponent.Value * (ScalingBase + levelMultiplier * HealthMultiplier) * eliteMultiplier);
+            var newHealth = (int)math.ceil(maxHealthComponent.Value * totalMultiplier);
             maxHealthComponent.Value = newHealth;
             currentHealthComponent.Value = newHealth;
 
-            lootAmountComponent.Value = (int)(lootAmountComponent.Value * (ScalingBase + levelMultiplier * LootMultiplier) * eliteMultiplier);
+            lootAmountComponent.Value = (int)(lootAmountComponent.Value * totalMultiplier);
 
             EntityCommandBufferParallelWriter.RemoveComponent<EnemyJustSpawnedTag>(entityIndexInQuery , entity);
         }

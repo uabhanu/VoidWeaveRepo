@@ -74,20 +74,14 @@ namespace Game.Scripts.Systems
 
             int turretEntityIndex = math.select(selectedTurretEntityComponent.ValueRO.Entity.Index , -doAction , isLevelComplete);
             int turretEntityVersion = math.select(selectedTurretEntityComponent.ValueRO.Entity.Version , noAction , isLevelComplete);
-            
+
             selectedTurretEntityComponent.ValueRW.Entity = new Entity { Index = turretEntityIndex , Version = turretEntityVersion };
             selectedTurretCostComponent.ValueRW.Value = math.select(selectedTurretCostComponent.ValueRO.Value , noAction , isLevelComplete);
 
             currentHealthComponent.ValueRW.Value = math.select(currentHealthComponent.ValueRO.Value , maxHealthComponent.ValueRO.Value , isLevelComplete);
-            
+
             bool isNotMaxLevel = levelComponent.ValueRO.Value < maxCampaignLevel;
-
-            if(!isNotMaxLevel)
-            {
-                UnityEngine.Debug.Log("Campaign Complete! Victory UI will go here.");
-            }
-
-            levelComponent.ValueRW.Value += math.select(noAction , doAction , isLevelComplete);
+            levelComponent.ValueRW.Value += math.select(noAction , doAction , isLevelComplete & isNotMaxLevel);
 
             uint bitMask = unlockedNone;
             bitMask |= (uint)math.select(noAction , unlockedLineEnemy , levelComponent.ValueRO.Value >= levelToUnlockLineEnemy);
