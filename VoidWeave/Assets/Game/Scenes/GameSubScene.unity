@@ -238,9 +238,11 @@ MonoBehaviour:
   collisionActive: 1
   collisionNone: 0
   damageMultiplierPerLevel: 0.05
-  dashCooldownDefault: 1
-  dashDurationDefault: 0.2
   doAction: 1
+  eliteStatMultiplier: 2.1
+  maxCampaignLevel: 10
+  maxTurretLevel: 3
+  normalStatMultiplier: 1
   noAction: 0
   enemiesToKill: 20
   enemiesToKillIncrement: 5

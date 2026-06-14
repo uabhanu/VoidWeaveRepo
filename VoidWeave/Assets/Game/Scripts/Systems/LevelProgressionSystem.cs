@@ -20,6 +20,7 @@ namespace Game.Scripts.Systems
             systemState.RequireForUpdate<IsTestingComponent>();
             systemState.RequireForUpdate<LevelComponent>();
             systemState.RequireForUpdate<LevelToUnlockLineEnemyComponent>();
+            systemState.RequireForUpdate<MaxCampaignLevelComponent>();
             systemState.RequireForUpdate<NoActionComponent>();
             systemState.RequireForUpdate<PlayerTag>();
             systemState.RequireForUpdate<LevelToUnlockSquareEnemyComponent>();
@@ -46,6 +47,7 @@ namespace Game.Scripts.Systems
             int levelToUnlockLineEnemy = SystemAPI.GetSingleton<LevelToUnlockLineEnemyComponent>().Value;
             int levelToUnlockSquareEnemy = SystemAPI.GetSingleton<LevelToUnlockSquareEnemyComponent>().Value;
             int levelToUnlockTriangleEnemy = SystemAPI.GetSingleton<LevelToUnlockTriangleEnemyComponent>().Value;
+            int maxCampaignLevel = SystemAPI.GetSingleton<MaxCampaignLevelComponent>().Value;
             uint unlockedLineEnemy = SystemAPI.GetSingleton<UnlockedLineEnemyComponent>().Value;
             uint unlockedNone = SystemAPI.GetSingleton<UnlockedNoneComponent>().Value;
             uint unlockedSquareEnemy = SystemAPI.GetSingleton<UnlockedSquareEnemyComponent>().Value;
@@ -77,6 +79,13 @@ namespace Game.Scripts.Systems
             selectedTurretCostComponent.ValueRW.Value = math.select(selectedTurretCostComponent.ValueRO.Value , noAction , isLevelComplete);
 
             currentHealthComponent.ValueRW.Value = math.select(currentHealthComponent.ValueRO.Value , maxHealthComponent.ValueRO.Value , isLevelComplete);
+            
+            bool isNotMaxLevel = levelComponent.ValueRO.Value < maxCampaignLevel;
+
+            if(!isNotMaxLevel)
+            {
+                UnityEngine.Debug.Log("Campaign Complete! Victory UI will go here.");
+            }
 
             levelComponent.ValueRW.Value += math.select(noAction , doAction , isLevelComplete);
 

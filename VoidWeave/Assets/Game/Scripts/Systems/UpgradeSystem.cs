@@ -15,6 +15,7 @@ namespace Game.Scripts.Systems
 
             systemState.RequireForUpdate<CurrentEnergyComponent>();
             systemState.RequireForUpdate<DoActionComponent>();
+            systemState.RequireForUpdate<MaxTurretLevelComponent>();
             systemState.RequireForUpdate<NoActionComponent>();
             systemState.RequireForUpdate<UpgradeCostBaseMultiplierComponent>();
             systemState.RequireForUpdate<UpgradeCostMultiplierComponent>();
@@ -26,6 +27,7 @@ namespace Game.Scripts.Systems
             EntityCommandBuffer entityCommandBuffer = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);
             RefRW<CurrentEnergyComponent> currentEnergyComponent = SystemAPI.GetSingletonRW<CurrentEnergyComponent>();
             int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
+            int maxTurretLevel = SystemAPI.GetSingleton<MaxTurretLevelComponent>().Value;
             int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
             float upgradeCostBaseMultiplier = SystemAPI.GetSingleton<UpgradeCostBaseMultiplierComponent>().Value;
             float upgradeCostMultiplier = SystemAPI.GetSingleton<UpgradeCostMultiplierComponent>().Value;
@@ -37,7 +39,7 @@ namespace Game.Scripts.Systems
                 RefRW<TurretCostComponent> strikerTurretCost = SystemAPI.GetComponentRW<TurretCostComponent>(configEntity);
                 RefRW<TurretLevelComponent> strikerTurretLevel = SystemAPI.GetComponentRW<TurretLevelComponent>(configEntity);
 
-                ProcessUpgrade(ref strikerTurretCost.ValueRW.Value , ref currentEnergyComponent , ref strikerTurretLevel.ValueRW.Value , entityCommandBuffer , entity , doAction , noAction , upgradeCostBaseMultiplier , upgradeCostMultiplier);
+                ProcessUpgrade(ref strikerTurretCost.ValueRW.Value , ref currentEnergyComponent , ref strikerTurretLevel.ValueRW.Value , entityCommandBuffer , entity , doAction , maxTurretLevel , noAction , upgradeCostBaseMultiplier , upgradeCostMultiplier);
             }
 
             foreach((RefRO<UpgradeScatterTurretTag> _ , Entity entity) in SystemAPI.Query<RefRO<UpgradeScatterTurretTag>>().WithEntityAccess())
@@ -47,7 +49,7 @@ namespace Game.Scripts.Systems
                 RefRW<TurretCostComponent> scatterTurretCost = SystemAPI.GetComponentRW<TurretCostComponent>(configEntity);
                 RefRW<TurretLevelComponent> scatterTurretLevel = SystemAPI.GetComponentRW<TurretLevelComponent>(configEntity);
 
-                ProcessUpgrade(ref scatterTurretCost.ValueRW.Value , ref currentEnergyComponent , ref scatterTurretLevel.ValueRW.Value , entityCommandBuffer , entity , doAction , noAction , upgradeCostBaseMultiplier , upgradeCostMultiplier);
+                ProcessUpgrade(ref scatterTurretCost.ValueRW.Value , ref currentEnergyComponent , ref scatterTurretLevel.ValueRW.Value , entityCommandBuffer , entity , doAction , maxTurretLevel , noAction , upgradeCostBaseMultiplier , upgradeCostMultiplier);
             }
 
             foreach((RefRO<UpgradeBeamTurretTag> _ , Entity entity) in SystemAPI.Query<RefRO<UpgradeBeamTurretTag>>().WithEntityAccess())
@@ -57,16 +59,19 @@ namespace Game.Scripts.Systems
                 RefRW<TurretCostComponent> beamTurretCost = SystemAPI.GetComponentRW<TurretCostComponent>(configEntity);
                 RefRW<TurretLevelComponent> beamTurretLevel = SystemAPI.GetComponentRW<TurretLevelComponent>(configEntity);
 
-                ProcessUpgrade(ref beamTurretCost.ValueRW.Value , ref currentEnergyComponent , ref beamTurretLevel.ValueRW.Value , entityCommandBuffer , entity , doAction , noAction , upgradeCostBaseMultiplier , upgradeCostMultiplier);
+                ProcessUpgrade(ref beamTurretCost.ValueRW.Value , ref currentEnergyComponent , ref beamTurretLevel.ValueRW.Value , entityCommandBuffer , entity , doAction , maxTurretLevel , noAction , upgradeCostBaseMultiplier , upgradeCostMultiplier);
             }
         }
 
-        private void ProcessUpgrade(ref int cost , ref RefRW<CurrentEnergyComponent> currentEnergyComponent , ref int level , EntityCommandBuffer entityCommandBuffer , Entity tagEntity , int doAction , int noAction , float upgradeCostBaseMultiplier , float upgradeCostMultiplier)
+        private void ProcessUpgrade(ref int cost , ref RefRW<CurrentEnergyComponent> currentEnergyComponent , ref int level , EntityCommandBuffer entityCommandBuffer , Entity tagEntity , int doAction , int maxTurretLevel , int noAction , float upgradeCostBaseMultiplier , float upgradeCostMultiplier)
         {
             bool canAfford = currentEnergyComponent.ValueRO.Value >= cost;
-            float costScalingFactor = math.select(upgradeCostBaseMultiplier , upgradeCostMultiplier , canAfford);
-            int costToDeduct = math.select(noAction , cost , canAfford);
-            int levelToAdd = math.select(noAction , doAction , canAfford);
+            bool isNotMaxLevel = level < maxTurretLevel;
+            bool canUpgrade = canAfford & isNotMaxLevel;
+
+            float costScalingFactor = math.select(upgradeCostBaseMultiplier , upgradeCostMultiplier , canUpgrade);
+            int costToDeduct = math.select(noAction , cost , canUpgrade);
+            int levelToAdd = math.select(noAction , doAction , canUpgrade);
 
             level += levelToAdd;
             cost = (int)(cost * costScalingFactor);
