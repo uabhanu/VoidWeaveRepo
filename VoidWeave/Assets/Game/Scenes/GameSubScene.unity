@@ -150,7 +150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.GameTestingEntity
   currentEnergyWhileTesting: 1000
   enemiesToKillWhileTesting: 3
-  isTesting: 0
+  isTesting: 1
   levelWhileTesting: 5
   muteWhileTesting: 0
   timerWhileTesting: 3
@@ -239,7 +239,7 @@ MonoBehaviour:
   damageMultiplierPerLevel: 0.05
   doAction: 1
   eliteStatMultiplier: 2.1
-  lastLevel: 0
+  lastLevel: 10
   maxTurretLevel: 3
   normalStatMultiplier: 1
   noAction: 0
