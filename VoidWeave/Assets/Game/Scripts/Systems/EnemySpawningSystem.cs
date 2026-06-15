@@ -7,7 +7,7 @@ namespace Game.Scripts.Systems
     using Unity.Transforms;
 
     [UpdateInGroup(typeof(GameplaySystemGroup))]
-    [UpdateAfter(typeof(LevelProgressionSystem))]
+    [UpdateAfter(typeof(CampaignProgressionSystem))]
     [UpdateAfter(typeof(TimerSystem))]
     [UpdateAfter(typeof(WaveStateSystem))]
     public partial struct EnemySpawningSystem : ISystem

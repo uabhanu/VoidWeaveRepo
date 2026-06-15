@@ -8,7 +8,7 @@ namespace Game.Scripts.Systems
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     [UpdateAfter(typeof(WaveStateSystem))]
     [UpdateBefore(typeof(EnemySpawningSystem))]
-    public partial struct LevelProgressionSystem : ISystem
+    public partial struct CampaignProgressionSystem : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState systemState)
@@ -20,7 +20,7 @@ namespace Game.Scripts.Systems
             systemState.RequireForUpdate<IsTestingComponent>();
             systemState.RequireForUpdate<LevelComponent>();
             systemState.RequireForUpdate<LevelToUnlockLineEnemyComponent>();
-            systemState.RequireForUpdate<MaxCampaignLevelComponent>();
+            systemState.RequireForUpdate<LastLevelComponent>();
             systemState.RequireForUpdate<NoActionComponent>();
             systemState.RequireForUpdate<PlayerTag>();
             systemState.RequireForUpdate<LevelToUnlockSquareEnemyComponent>();
@@ -47,7 +47,7 @@ namespace Game.Scripts.Systems
             int levelToUnlockLineEnemy = SystemAPI.GetSingleton<LevelToUnlockLineEnemyComponent>().Value;
             int levelToUnlockSquareEnemy = SystemAPI.GetSingleton<LevelToUnlockSquareEnemyComponent>().Value;
             int levelToUnlockTriangleEnemy = SystemAPI.GetSingleton<LevelToUnlockTriangleEnemyComponent>().Value;
-            int maxCampaignLevel = SystemAPI.GetSingleton<MaxCampaignLevelComponent>().Value;
+            int maxCampaignLevel = SystemAPI.GetSingleton<LastLevelComponent>().Value;
             uint unlockedLineEnemy = SystemAPI.GetSingleton<UnlockedLineEnemyComponent>().Value;
             uint unlockedNone = SystemAPI.GetSingleton<UnlockedNoneComponent>().Value;
             uint unlockedSquareEnemy = SystemAPI.GetSingleton<UnlockedSquareEnemyComponent>().Value;
@@ -60,7 +60,7 @@ namespace Game.Scripts.Systems
             RefRW<UnlockedEnemiesComponent> unlockedEnemiesComponent = SystemAPI.GetSingletonRW<UnlockedEnemiesComponent>();
             RefRW<WaveIndexComponent> waveIndexComponent = SystemAPI.GetSingletonRW<WaveIndexComponent>();
 
-            bool isLevelComplete = true;
+            bool isLevelComplete = enemiesKilledComponent.ValueRO.Value >= enemiesToKillComponent.ValueRO.Value;
 
             enemiesKilledComponent.ValueRW.Value = math.select(enemiesKilledComponent.ValueRO.Value , noAction , isLevelComplete);
             enemiesToKillComponent.ValueRW.Value += math.select(noAction , enemiesToKillIncrementComponent.Value , isLevelComplete);

@@ -59,11 +59,11 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new WaveStateComponent());
                 AddComponent(entity , new WaveStockComponent());
                 
-                AddComponent<GameLostTag>(entity);
-                SetComponentEnabled<GameLostTag>(entity , false);
+                AddComponent<LevelLostTag>(entity);
+                SetComponentEnabled<LevelLostTag>(entity , false);
                 
-                AddComponent<GameWonTag>(entity);
-                SetComponentEnabled<GameWonTag>(entity , false);
+                AddComponent<LevelWonTag>(entity);
+                SetComponentEnabled<LevelWonTag>(entity , false);
                 
                 AddComponent(entity , new TurretsTutorialActiveTag());
             }

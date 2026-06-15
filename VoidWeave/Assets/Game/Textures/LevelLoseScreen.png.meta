@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 0f80efdd7fc41104abaf412f069790b7
+guid: c07edba4f56fe0448abd2479deb4d0cd
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -848381713617584042
-    second: WinScreen_0
+      213: -1447513367210407682
+    second: LevelLoseScreen_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:

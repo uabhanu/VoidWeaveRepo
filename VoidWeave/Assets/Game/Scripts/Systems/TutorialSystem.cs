@@ -6,7 +6,7 @@ namespace Game.Scripts.Systems
     using Unity.Mathematics;
 
     [UpdateInGroup(typeof(GameplaySystemGroup))]
-    [UpdateBefore(typeof(LevelProgressionSystem))]
+    [UpdateBefore(typeof(CampaignProgressionSystem))]
     public partial struct TutorialSystem : ISystem
     {
         private EntityQuery _advanceLevelQuery;

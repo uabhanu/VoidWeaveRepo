@@ -149,12 +149,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.GameTestingEntity
   currentEnergyWhileTesting: 1000
+  enemiesToKillWhileTesting: 3
   isTesting: 0
   levelWhileTesting: 5
   muteWhileTesting: 0
-  timerWhileTesting: 0
-  waveStateWhileTesting: 1
-  waveStockWhileTesting: 1
+  timerWhileTesting: 3
 --- !u!4 &64175127
 Transform:
   m_ObjectHideFlags: 0
@@ -240,7 +239,7 @@ MonoBehaviour:
   damageMultiplierPerLevel: 0.05
   doAction: 1
   eliteStatMultiplier: 2.1
-  maxCampaignLevel: 10
+  lastLevel: 0
   maxTurretLevel: 3
   normalStatMultiplier: 1
   noAction: 0

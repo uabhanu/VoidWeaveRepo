@@ -20,7 +20,7 @@ namespace Game.Scripts.Systems
             systemState.RequireForUpdate<HealthMultiplierComponent>();
             systemState.RequireForUpdate<LevelComponent>();
             systemState.RequireForUpdate<LootMultiplierComponent>();
-            systemState.RequireForUpdate<MaxCampaignLevelComponent>();
+            systemState.RequireForUpdate<LastLevelComponent>();
             systemState.RequireForUpdate<NormalStatMultiplierComponent>();
             systemState.RequireForUpdate<ScalingBaseComponent>();
             systemState.RequireForUpdate<ScalingLevelOffsetComponent>();
@@ -31,7 +31,7 @@ namespace Game.Scripts.Systems
         public void OnUpdate(ref SystemState systemState)
         {
             float eliteStatMultiplier = SystemAPI.GetSingleton<EliteStatMultiplierComponent>().Value;
-            int maxCampaignLevel = SystemAPI.GetSingleton<MaxCampaignLevelComponent>().Value;
+            int maxCampaignLevel = SystemAPI.GetSingleton<LastLevelComponent>().Value;
             float normalStatMultiplier = SystemAPI.GetSingleton<NormalStatMultiplierComponent>().Value;
             float scalingBase = SystemAPI.GetSingleton<ScalingBaseComponent>().Value;
             int scalingLevelOffset = SystemAPI.GetSingleton<ScalingLevelOffsetComponent>().Value;

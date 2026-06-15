@@ -18,7 +18,7 @@ namespace Game.Scripts.Entities
         [SerializeField] private float damageMultiplierPerLevel;
         [SerializeField] private int doAction;
         [SerializeField] private float eliteStatMultiplier;
-        [SerializeField] private int maxCampaignLevel;
+        [SerializeField] private int lastLevel;
         [SerializeField] private int maxTurretLevel;
         [SerializeField] private float normalStatMultiplier;
         [SerializeField] private int noAction;
@@ -108,6 +108,7 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new HealthMultiplierComponent { Value = authoring.healthMultiplierPerLevel });
                 AddComponent(entity , new HealthValueForDeathComponent { Value = authoring.healthValueForDeath });
                 AddComponent(entity , new InputEntityComponent { Entity = GetEntity(authoring.inputEntityPrefab , TransformUsageFlags.Dynamic) });
+                AddComponent(entity , new LastLevelComponent { Value = authoring.lastLevel });
                 AddComponent(entity , new LevelComponent { Value = authoring.startingLevel });
                 AddComponent(entity , new Level1EnergyForTutorialComponent { Value = authoring.level1EnergyForTutorial });
                 AddComponent(entity , new Level2EnergyForTutorialComponent { Value = authoring.level2EnergyForTutorial });
@@ -120,7 +121,6 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new LootSpawnedFirstTimeComponent { Value = authoring.lootSpawnedFirstTime });
                 AddComponent(entity , new MainMenuStateComponent { Value = authoring.mainMenuState });
                 AddComponent(entity , new MaxLevelsForTutorialsComponent { Value = authoring.maxLevelForTutorials });
-                AddComponent(entity , new MaxCampaignLevelComponent { Value = authoring.maxCampaignLevel });
                 AddComponent(entity , new MaxTurretLevelComponent { Value = authoring.maxTurretLevel });
                 AddComponent(entity , new MinOverlapDistanceComponent { Value = authoring.minOverlapDistance });
                 AddComponent(entity , new MovementActiveComponent { Value = authoring.movementActive });
