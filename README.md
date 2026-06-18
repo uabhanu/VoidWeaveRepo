@@ -235,11 +235,11 @@ Level 1 (Base) → Level 2 (+50%) → Level 3 (+100%)
 - [x] Tutorial
 
 ### 📅 Phase 5: Content & Balance
-- [ ] 10-Level Finite Campaign Structure
-- [ ] Elite Enemy Tag Mutations (Wave 10 Final Exam)
-- [ ] Turret Level 3 Max Upgrade Cap
-- [ ] Economy & Mathematical Balance Pass
-- [ ] Victory/Defeat State UI
+- [x] 10-Level Finite Campaign Structure
+- [x] Elite Enemy Tag Mutations (Wave 10 Final Exam)
+- [x] Turret Level 3 Max Upgrade Cap
+- [x] Economy & Mathematical Balance Pass
+- [x] Victory/Defeat State UI
 
 ---
 
