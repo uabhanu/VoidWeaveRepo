@@ -2,7 +2,7 @@ namespace Game.Scripts.Components
 {
     using Unity.Entities;
 
-    public struct MaxCampaignLevelComponent : IComponentData
+    public struct EnemiesToKillWhileTestingComponent : IComponentData
     {
         public int Value;
     }

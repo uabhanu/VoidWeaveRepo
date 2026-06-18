@@ -5,7 +5,7 @@ namespace Game.Scripts.Systems
     using Unity.Entities;
 
     [UpdateInGroup(typeof(GameplaySystemGroup))]
-    public partial struct GameLoseSystem : ISystem
+    public partial struct LevelLoseSystem : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState systemState) { systemState.RequireForUpdate<EnemySpawnerTag>(); }
@@ -17,10 +17,10 @@ namespace Game.Scripts.Systems
 
             foreach(var currentHealthComponent in SystemAPI.Query<RefRO<CurrentHealthComponent>>().WithAll<PlayerTag>()) { hasLost = currentHealthComponent.ValueRO.Value <= 0f; }
 
-            foreach(var (_ , entity) in SystemAPI.Query<RefRO<EnemySpawnerTag>>().WithAll<GameLostTag>().WithOptions(EntityQueryOptions.IgnoreComponentEnabledState).WithEntityAccess())
+            foreach(var (_ , entity) in SystemAPI.Query<RefRO<EnemySpawnerTag>>().WithAll<LevelLostTag>().WithOptions(EntityQueryOptions.IgnoreComponentEnabledState).WithEntityAccess())
             {
-                bool isAlreadyLost = SystemAPI.IsComponentEnabled<GameLostTag>(entity);
-                SystemAPI.SetComponentEnabled<GameLostTag>(entity , isAlreadyLost || hasLost);
+                bool isAlreadyLost = SystemAPI.IsComponentEnabled<LevelLostTag>(entity);
+                SystemAPI.SetComponentEnabled<LevelLostTag>(entity , isAlreadyLost || hasLost);
             }
         }
     }

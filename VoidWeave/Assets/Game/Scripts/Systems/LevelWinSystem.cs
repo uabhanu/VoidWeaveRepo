@@ -5,16 +5,18 @@ namespace Game.Scripts.Systems
     using Unity.Entities;
 
     [UpdateInGroup(typeof(GameplaySystemGroup))]
-    [UpdateAfter(typeof(LevelProgressionSystem))]
-    public partial struct GameWinSystem : ISystem
+    [UpdateAfter(typeof(CampaignProgressionSystem))]
+    public partial struct LevelWinSystem : ISystem
     {
         private EntityQuery _lootQuery;
 
         [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
+            systemState.RequireForUpdate<IsTestingComponent>();
             _lootQuery = SystemAPI.QueryBuilder().WithAll<LootPickupTag>().Build();
 
+            systemState.RequireForUpdate<DoActionComponent>();
             systemState.RequireForUpdate<EnemiesKilledComponent>();
             systemState.RequireForUpdate<EnemiesToKillComponent>();
         }
@@ -24,13 +26,11 @@ namespace Game.Scripts.Systems
         {
             int enemiesKilled = SystemAPI.GetSingleton<EnemiesKilledComponent>().Value;
             int enemiesToKill = SystemAPI.GetSingleton<EnemiesToKillComponent>().Value;
-
-            bool levelObjectiveComplete = enemiesKilled >= enemiesToKill;
             bool noLootRemaining = _lootQuery.IsEmpty;
-
+            bool levelObjectiveComplete = enemiesKilled >= enemiesToKill;
             bool levelWon = levelObjectiveComplete && noLootRemaining;
 
-            foreach(var (_ , entity) in SystemAPI.Query<RefRO<EnemySpawnerTag>>().WithAll<GameWonTag>().WithOptions(EntityQueryOptions.IgnoreComponentEnabledState).WithEntityAccess()) { SystemAPI.SetComponentEnabled<GameWonTag>(entity , levelWon); }
+            foreach(var (_ , entity) in SystemAPI.Query<RefRO<EnemySpawnerTag>>().WithAll<LevelWonTag>().WithOptions(EntityQueryOptions.IgnoreComponentEnabledState).WithEntityAccess()) { SystemAPI.SetComponentEnabled<LevelWonTag>(entity , levelWon); }
         }
     }
 }

@@ -20,6 +20,7 @@ namespace Game.Scripts.Systems
             systemState.RequireForUpdate<DoActionComponent>();
             systemState.RequireForUpdate<EnemiesKilledComponent>();
             systemState.RequireForUpdate<EnemiesToKillComponent>();
+            systemState.RequireForUpdate<IsTestingComponent>();
             systemState.RequireForUpdate<NoActionComponent>();
             systemState.RequireForUpdate<TimerComponent>();
             systemState.RequireForUpdate<TimerExpiredComponent>();
@@ -43,6 +44,7 @@ namespace Game.Scripts.Systems
             int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
             int enemiesKilled = SystemAPI.GetSingleton<EnemiesKilledComponent>().Value;
             int enemiesToKill = SystemAPI.GetSingleton<EnemiesToKillComponent>().Value;
+            int isTesting = SystemAPI.GetSingleton<IsTestingComponent>().Value;
             bool isTutorialActive = !_tutorialActiveQuery.IsEmpty;
             int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
             float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value;
@@ -52,6 +54,7 @@ namespace Game.Scripts.Systems
             int wavesPerLevel = SystemAPI.GetSingleton<WavesPerLevelComponent>().Value;
             int waveStateCombat = SystemAPI.GetSingleton<WaveStateCombatComponent>().Value;
             int waveStatePrep = SystemAPI.GetSingleton<WaveStatePrepComponent>().Value;
+            bool isTestingMode = isTesting == doAction;
 
             systemState.Dependency = new WaveStateJob
             {
@@ -59,6 +62,7 @@ namespace Game.Scripts.Systems
                 DoAction = doAction ,
                 EnemiesKilled = enemiesKilled ,
                 EnemiesToKill = enemiesToKill ,
+                IsTestingMode = isTestingMode ,
                 IsTutorialActive = isTutorialActive ,
                 NoAction = noAction ,
                 TimerExpired = timerExpired ,
@@ -79,6 +83,7 @@ namespace Game.Scripts.Systems
         public int DoAction;
         public int EnemiesKilled;
         public int EnemiesToKill;
+        public bool IsTestingMode;
         public bool IsTutorialActive;
         public int NoAction;
         public float TimerExpired;
@@ -91,10 +96,8 @@ namespace Game.Scripts.Systems
 
         private void Execute(ref TimerComponent timerComponent , ref WaveIndexComponent waveIndexComponent , in WavePrepDurationComponent wavePrepDurationComponent , ref WaveStateComponent waveStateComponent , ref WaveStockComponent waveStockComponent)
         {
-            bool isPrepComplete = waveStateComponent.Value == WaveStatePrep && timerComponent.Value <= TimerExpired && !IsTutorialActive;
-
-            // We only transition to the next wave if we still need more kills for the level.
             bool isLevelOngoing = EnemiesKilled < EnemiesToKill;
+            bool isPrepComplete = waveStateComponent.Value == WaveStatePrep && timerComponent.Value <= TimerExpired && !IsTutorialActive;
             bool isWaveClear = waveStateComponent.Value == WaveStateCombat && waveStockComponent.Value <= NoAction && AliveEnemyCount <= NoAction && isLevelOngoing;
 
             waveIndexComponent.Value += math.select(NoAction , DoAction , isPrepComplete);
@@ -103,7 +106,6 @@ namespace Game.Scripts.Systems
 
             int enemiesNeededForLevel = EnemiesToKill - EnemiesKilled - AliveEnemyCount;
 
-            // Prevent modulo by zero if inspector value is 0
             int safeWavesPerLevel = math.max(DoAction , WavesPerLevel);
             int currentWaveInLevel = (waveIndexComponent.Value - DoAction) % safeWavesPerLevel;
             currentWaveInLevel = math.select(currentWaveInLevel , NoAction , currentWaveInLevel < NoAction);
@@ -112,10 +114,8 @@ namespace Game.Scripts.Systems
 
             int calculatedStock = (int)(enemiesNeededForLevel * multiplier);
 
-            // Require at least 1 enemy if the quota is not yet met to prevent softlocks
             int minRequiredStock = math.select(NoAction , DoAction , enemiesNeededForLevel > NoAction);
 
-            // Clamp the final stock between the minimum required and the absolute maximum needed
             int cappedStock = math.clamp(calculatedStock , minRequiredStock , enemiesNeededForLevel);
 
             waveStockComponent.Value = math.select(waveStockComponent.Value , cappedStock , isPrepComplete);

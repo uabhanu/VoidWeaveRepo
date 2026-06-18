@@ -7,12 +7,11 @@ namespace Game.Scripts.Entities
     public class GameTestingEntity : MonoBehaviour
     {
         [SerializeField] private int currentEnergyWhileTesting;
+        [SerializeField] private int enemiesToKillWhileTesting;
         [SerializeField] private bool isTesting;
         [SerializeField] private int levelWhileTesting;
         [SerializeField] private bool muteWhileTesting;
         [SerializeField] private int timerWhileTesting;
-        [SerializeField] private int waveStateWhileTesting;
-        [SerializeField] private int waveStockWhileTesting;
 
         private class GameTesterBaker : Baker<GameTestingEntity>
         {
@@ -23,12 +22,11 @@ namespace Game.Scripts.Entities
                 int isTesting = System.Convert.ToInt32(authoring.isTesting);
 
                 AddComponent(entity , new CurrentEnergyWhileTestingComponent { Value = authoring.currentEnergyWhileTesting });
+                AddComponent(entity , new EnemiesToKillWhileTestingComponent { Value = authoring.enemiesToKillWhileTesting });
                 AddComponent(entity , new IsTestingComponent { Value = isTesting });
                 AddComponent(entity , new LevelWhileTestingComponent { Value = authoring.levelWhileTesting });
                 AddComponent(entity , new MuteWhileTestingComponent { Value = isMuted });
                 AddComponent(entity , new TimerWhileTestingComponent { Value = authoring.timerWhileTesting });
-                AddComponent(entity , new WaveStateWhileTestingComponent { Value = authoring.waveStateWhileTesting });
-                AddComponent(entity , new WaveStockWhileTestingComponent { Value = authoring.waveStockWhileTesting });
                 
                 AddComponent(entity , new IsTestingTag());
                 SetComponentEnabled<IsTestingTag>(entity , authoring.isTesting);
