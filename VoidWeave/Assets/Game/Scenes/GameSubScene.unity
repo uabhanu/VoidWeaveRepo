@@ -239,6 +239,7 @@ MonoBehaviour:
   damageMultiplierPerLevel: 0.05
   doAction: 1
   eliteStatMultiplier: 2.1
+  floatTolerance: 0.001
   lastLevel: 10
   maxTurretLevel: 3
   normalStatMultiplier: 1

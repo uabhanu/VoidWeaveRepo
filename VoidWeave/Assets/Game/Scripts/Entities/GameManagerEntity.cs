@@ -18,6 +18,7 @@ namespace Game.Scripts.Entities
         [SerializeField] private float damageMultiplierPerLevel;
         [SerializeField] private int doAction;
         [SerializeField] private float eliteStatMultiplier;
+        [SerializeField] private float floatTolerance;
         [SerializeField] private int lastLevel;
         [SerializeField] private int maxTurretLevel;
         [SerializeField] private float normalStatMultiplier;
@@ -104,6 +105,7 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new EnemiesKilledComponent());
                 AddComponent(entity , new EnemiesToKillIncrementComponent { Value = authoring.enemiesToKillIncrement });
                 AddComponent(entity , new EnemySpawnerEntityComponent { Entity = GetEntity(authoring.enemySpawnerEntityPrefab , TransformUsageFlags.Dynamic) });
+                AddComponent(entity , new FloatToleranceComponent { Value = authoring.floatTolerance });
                 AddComponent(entity , new GameStateComponent { Value = authoring.mainMenuState });
                 AddComponent(entity , new HealthMultiplierComponent { Value = authoring.healthMultiplierPerLevel });
                 AddComponent(entity , new HealthValueForDeathComponent { Value = authoring.healthValueForDeath });

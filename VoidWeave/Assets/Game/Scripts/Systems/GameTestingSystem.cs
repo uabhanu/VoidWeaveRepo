@@ -4,7 +4,6 @@ namespace Game.Scripts.Systems
     using Unity.Burst;
     using Unity.Entities;
     using Unity.Mathematics;
-    using UnityEngine;
 
     [UpdateInGroup(typeof(SimulationSystemGroup))]
     [UpdateBefore(typeof(GameplaySystemGroup))]
@@ -21,6 +20,7 @@ namespace Game.Scripts.Systems
             systemState.RequireForUpdate<EnemiesToKillComponent>();
             systemState.RequireForUpdate<EnemiesToKillIncrementComponent>();
             systemState.RequireForUpdate<EnemiesToKillWhileTestingComponent>();
+            systemState.RequireForUpdate<FloatToleranceComponent>();
             systemState.RequireForUpdate<IsTestingComponent>();
             systemState.RequireForUpdate<LevelComponent>();
             systemState.RequireForUpdate<LevelWhileTestingComponent>();
@@ -41,6 +41,7 @@ namespace Game.Scripts.Systems
             EntityCommandBuffer ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);
             int enemiesToKillIncrement = SystemAPI.GetSingleton<EnemiesToKillIncrementComponent>().Value;
             int enemiesToKillWhileTesting = SystemAPI.GetSingleton<EnemiesToKillWhileTestingComponent>().Value;
+            float floatTolerance = SystemAPI.GetSingleton<FloatToleranceComponent>().Value;
             int isTesting = SystemAPI.GetSingleton<IsTestingComponent>().Value;
             bool isTestingBool = isTesting == doAction;
             int levelWhileTesting = SystemAPI.GetSingleton<LevelWhileTestingComponent>().Value;
@@ -69,7 +70,7 @@ namespace Game.Scripts.Systems
 
                     bool hasTutorialTag = SystemAPI.HasComponent<TurretsTutorialActiveTag>(spawnerEntity);
                     int disableTutorial = math.select(noAction , doAction , hasTutorialTag & isTestingBool);
-                    
+
                     for(int i = noAction ; i < disableTutorial ; i++) { ecb.SetComponentEnabled<TurretsTutorialActiveTag>(spawnerEntity , false); }
                 }
 
@@ -78,7 +79,7 @@ namespace Game.Scripts.Systems
 
             foreach(var timerComponent in SystemAPI.Query<RefRW<TimerComponent>>().WithAll<EnemySpawnerTag>())
             {
-                bool isSystemResettingTimer = !Mathf.Approximately(timerComponent.ValueRO.Value , timerWhileTesting) && timerComponent.ValueRO.Value > timerWhileTesting;
+                bool isSystemResettingTimer = math.abs(timerComponent.ValueRO.Value - timerWhileTesting) > floatTolerance && timerComponent.ValueRO.Value > timerWhileTesting;
                 timerComponent.ValueRW.Value = math.select(timerComponent.ValueRO.Value , timerWhileTesting , isTestingBool & isSystemResettingTimer);
             }
 

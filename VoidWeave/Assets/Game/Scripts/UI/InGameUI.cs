@@ -762,10 +762,11 @@ namespace Game.Scripts.UI
 
             _boundaryYQuery = _entityManager.CreateEntityQuery(typeof(ScreenBoundaryYComponent));
             _energyQuery = _entityManager.CreateEntityQuery(typeof(CurrentEnergyComponent));
-            _levelLostQuery = _entityManager.CreateEntityQuery(typeof(LevelLostTag));
-            _levelWonQuery = _entityManager.CreateEntityQuery(typeof(LevelWonTag));
             _healthQuery = _entityManager.CreateEntityQuery(typeof(CurrentHealthComponent) , typeof(PlayerTag));
+            _lastLevelQuery = _entityManager.CreateEntityQuery(typeof(LastLevelComponent));
+            _levelLostQuery = _entityManager.CreateEntityQuery(typeof(LevelLostTag));
             _levelQuery = _entityManager.CreateEntityQuery(typeof(LevelComponent));
+            _levelWonQuery = _entityManager.CreateEntityQuery(typeof(LevelWonTag));
             _playerQuery = _entityManager.CreateEntityQuery(typeof(PlayerTag));
             _waveIndexQuery = _entityManager.CreateEntityQuery(typeof(WaveIndexComponent));
 
