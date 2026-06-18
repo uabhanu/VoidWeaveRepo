@@ -237,7 +237,9 @@ namespace Game.Scripts.UI
             ManagedEventBridgeSystem.OnEnergyValueChanged += OnEnergyValueChanged;
             ManagedEventBridgeSystem.OnGameFinished += OnGameFinished;
             ManagedEventBridgeSystem.OnHealthValueChanged += OnHealthValueChanged;
+            ManagedEventBridgeSystem.OnLevelLost += OnLevelLost;
             ManagedEventBridgeSystem.OnLevelValueChanged += OnLevelValueChanged;
+            ManagedEventBridgeSystem.OnLevelWon += OnLevelWon;
             ManagedEventBridgeSystem.OnLootTutorialStateChanged += OnLootTutorialStateChanged;
             ManagedEventBridgeSystem.OnPauseButtonClicked += OnPauseButtonClicked;
             ManagedEventBridgeSystem.OnPlayerDashCooldownStarted += OnPlayerDashCooldownStarted;
@@ -254,7 +256,9 @@ namespace Game.Scripts.UI
             ManagedEventBridgeSystem.OnEnergyValueChanged -= OnEnergyValueChanged;
             ManagedEventBridgeSystem.OnGameFinished -= OnGameFinished;
             ManagedEventBridgeSystem.OnHealthValueChanged -= OnHealthValueChanged;
+            ManagedEventBridgeSystem.OnLevelLost -= OnLevelLost;
             ManagedEventBridgeSystem.OnLevelValueChanged -= OnLevelValueChanged;
+            ManagedEventBridgeSystem.OnLevelWon -= OnLevelWon;
             ManagedEventBridgeSystem.OnLootTutorialStateChanged -= OnLootTutorialStateChanged;
             ManagedEventBridgeSystem.OnPauseButtonClicked -= OnPauseButtonClicked;
             ManagedEventBridgeSystem.OnPlayerDashCooldownStarted -= OnPlayerDashCooldownStarted;
@@ -272,44 +276,6 @@ namespace Game.Scripts.UI
 
             if(world == null || !world.IsCreated) return;
             if(_entityManager.World != world) { RefreshEcsReferences(); }
-
-            if(!_levelWonQuery.IsEmpty)
-            {
-                bool isGameFinished = false;
-                
-                if(!_lastLevelQuery.IsEmptyIgnoreFilter && !_levelQuery.IsEmptyIgnoreFilter)
-                {
-                    int currentLevel = _levelQuery.GetSingleton<LevelComponent>().Value;
-                    int maxLevel = _lastLevelQuery.GetSingleton<LastLevelComponent>().Value;
-                    if(currentLevel >= maxLevel) { isGameFinished = true; }
-                }
-
-                if(isGameFinished)
-                {
-                    if(_gameFinishedScreenVisualElement != null && _gameFinishedScreenVisualElement.style.display == DisplayStyle.None)
-                    {
-                        _entityManager.CreateEntity(typeof(PauseInputTag));
-                        _pauseButton.SetEnabled(false);
-                        _gameFinishedScreenVisualElement.style.display = DisplayStyle.Flex;
-                    }
-                }
-                else
-                {
-                    if(_levelWinScreenVisualElement != null && _levelWinScreenVisualElement.style.display == DisplayStyle.None)
-                    {
-                        _entityManager.CreateEntity(typeof(PauseInputTag));
-                        _pauseButton.SetEnabled(false);
-                        _levelWinScreenVisualElement.style.display = DisplayStyle.Flex;
-                    }
-                }
-            }
-
-            else if(!_levelLostQuery.IsEmpty && _levelLoseScreenVisualElement != null && _levelLoseScreenVisualElement.style.display == DisplayStyle.None)
-            {
-                _entityManager.CreateEntity(typeof(PauseInputTag));
-                _pauseButton.SetEnabled(false);
-                _levelLoseScreenVisualElement.style.display = DisplayStyle.Flex;
-            }
 
             foreach(var button in _inGameUIButtonsList) { Pulse(button); }
 
@@ -407,11 +373,54 @@ namespace Game.Scripts.UI
             }
         }
 
+        private void OnLevelLost()
+        {
+            if(_levelLoseScreenVisualElement != null && _levelLoseScreenVisualElement.style.display == DisplayStyle.None)
+            {
+                _entityManager.CreateEntity(typeof(PauseInputTag));
+                _pauseButton.SetEnabled(false);
+                _levelLoseScreenVisualElement.style.display = DisplayStyle.Flex;
+            }
+        }
+
         private void OnLevelValueChanged(int currentLevel)
         {
             if(!_entityManager.World.IsCreated) return;
             _entityManager.CompleteDependencyBeforeRO<LevelComponent>();
             if(!_levelQuery.IsEmptyIgnoreFilter) _levelValueLabel.text = $"{currentLevel:F0}";
+        }
+
+        private void OnLevelWon()
+        {
+            if(!_entityManager.World.IsCreated) return;
+
+            bool isGameFinished = false;
+
+            if(!_lastLevelQuery.IsEmptyIgnoreFilter && !_levelQuery.IsEmptyIgnoreFilter)
+            {
+                int currentLevel = _levelQuery.GetSingleton<LevelComponent>().Value;
+                int lastLevel = _lastLevelQuery.GetSingleton<LastLevelComponent>().Value;
+                if(currentLevel >= lastLevel) { isGameFinished = true; }
+            }
+
+            if(isGameFinished)
+            {
+                if(_gameFinishedScreenVisualElement != null && _gameFinishedScreenVisualElement.style.display == DisplayStyle.None)
+                {
+                    _entityManager.CreateEntity(typeof(PauseInputTag));
+                    _pauseButton.SetEnabled(false);
+                    _gameFinishedScreenVisualElement.style.display = DisplayStyle.Flex;
+                }
+            }
+            else
+            {
+                if(_levelWinScreenVisualElement != null && _levelWinScreenVisualElement.style.display == DisplayStyle.None)
+                {
+                    _entityManager.CreateEntity(typeof(PauseInputTag));
+                    _pauseButton.SetEnabled(false);
+                    _levelWinScreenVisualElement.style.display = DisplayStyle.Flex;
+                }
+            }
         }
 
         private void OnLootTutorialStateChanged(bool isActive)

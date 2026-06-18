@@ -150,8 +150,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.GameTestingEntity
   currentEnergyWhileTesting: 1000
   enemiesToKillWhileTesting: 3
-  isTesting: 1
-  levelWhileTesting: 5
+  isTesting: 0
+  levelWhileTesting: 9
   muteWhileTesting: 0
   timerWhileTesting: 3
 --- !u!4 &64175127

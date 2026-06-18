@@ -7,9 +7,7 @@ namespace Game.Scripts.Systems
     using UnityEngine;
 
     [UpdateInGroup(typeof(SimulationSystemGroup))]
-    [UpdateAfter(typeof(BeginSimulationEntityCommandBufferSystem))]
     [UpdateBefore(typeof(GameplaySystemGroup))]
-    [UpdateBefore(typeof(ManagedEventBridgeSystem))]
     public partial struct GameTestingSystem : ISystem
     {
         [BurstCompile]

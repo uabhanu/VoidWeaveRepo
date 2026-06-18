@@ -6,11 +6,14 @@ namespace Game.Scripts.Systems
     using Unity.Mathematics;
     using Unity.Transforms;
 
+    [UpdateInGroup(typeof(PresentationSystemGroup))]
     public partial class ManagedEventBridgeSystem : SystemBase
     {
         #region Variables
 
         private bool _previousGameFinishedState;
+        private bool _previousLevelLostState;
+        private bool _previousLevelWonState;
         private bool _previousLootTutorialState;
         private bool _previousTurretsTutorialState;
 
@@ -18,6 +21,8 @@ namespace Game.Scripts.Systems
 
         private EntityQuery _beamTurretQuery;
         private EntityQuery _gameFinishedQuery;
+        private EntityQuery _levelLostQuery;
+        private EntityQuery _levelWonQuery;
         private EntityQuery _scatterTurretQuery;
         private EntityQuery _strikerTurretQuery;
 
@@ -42,7 +47,9 @@ namespace Game.Scripts.Systems
         public static event Action<float> OnEnergyValueChanged;
         public static event Action OnGameFinished;
         public static event Action OnHealthValueChanged;
+        public static event Action OnLevelLost;
         public static event Action<int> OnLevelValueChanged;
+        public static event Action OnLevelWon;
         public static event Action<bool> OnLootTutorialStateChanged;
         public static event Action<float , float3> OnPlayerDashCooldownStarted;
         public static event Action OnPlayerDeath;
@@ -70,6 +77,8 @@ namespace Game.Scripts.Systems
             _lootTutorialActiveQuery = SystemAPI.QueryBuilder().WithAll<LootTutorialActiveTag>().Build();
             _turretsTutorialActiveQuery = SystemAPI.QueryBuilder().WithAll<EnemySpawnerTag , TurretsTutorialActiveTag>().Build();
 
+            _levelLostQuery = SystemAPI.QueryBuilder().WithAll<LevelLostTag, EnemySpawnerTag>().Build();
+            _levelWonQuery = SystemAPI.QueryBuilder().WithAll<LevelWonTag, EnemySpawnerTag>().Build();
             _strikerTurretQuery = SystemAPI.QueryBuilder().WithAll<StrikerTurretTag , TurretEntityComponent>().Build();
             _scatterTurretQuery = SystemAPI.QueryBuilder().WithAll<ScatterTurretTag , TurretEntityComponent>().Build();
             _beamTurretQuery = SystemAPI.QueryBuilder().WithAll<BeamTurretTag , TurretEntityComponent>().Build();
@@ -92,10 +101,18 @@ namespace Game.Scripts.Systems
 
             int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
             int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
-            
+
             bool currentGameFinishedState = !_gameFinishedQuery.IsEmpty;
             bool gameFinishedStateToggled = currentGameFinishedState != _previousGameFinishedState;
             _previousGameFinishedState = currentGameFinishedState;
+
+            bool currentLevelLostState = !_levelLostQuery.IsEmpty;
+            bool levelLostStateToggled = currentLevelLostState & !_previousLevelLostState;
+            _previousLevelLostState = currentLevelLostState;
+
+            bool currentLevelWonState = !_levelWonQuery.IsEmpty;
+            bool levelWonStateToggled = currentLevelWonState & !_previousLevelWonState;
+            _previousLevelWonState = currentLevelWonState;
 
             bool currentLootTutorialState = !_lootTutorialActiveQuery.IsEmpty;
             bool lootTutorialStateToggled = currentLootTutorialState != _previousLootTutorialState;
@@ -114,7 +131,7 @@ namespace Game.Scripts.Systems
             _previousSelectedTurretEntity = currentSelectedTurretEntity;
 
             int gameFinishedTrigger = math.select(noAction , doAction , gameFinishedStateToggled & currentGameFinishedState);
-            
+
             bool isStrikerTurret = currentSelectedTurretEntity == strikerTurretEntity;
             bool isScatterTurret = currentSelectedTurretEntity == scatterTurretEntity;
             bool isBeamTurret = currentSelectedTurretEntity == beamTurretEntity;
@@ -149,9 +166,13 @@ namespace Game.Scripts.Systems
 
             foreach(RefRO<CurrentEnergyComponent> currentEnergyComponent in SystemAPI.Query<RefRO<CurrentEnergyComponent>>().WithChangeFilter<CurrentEnergyComponent>()) OnEnergyValueChanged?.Invoke(currentEnergyComponent.ValueRO.Value);
 
-            for(int i = noAction; i < gameFinishedTrigger; i++) { OnGameFinished?.Invoke(); }
-            
+            for(int i = noAction ; i < gameFinishedTrigger ; i++) { OnGameFinished?.Invoke(); }
+
             foreach(var _ in SystemAPI.Query<RefRO<CurrentHealthComponent>>().WithAll<PlayerTag>().WithChangeFilter<CurrentHealthComponent>()) { OnHealthValueChanged?.Invoke(); }
+            
+            for(int i = noAction ; i < math.select(noAction , doAction , levelLostStateToggled) ; i++) { OnLevelLost?.Invoke(); }
+
+            for(int i = noAction ; i < math.select(noAction , doAction , levelWonStateToggled) ; i++) { OnLevelWon?.Invoke(); }
 
             for(int i = noAction ; i < math.select(noAction , doAction , lootTutorialStateToggled) ; i++) { OnLootTutorialStateChanged?.Invoke(currentLootTutorialState); }
 
