@@ -15,20 +15,17 @@ namespace Game.Scripts.Systems
         {
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
             
-            systemState.RequireForUpdate<DoActionComponent>();
-            systemState.RequireForUpdate<NoActionComponent>();
+            systemState.RequireForUpdate<FloatToleranceComponent>();
         }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
-            float deltaTime = SystemAPI.Time.DeltaTime;
-            int doAction = (int)SystemAPI.GetSingleton<DoActionComponent>().Value;
-            int noAction = (int)SystemAPI.GetSingleton<NoActionComponent>().Value;
+            float floatTolerance = SystemAPI.GetSingleton<FloatToleranceComponent>().Value;
 
-            systemState.Dependency = new CombatRotationJob { DeltaTime = deltaTime , DoAction = doAction , ECBParallelWriter = ecb , NoAction = noAction }.ScheduleParallel(systemState.Dependency);
-            systemState.Dependency = new MovementRotationJob { DeltaTime = deltaTime , DoAction = doAction }.ScheduleParallel(systemState.Dependency);
+            systemState.Dependency = new CombatRotationJob { DeltaTime = SystemAPI.Time.DeltaTime , ECBParallelWriter = ecb , FloatTolerence = floatTolerance }.ScheduleParallel(systemState.Dependency);
+            systemState.Dependency = new MovementRotationJob { DeltaTime = SystemAPI.Time.DeltaTime , FloatTolerence = floatTolerance }.ScheduleParallel(systemState.Dependency);
         }
     }
 
@@ -37,9 +34,8 @@ namespace Game.Scripts.Systems
     public partial struct CombatRotationJob : IJobEntity
     {
         public float DeltaTime;
-        public int DoAction;
         public EntityCommandBuffer.ParallelWriter ECBParallelWriter;
-        public int NoAction;
+        public float FloatTolerence;
 
         private void Execute(Entity entity , [EntityIndexInQuery] int entityIndexInQuery , ref LocalTransform localTransform , in MinRotationRequiredComponent minRotationRequiredComponent , in RotationOffsetComponent rotationOffsetComponent , in RotationSpeedComponent rotationSpeedComponent , in TargetPositionComponent targetPositionComponent)
         {
@@ -49,13 +45,13 @@ namespace Game.Scripts.Systems
 
             float angleDifference = math.angle(localTransform.Rotation , targetRotation);
             float step = rotationSpeedComponent.Value * DeltaTime;
-            float t = math.select(math.saturate(step / angleDifference) , (float)DoAction , angleDifference < 0.001f);
+            float t = math.select(math.saturate(step / angleDifference) , 1 , angleDifference < FloatTolerence);
 
             localTransform.Rotation = math.slerp(localTransform.Rotation , targetRotation , t);
 
             bool isAligned = angleDifference <= math.radians(minRotationRequiredComponent.Value);
-            for(var i = 0 ; i < math.select(NoAction , DoAction , isAligned) ; i++) ECBParallelWriter.AddComponent<RotationCompleteTag>(entityIndexInQuery , entity);
-            for(var i = 0 ; i < math.select(NoAction , DoAction , !isAligned) ; i++) ECBParallelWriter.RemoveComponent<RotationCompleteTag>(entityIndexInQuery , entity);
+            for(var i = 0 ; i < math.select(0 , 1 , isAligned) ; i++) ECBParallelWriter.AddComponent<RotationCompleteTag>(entityIndexInQuery , entity);
+            for(var i = 0 ; i < math.select(0 , 1 , !isAligned) ; i++) ECBParallelWriter.RemoveComponent<RotationCompleteTag>(entityIndexInQuery , entity);
         }
     }
 
@@ -64,12 +60,12 @@ namespace Game.Scripts.Systems
     public partial struct MovementRotationJob : IJobEntity
     {
         public float DeltaTime;
-        public int DoAction;
+        public float FloatTolerence;
 
         private void Execute(ref LocalTransform localTransform , in MoveDirectionComponent moveDirectionComponent , in RotationOffsetComponent rotationOffsetComponent , in RotationSpeedComponent rotationSpeedComponent)
         {
             float3 moveDir = moveDirectionComponent.Value;
-            bool isMoving = math.lengthsq(moveDir) > 0.001f;
+            bool isMoving = math.lengthsq(moveDir) > FloatTolerence;
             
             float targetAngle = math.atan2(moveDir.y , moveDir.x) - math.radians(rotationOffsetComponent.Value);
             quaternion targetRotation = quaternion.RotateZ(targetAngle);
@@ -79,7 +75,7 @@ namespace Game.Scripts.Systems
             float angleDifference = math.angle(localTransform.Rotation , finalTarget);
             float step = rotationSpeedComponent.Value * DeltaTime;
 
-            float t = math.select(math.saturate(step / angleDifference) , DoAction , angleDifference < 0.001f);
+            float t = math.select(math.saturate(step / angleDifference) , 1 , angleDifference < FloatTolerence);
 
             localTransform.Rotation = math.slerp(localTransform.Rotation , finalTarget , t);
         }

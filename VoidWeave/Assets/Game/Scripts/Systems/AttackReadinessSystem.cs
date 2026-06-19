@@ -13,8 +13,6 @@ namespace Game.Scripts.Systems
         public void OnCreate(ref SystemState systemState)
         {
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
-            systemState.RequireForUpdate<DoActionComponent>();
-            systemState.RequireForUpdate<NoActionComponent>();
             systemState.RequireForUpdate<TimerExpiredComponent>();
         }
 
@@ -22,17 +20,15 @@ namespace Game.Scripts.Systems
         public void OnUpdate(ref SystemState systemState)
         {
             EntityCommandBuffer.ParallelWriter ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
-
-            int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
-            int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
+            
             float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value;
 
             // 1. Check Readiness (Open the Gate)
-            systemState.Dependency = new CanMeleeAttackJob { DoAction = doAction , ECB = ecb , NoAction = noAction , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
-            systemState.Dependency = new CanRangeAttackJob { DoAction = doAction , ECB = ecb , NoAction = noAction , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
+            systemState.Dependency = new CanMeleeAttackJob { ECB = ecb , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
+            systemState.Dependency = new CanRangeAttackJob { ECB = ecb , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
 
-            systemState.Dependency = new CannotMeleeAttackJob { DoAction = doAction , ECB = ecb , NoAction = noAction , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
-            systemState.Dependency = new CannotRangeAttackJob { DoAction = doAction , ECB = ecb , NoAction = noAction , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
+            systemState.Dependency = new CannotMeleeAttackJob { ECB = ecb , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
+            systemState.Dependency = new CannotRangeAttackJob { ECB = ecb , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
 
             // 2. Reset Cooldowns (Close the Gate after Attack) - FIXED
             systemState.Dependency = new ResetMeleeAttackCooldownJob { ECB = ecb }.ScheduleParallel(systemState.Dependency);
@@ -45,14 +41,12 @@ namespace Game.Scripts.Systems
     [WithNone(typeof(CanMeleeAttackTag) , typeof(DeployingTurretTag))]
     public partial struct CanMeleeAttackJob : IJobEntity
     {
-        public int DoAction;
         public EntityCommandBuffer.ParallelWriter ECB;
-        public int NoAction;
         public float TimerExpired;
 
         private void Execute(in CooldownComponent cooldownComponent , Entity entity , [EntityIndexInQuery] int entityIndexInQuery)
         {
-            for(var i = 0 ; i < math.select(NoAction , DoAction , cooldownComponent.Value <= TimerExpired) ; i++) ECB.AddComponent<CanMeleeAttackTag>(entityIndexInQuery , entity);
+            for(var i = 0 ; i < math.select(0 , 1 , cooldownComponent.Value <= TimerExpired) ; i++) ECB.AddComponent<CanMeleeAttackTag>(entityIndexInQuery , entity);
         }
     }
 
@@ -60,14 +54,12 @@ namespace Game.Scripts.Systems
     [WithAll(typeof(AttackRateComponent) , typeof(CanMeleeAttackTag))]
     public partial struct CannotMeleeAttackJob : IJobEntity
     {
-        public int DoAction;
         public EntityCommandBuffer.ParallelWriter ECB;
-        public int NoAction;
         public float TimerExpired;
 
         private void Execute(in CooldownComponent cooldownComponent , Entity entity , [EntityIndexInQuery] int entityIndexInQuery)
         {
-            for(var i = 0 ; i < math.select(NoAction , DoAction , cooldownComponent.Value > TimerExpired) ; i++) ECB.RemoveComponent<CanMeleeAttackTag>(entityIndexInQuery , entity);
+            for(var i = 0 ; i < math.select(0 , 1 , cooldownComponent.Value > TimerExpired) ; i++) ECB.RemoveComponent<CanMeleeAttackTag>(entityIndexInQuery , entity);
         }
     }
 
@@ -76,14 +68,12 @@ namespace Game.Scripts.Systems
     [WithNone(typeof(DeployingTurretTag))]
     public partial struct CanRangeAttackJob : IJobEntity
     {
-        public int DoAction;
         public EntityCommandBuffer.ParallelWriter ECB;
-        public int NoAction;
         public float TimerExpired;
 
         private void Execute(in CooldownComponent cooldownComponent , Entity entity , [EntityIndexInQuery] int entityIndexInQuery)
         {
-            for(var i = 0 ; i < math.select(NoAction , DoAction , cooldownComponent.Value <= TimerExpired) ; i++) ECB.AddComponent<CanShootTag>(entityIndexInQuery , entity);
+            for(var i = 0 ; i < math.select(0 , 1 , cooldownComponent.Value <= TimerExpired) ; i++) ECB.AddComponent<CanShootTag>(entityIndexInQuery , entity);
         }
     }
 
@@ -91,14 +81,12 @@ namespace Game.Scripts.Systems
     [WithAll(typeof(AttackRateComponent))]
     public partial struct CannotRangeAttackJob : IJobEntity
     {
-        public int DoAction;
         public EntityCommandBuffer.ParallelWriter ECB;
-        public int NoAction;
         public float TimerExpired;
 
         private void Execute(in CooldownComponent cooldownComponent , Entity entity , [EntityIndexInQuery] int entityIndexInQuery)
         {
-            for(var i = 0 ; i < math.select(NoAction , DoAction , cooldownComponent.Value > TimerExpired) ; i++) ECB.RemoveComponent<CanShootTag>(entityIndexInQuery , entity);
+            for(var i = 0 ; i < math.select(0 , 1 , cooldownComponent.Value > TimerExpired) ; i++) ECB.RemoveComponent<CanShootTag>(entityIndexInQuery , entity);
         }
     }
 

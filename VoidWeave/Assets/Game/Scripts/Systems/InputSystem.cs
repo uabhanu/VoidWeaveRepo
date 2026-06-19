@@ -21,7 +21,6 @@ namespace Game.Scripts.Systems
             systemState.RequireForUpdate<InputDeployComponent>();
             systemState.RequireForUpdate<InputDownComponent>();
             systemState.RequireForUpdate<InputLeftComponent>();
-            systemState.RequireForUpdate<InputNoneComponent>();
             systemState.RequireForUpdate<InputRightComponent>();
             systemState.RequireForUpdate<InputTurret1Component>();
             systemState.RequireForUpdate<InputTurret2Component>();
@@ -63,8 +62,6 @@ namespace Game.Scripts.Systems
             Key leftKey = SystemAPI.GetSingleton<LeftKeyComponent>().Value;
             uint leftValue = SystemAPI.GetSingleton<InputLeftComponent>().Value;
 
-            uint noneValue = SystemAPI.GetSingleton<InputNoneComponent>().Value;
-
             Key rightKey = SystemAPI.GetSingleton<RightKeyComponent>().Value;
             uint rightValue = SystemAPI.GetSingleton<InputRightComponent>().Value;
 
@@ -80,17 +77,17 @@ namespace Game.Scripts.Systems
             Key upKey = SystemAPI.GetSingleton<UpKeyComponent>().Value;
             uint upValue = SystemAPI.GetSingleton<InputUpComponent>().Value;
 
-            uint selectedInput = noneValue;
+            uint selectedInput = 0;
 
-            selectedInput |= math.select(noneValue , upValue , keyboard[upKey].isPressed);
-            selectedInput |= math.select(noneValue , downValue , keyboard[downKey].isPressed);
-            selectedInput |= math.select(noneValue , leftValue , keyboard[leftKey].isPressed);
-            selectedInput |= math.select(noneValue , rightValue , keyboard[rightKey].isPressed);
-            selectedInput |= math.select(noneValue , dashValue , keyboard[dashKey].wasPressedThisFrame);
-            selectedInput |= math.select(noneValue , deployValue , keyboard[deployKey].wasPressedThisFrame);
-            selectedInput |= math.select(noneValue , turret1Value , keyboard[turret1Key].wasPressedThisFrame && canPress1);
-            selectedInput |= math.select(noneValue , turret2Value , keyboard[turret2Key].wasPressedThisFrame && canPress2);
-            selectedInput |= math.select(noneValue , turret3Value , keyboard[turret3Key].wasPressedThisFrame && canPress3);
+            selectedInput |= math.select(0 , upValue , keyboard[upKey].isPressed);
+            selectedInput |= math.select(0 , downValue , keyboard[downKey].isPressed);
+            selectedInput |= math.select(0 , leftValue , keyboard[leftKey].isPressed);
+            selectedInput |= math.select(0 , rightValue , keyboard[rightKey].isPressed);
+            selectedInput |= math.select(0 , dashValue , keyboard[dashKey].wasPressedThisFrame);
+            selectedInput |= math.select(0 , deployValue , keyboard[deployKey].wasPressedThisFrame);
+            selectedInput |= math.select(0 , turret1Value , keyboard[turret1Key].wasPressedThisFrame && canPress1);
+            selectedInput |= math.select(0 , turret2Value , keyboard[turret2Key].wasPressedThisFrame && canPress2);
+            selectedInput |= math.select(0 , turret3Value , keyboard[turret3Key].wasPressedThisFrame && canPress3);
 
             foreach(RefRW<PlayerInputComponent> playerInputComponent in SystemAPI.Query<RefRW<PlayerInputComponent>>().WithAll<PlayerTag>()) playerInputComponent.ValueRW.Value = selectedInput;
         }

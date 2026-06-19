@@ -14,27 +14,22 @@ namespace Game.Scripts.Systems
         public void OnCreate(ref SystemState systemState)
         {
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
-
-            systemState.RequireForUpdate<OneScaleComponent>();
-            systemState.RequireForUpdate<ZeroScaleComponent>();
         }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
             float deltaTime = SystemAPI.Time.DeltaTime;
-            float oneScale = SystemAPI.GetSingleton<OneScaleComponent>().Value;
-            float zeroScale = SystemAPI.GetSingleton<ZeroScaleComponent>().Value;
             EntityCommandBuffer ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);
 
             foreach(var (localTransform , timerComponent , entity) in SystemAPI.Query<RefRW<LocalTransform> , RefRW<TimerComponent>>().WithAll<SpawningTag>().WithEntityAccess())
             {
                 timerComponent.ValueRW.Value -= deltaTime;
 
-                float progress = math.saturate(oneScale - timerComponent.ValueRO.Value * oneScale);
+                float progress = math.saturate(1f - timerComponent.ValueRO.Value * 1f);
                 localTransform.ValueRW.Scale = progress;
                 
-                ecb.SetComponentEnabled<SpawningTag>(entity , timerComponent.ValueRO.Value > zeroScale);
+                ecb.SetComponentEnabled<SpawningTag>(entity , timerComponent.ValueRO.Value > 0f);
             }
         }
     }

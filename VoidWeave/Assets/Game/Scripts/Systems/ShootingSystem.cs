@@ -13,10 +13,7 @@ namespace Game.Scripts.Systems
         public void OnCreate(ref SystemState systemState)
         {
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
-
-            systemState.RequireForUpdate<NoActionComponent>();
-            systemState.RequireForUpdate<SpreadHalfMultiplierComponent>();
-            systemState.RequireForUpdate<SpreadZeroComponent>();
+            
             systemState.RequireForUpdate<TimerExpiredComponent>();
         }
 
@@ -24,13 +21,10 @@ namespace Game.Scripts.Systems
         public void OnUpdate(ref SystemState systemState)
         {
             EntityCommandBuffer.ParallelWriter ecbParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
-
-            int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
-            float spreadHalfMultiplier = SystemAPI.GetSingleton<SpreadHalfMultiplierComponent>().Value;
-            float spreadZero = SystemAPI.GetSingleton<SpreadZeroComponent>().Value;
+            
             float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value;
 
-            systemState.Dependency = new ShootJob { ECBParallelWriter = ecbParallelWriter , NoAction = noAction , SpreadHalfMultiplier = spreadHalfMultiplier , SpreadZero = spreadZero , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
+            systemState.Dependency = new ShootJob { ECBParallelWriter = ecbParallelWriter , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
         }
     }
 
@@ -39,9 +33,6 @@ namespace Game.Scripts.Systems
     public partial struct ShootJob : IJobEntity
     {
         public EntityCommandBuffer.ParallelWriter ECBParallelWriter;
-        public int NoAction;
-        public float SpreadHalfMultiplier;
-        public float SpreadZero;
         public float TimerExpired;
 
         private void Execute(in AttackRateComponent attackRateComponent , in BulletEntityComponent bulletEntityComponent , RefRW<CooldownComponent> cooldownComponent , in DamageComponent damageComponent , Entity entity , [EntityIndexInQuery] int entityIndexInQuery , in LocalToWorld localToWorld , in ProjectileCountComponent projectileCountComponent , in ProjectileSpawnPointComponent projectileSpawnPointComponent , in SpreadComponent spreadComponent)
@@ -49,7 +40,7 @@ namespace Game.Scripts.Systems
             bool isReady = cooldownComponent.ValueRO.Value <= TimerExpired;
             cooldownComponent.ValueRW.Value = math.select(cooldownComponent.ValueRO.Value , attackRateComponent.Value , isReady);
 
-            int spawnCount = math.select(NoAction , projectileCountComponent.Value , isReady);
+            int spawnCount = math.select(0 , projectileCountComponent.Value , isReady);
 
             // Get the actual world-space rotation of the turret nozzle
             quaternion turretRotation = localToWorld.Rotation;
@@ -60,10 +51,10 @@ namespace Game.Scripts.Systems
                 Entity newBullet = ECBParallelWriter.Instantiate(entityIndexInQuery , bulletEntityComponent.Entity);
 
                 float spreadAngle = math.radians(spreadComponent.Value);
-                float angleStep = math.select(SpreadZero , spreadAngle / math.max(1 , projectileCountComponent.Value - 1) , projectileCountComponent.Value > 1);
+                float angleStep = math.select(0f , spreadAngle / math.max(1 , projectileCountComponent.Value - 1) , projectileCountComponent.Value > 1);
 
                 // Using your established component for the half-offset
-                float startOffset = spreadAngle * SpreadHalfMultiplier;
+                float startOffset = spreadAngle * 0.5f;
 
                 // COMBINED ROTATION: Base turret rotation + the spread offset
                 // We removed BulletRotationOffset because it is now handled by the BulletVisual child

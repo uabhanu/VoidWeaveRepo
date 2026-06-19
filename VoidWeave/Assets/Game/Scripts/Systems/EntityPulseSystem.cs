@@ -13,18 +13,12 @@ namespace Game.Scripts.Systems
         public void OnCreate(ref SystemState systemState)
         {
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
-            
-            systemState.RequireForUpdate<DoActionComponent>();
-            systemState.RequireForUpdate<NoActionComponent>();
         }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
-            int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
-
-            new PulseJob { DoAction = doAction , EntityCommandBuffer = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , NoAction = noAction}.ScheduleParallel();
+            new PulseJob { EntityCommandBuffer = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter()}.ScheduleParallel();
         }
     }
 
@@ -33,13 +27,11 @@ namespace Game.Scripts.Systems
     [WithNone(typeof(PulseTag))]
     public partial struct PulseJob : IJobEntity
     {
-        public int DoAction;
         public EntityCommandBuffer.ParallelWriter EntityCommandBuffer;
-        public int NoAction;
 
         private void Execute(Entity entity , [EntityIndexInQuery] int entityInQueryIndex , in LifetimeComponent lifetimeComponent , in TimeBeforeEntityPulseComponent timeBeforePulse)
         {
-            for(var i = 0 ; i < math.select(NoAction , DoAction , lifetimeComponent.Value <= timeBeforePulse.Value) ; i++) EntityCommandBuffer.AddComponent(entityInQueryIndex , entity , new PulseTag());
+            for(var i = 0 ; i < math.select(0 , 1 , lifetimeComponent.Value <= timeBeforePulse.Value) ; i++) EntityCommandBuffer.AddComponent(entityInQueryIndex , entity , new PulseTag());
         }
     }
 }

@@ -13,19 +13,15 @@ namespace Game.Scripts.Systems
         {
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
             
-            systemState.RequireForUpdate<DoActionComponent>();
-            systemState.RequireForUpdate<NoActionComponent>();
             systemState.RequireForUpdate<TimerExpiredComponent>();
         }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
-            int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
             float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value;
 
-            new LifetimeJob { DeltaTime = SystemAPI.Time.DeltaTime , DoAction = doAction , EntityCommandBuffer = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , NoAction = noAction , TimerExpired = timerExpired }.ScheduleParallel();
+            new LifetimeJob { DeltaTime = SystemAPI.Time.DeltaTime , EntityCommandBuffer = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , TimerExpired = timerExpired }.ScheduleParallel();
         }
     }
 
@@ -33,16 +29,14 @@ namespace Game.Scripts.Systems
     public partial struct LifetimeJob : IJobEntity
     {
         public float DeltaTime;
-        public int DoAction;
         public EntityCommandBuffer.ParallelWriter EntityCommandBuffer;
-        public int NoAction;
         public float TimerExpired;
 
         private void Execute(Entity entity , [EntityIndexInQuery] int entityInQueryIndex , ref LifetimeComponent lifetimeComponent)
         {
             lifetimeComponent.Value -= DeltaTime;
 
-            for(var i = 0 ; i < math.select(NoAction , DoAction , lifetimeComponent.Value <= TimerExpired) ; i++) EntityCommandBuffer.DestroyEntity(entityInQueryIndex , entity);
+            for(var i = 0 ; i < math.select(0 , 1 , lifetimeComponent.Value <= TimerExpired) ; i++) EntityCommandBuffer.DestroyEntity(entityInQueryIndex , entity);
         }
     }
 }

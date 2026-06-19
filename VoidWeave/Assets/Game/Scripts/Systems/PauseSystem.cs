@@ -13,11 +13,9 @@ namespace Game.Scripts.Systems
 
         public void OnCreate(ref SystemState systemState)
         {
-            systemState.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
-
             systemState.RequireForUpdate<DashKeyComponent>();
-            systemState.RequireForUpdate<DoActionComponent>();
-            systemState.RequireForUpdate<NoActionComponent>();
+            
+            systemState.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
         }
 
         public void OnUpdate(ref SystemState systemState)
@@ -25,16 +23,14 @@ namespace Game.Scripts.Systems
             EntityCommandBuffer ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);
 
             Key dashKey = SystemAPI.GetSingleton<DashKeyComponent>().Value;
-            int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
-            int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
 
             bool isPaused = !systemState.World.GetExistingSystemManaged<GameplaySystemGroup>().Enabled;
             bool hasLootTag = !SystemAPI.QueryBuilder().WithAll<LootTutorialActiveTag>().Build().IsEmpty;
             bool dashKeyPressed = Keyboard.current != null && Keyboard.current[dashKey].wasPressedThisFrame;
 
-            int triggerLootResume = math.select(noAction , doAction , isPaused & hasLootTag & dashKeyPressed & !_isManualPaused);
+            int triggerLootResume = math.select(0 , 1 , isPaused & hasLootTag & dashKeyPressed & !_isManualPaused);
             
-            for(int i = noAction ; i < triggerLootResume ; i++)
+            for(int i = 0 ; i < triggerLootResume ; i++)
             {
                 ecb.AddComponent<LootTutorialResumeTag>(ecb.CreateEntity());
 
@@ -45,9 +41,9 @@ namespace Game.Scripts.Systems
             {
                 ecb.DestroyEntity(entity);
 
-                int executePause = math.select(noAction , doAction , hasLootTag);
+                int executePause = math.select(0 , 1 , hasLootTag);
 
-                for(int i = noAction ; i < executePause ; i++)
+                for(int i = 0 ; i < executePause ; i++)
                 {
                     systemState.World.GetExistingSystemManaged<GameplaySystemGroup>().Enabled = false;
                     foreach(var vfx in SystemAPI.Query<SystemAPI.ManagedAPI.UnityEngineComponent<VisualEffect>>()) { vfx.Value.pause = true; }

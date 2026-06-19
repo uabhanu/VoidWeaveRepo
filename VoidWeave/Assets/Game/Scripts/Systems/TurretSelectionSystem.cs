@@ -12,7 +12,6 @@ namespace Game.Scripts.Systems
         public void OnCreate(ref SystemState systemState)
         {
             systemState.RequireForUpdate<BeamTurretUnlockLevelComponent>();
-            systemState.RequireForUpdate<InputNoneComponent>();
             systemState.RequireForUpdate<InputTurret1Component>();
             systemState.RequireForUpdate<InputTurret2Component>();
             systemState.RequireForUpdate<InputTurret3Component>();
@@ -44,7 +43,6 @@ namespace Game.Scripts.Systems
             int beamTurretCost = SystemAPI.GetComponent<TurretCostComponent>(beamTurretConfigEntity).Value;
 
             int beamTurretUnlockLevel = SystemAPI.GetSingleton<BeamTurretUnlockLevelComponent>().Value;
-            uint inputNone = SystemAPI.GetSingleton<InputNoneComponent>().Value;
             uint inputTurret1 = SystemAPI.GetSingleton<InputTurret1Component>().Value;
             uint inputTurret2 = SystemAPI.GetSingleton<InputTurret2Component>().Value;
             uint inputTurret3 = SystemAPI.GetSingleton<InputTurret3Component>().Value;
@@ -56,7 +54,6 @@ namespace Game.Scripts.Systems
                 BeamTurretEntity = beamTurretEntity ,
                 BeamTurretUnlockLevel = beamTurretUnlockLevel ,
                 CurrentLevel = SystemAPI.GetSingleton<LevelComponent>().Value ,
-                InputNone = inputNone ,
                 InputTurret1 = inputTurret1 ,
                 InputTurret2 = inputTurret2 ,
                 InputTurret3 = inputTurret3 ,
@@ -76,7 +73,6 @@ namespace Game.Scripts.Systems
         public Entity BeamTurretEntity;
         public int BeamTurretUnlockLevel;
         public int CurrentLevel;
-        public uint InputNone;
         public uint InputTurret1;
         public uint InputTurret2;
         public uint InputTurret3;
@@ -90,9 +86,9 @@ namespace Game.Scripts.Systems
         {
             // Input Flags: Replaced 64, 128, 256 with InputTurret Components
             // Replaced 0 with Value
-            bool strikerTurretKeyPressed = (playerInputComponent.Value & InputTurret1) != InputNone;
-            bool scatterTurretKeyPressed = (playerInputComponent.Value & InputTurret2) != InputNone;
-            bool beamTurretKeyPressed = (playerInputComponent.Value & InputTurret3) != InputNone;
+            bool strikerTurretKeyPressed = (playerInputComponent.Value & InputTurret1) != 0;
+            bool scatterTurretKeyPressed = (playerInputComponent.Value & InputTurret2) != 0;
+            bool beamTurretKeyPressed = (playerInputComponent.Value & InputTurret3) != 0;
 
             // Check Unlocks: Replaced 2 and 3 with UnlockLevel Components
             bool scatterTurretUnlocked = scatterTurretKeyPressed && CurrentLevel >= ScatterTurretUnlockLevel;

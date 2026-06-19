@@ -13,12 +13,11 @@ namespace Game.Scripts.Systems
         [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
-            systemState.RequireForUpdate<IsTestingComponent>();
             _lootQuery = SystemAPI.QueryBuilder().WithAll<LootPickupTag>().Build();
-
-            systemState.RequireForUpdate<DoActionComponent>();
+            
             systemState.RequireForUpdate<EnemiesKilledComponent>();
             systemState.RequireForUpdate<EnemiesToKillComponent>();
+            systemState.RequireForUpdate<IsTestingComponent>();
         }
 
         [BurstCompile]
