@@ -16,6 +16,7 @@ namespace Game.Scripts.Systems
             _dyingEnemyEntityQuery = SystemAPI.QueryBuilder().WithAll<DeathTag , EnemyTag>().Build();
 
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
+            
             systemState.RequireForUpdate<DeathTag>();
             systemState.RequireForUpdate<EnemiesKilledComponent>();
         }
@@ -23,11 +24,13 @@ namespace Game.Scripts.Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
+            EntityCommandBuffer.ParallelWriter ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
+            
             int killedCount = _dyingEnemyEntityQuery.CalculateEntityCount();
 
             SystemAPI.GetSingletonRW<EnemiesKilledComponent>().ValueRW.Value += killedCount;
 
-            systemState.Dependency = new DeathJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() }.ScheduleParallel(systemState.Dependency);
+            systemState.Dependency = new DeathJob { ECB = ecb }.ScheduleParallel(systemState.Dependency);
         }
     }
 

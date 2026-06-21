@@ -19,9 +19,11 @@ namespace Game.Scripts.Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
+            EntityCommandBuffer.ParallelWriter ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
+                
             float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value;
 
-            new LifetimeJob { DeltaTime = SystemAPI.Time.DeltaTime , EntityCommandBuffer = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , TimerExpired = timerExpired }.ScheduleParallel();
+            new LifetimeJob { DeltaTime = SystemAPI.Time.DeltaTime , ECB = ecb , TimerExpired = timerExpired }.ScheduleParallel();
         }
     }
 
@@ -29,14 +31,14 @@ namespace Game.Scripts.Systems
     public partial struct LifetimeJob : IJobEntity
     {
         public float DeltaTime;
-        public EntityCommandBuffer.ParallelWriter EntityCommandBuffer;
+        public EntityCommandBuffer.ParallelWriter ECB;
         public float TimerExpired;
 
         private void Execute(Entity entity , [EntityIndexInQuery] int entityInQueryIndex , ref LifetimeComponent lifetimeComponent)
         {
             lifetimeComponent.Value -= DeltaTime;
 
-            for(var i = 0 ; i < math.select(0 , 1 , lifetimeComponent.Value <= TimerExpired) ; i++) EntityCommandBuffer.DestroyEntity(entityInQueryIndex , entity);
+            for(var i = 0 ; i < math.select(0 , 1 , lifetimeComponent.Value <= TimerExpired) ; i++) ECB.DestroyEntity(entityInQueryIndex , entity);
         }
     }
 }

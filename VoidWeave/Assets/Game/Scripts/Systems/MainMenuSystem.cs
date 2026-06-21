@@ -21,14 +21,14 @@ namespace Game.Scripts.Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            var entityCommandBuffer = SystemAPI.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);
+            var ecb = SystemAPI.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);
             var gameStateComponentEntity = SystemAPI.GetSingletonEntity<GameStateComponent>();
             var playingStateComponent = SystemAPI.GetSingleton<PlayingStateComponent>();
             var startGameRequestEntity = SystemAPI.GetSingletonEntity<StartGameRequestTag>();
 
-            entityCommandBuffer.SetComponent(gameStateComponentEntity , new GameStateComponent { Value = playingStateComponent.Value });
-            entityCommandBuffer.AddComponent<InitializeGameTag>(gameStateComponentEntity);
-            entityCommandBuffer.DestroyEntity(startGameRequestEntity);
+            ecb.SetComponent(gameStateComponentEntity , new GameStateComponent { Value = playingStateComponent.Value });
+            ecb.AddComponent<InitializeGameTag>(gameStateComponentEntity);
+            ecb.DestroyEntity(startGameRequestEntity);
         }
     }
 }

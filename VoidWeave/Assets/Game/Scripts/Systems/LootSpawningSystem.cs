@@ -22,13 +22,15 @@ namespace Game.Scripts.Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
+            EntityCommandBuffer.ParallelWriter ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
+            
             var lootQuery = SystemAPI.QueryBuilder().WithAll<LootTutorialActiveTag>().Build();
             
             int lootSpawnedFirstTimeValue = SystemAPI.GetSingleton<LootSpawnedFirstTimeComponent>().Value;
             bool shouldUpdate = !lootQuery.IsEmpty;
             SystemAPI.SetSingleton(new LootSpawnedFirstTimeComponent { Value = math.select(lootSpawnedFirstTimeValue , 1 , shouldUpdate) });
 
-            new SpawnLootJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , LootSpawnedFirstTimeValue = lootSpawnedFirstTimeValue }.ScheduleParallel();
+            new SpawnLootJob { ECB = ecb , LootSpawnedFirstTimeValue = lootSpawnedFirstTimeValue }.ScheduleParallel();
         }
     }
 

@@ -25,10 +25,11 @@ namespace Game.Scripts.Systems
         {
             float dashCooldownDefault = SystemAPI.GetSingleton<DashCooldownDefaultComponent>().Value;
             float dashDurationDefault = SystemAPI.GetSingleton<DashDurationDefaultComponent>().Value;
+            EntityCommandBuffer.ParallelWriter ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
             uint inputDash = SystemAPI.GetSingleton<InputDashComponent>().Value;
             float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value;
 
-            systemState.Dependency = new DashJob { DashCooldownDefault = dashCooldownDefault , DeltaTime = SystemAPI.Time.DeltaTime , DashDurationDefault = dashDurationDefault , Ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , InputDashBit = inputDash , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
+            systemState.Dependency = new DashJob { DashCooldownDefault = dashCooldownDefault , DeltaTime = SystemAPI.Time.DeltaTime , DashDurationDefault = dashDurationDefault , ECB = ecb , InputDashBit = inputDash , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
         }
     }
 
@@ -39,7 +40,7 @@ namespace Game.Scripts.Systems
         public float DashCooldownDefault;
         public float DashDurationDefault;
         public float DeltaTime;
-        public EntityCommandBuffer.ParallelWriter Ecb;
+        public EntityCommandBuffer.ParallelWriter ECB;
         public uint InputDashBit;
         public float TimerExpired;
 
@@ -49,7 +50,7 @@ namespace Game.Scripts.Systems
             bool isCooldownReady = dashCooldownComponent.Value <= TimerExpired;
 
             int shouldDash = math.select(0 , 1 , isDashInputActive && isCooldownReady);
-            for(int i = 0 ; i < shouldDash ; i++) { Ecb.AddComponent<DashPerformedTag>(entity.Index , entity); }
+            for(int i = 0 ; i < shouldDash ; i++) { ECB.AddComponent<DashPerformedTag>(entity.Index , entity); }
 
             dashDurationComponent.Value = math.select(math.max(TimerExpired , dashDurationComponent.Value - DeltaTime) , DashDurationDefault , isDashInputActive && isCooldownReady);
             dashCooldownComponent.Value = math.select(math.max(TimerExpired , dashCooldownComponent.Value - DeltaTime) , DashCooldownDefault , isDashInputActive && isCooldownReady);

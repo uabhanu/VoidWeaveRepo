@@ -7,7 +7,7 @@ namespace Game.Scripts.Systems
     using Unity.Transforms;
 
     [UpdateInGroup(typeof(GameplaySystemGroup))]
-    [UpdateAfter(typeof(CampaignProgressionSystem))]
+    [UpdateAfter(typeof(AdvanceLevelSystem))]
     [UpdateAfter(typeof(TimerSystem))]
     [UpdateAfter(typeof(WaveStateSystem))]
     public partial struct EnemySpawningSystem : ISystem
@@ -35,6 +35,8 @@ namespace Game.Scripts.Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
+            EntityCommandBuffer.ParallelWriter ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
+            
             int activeWaveState = SystemAPI.GetSingleton<ActiveWaveStateComponent>().Value;
             float boundaryX = SystemAPI.GetSingleton<ScreenBoundaryXComponent>().Value;
             float boundaryY = SystemAPI.GetSingleton<ScreenBoundaryYComponent>().Value;
@@ -60,7 +62,7 @@ namespace Game.Scripts.Systems
                 BoundaryX = boundaryX ,
                 BoundaryY = boundaryY ,
                 EnemyTypesCount = enemyTypesCount ,
-                EntityCommandBufferParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() ,
+                ECB = ecb ,
                 InitialBitmask = initialBitmask ,
                 LineEnemyEntity = lineEnemyEntity ,
                 LineEnemyIndex = lineEnemyIndex ,
@@ -83,7 +85,7 @@ namespace Game.Scripts.Systems
         public float BoundaryX;
         public float BoundaryY;
         public int EnemyTypesCount;
-        public EntityCommandBuffer.ParallelWriter EntityCommandBufferParallelWriter;
+        public EntityCommandBuffer.ParallelWriter ECB;
         public uint InitialBitmask;
         public Entity LineEnemyEntity;
         public int LineEnemyIndex;
@@ -107,21 +109,20 @@ namespace Game.Scripts.Systems
                 enemyTypeIndex = math.select(LineEnemyIndex , enemyTypeIndex , isUnlocked);
 
                 Entity enemyEntityToSpawn = enemyTypeIndex == LineEnemyIndex ? LineEnemyEntity : enemyTypeIndex == SquareEnemyIndex ? SquareEnemyEntity : TriangleEnemyEntity;
-                Entity newEnemyEntity = EntityCommandBufferParallelWriter.Instantiate(entityInQueryIndex , enemyEntityToSpawn);
+                Entity newEnemyEntity = ECB.Instantiate(entityInQueryIndex , enemyEntityToSpawn);
 
-                EntityCommandBufferParallelWriter.AddComponent<SpawningTag>(entityInQueryIndex , newEnemyEntity);
-                EntityCommandBufferParallelWriter.SetComponentEnabled<SpawningTag>(entityInQueryIndex , newEnemyEntity , true);
+                ECB.AddComponent<SpawningTag>(entityInQueryIndex , newEnemyEntity);
+                ECB.SetComponentEnabled<SpawningTag>(entityInQueryIndex , newEnemyEntity , true);
 
                 float randomX = randomSeedComponent.Value.NextFloat(-BoundaryX , BoundaryX);
                 float randomY = randomSeedComponent.Value.NextFloat(-BoundaryY , BoundaryY);
                 float3 spawnPosition = new float3(randomX , randomY , 0);
+                
+                ECB.SetComponent(entityInQueryIndex , newEnemyEntity , LocalTransform.FromPosition(spawnPosition).WithScale(0.0f));
 
-                EntityCommandBufferParallelWriter.AddComponent<EnemyJustSpawnedTag>(entityInQueryIndex , newEnemyEntity);
-                EntityCommandBufferParallelWriter.SetComponent(entityInQueryIndex , newEnemyEntity , LocalTransform.FromPosition(spawnPosition).WithScale(0.0f));
-
-                for(var k = 0 ; k < math.select(0 , 1 , enemyTypeIndex == LineEnemyIndex) ; k++) EntityCommandBufferParallelWriter.AddComponent<LineEnemyTag>(entityInQueryIndex , newEnemyEntity);
-                for(var k = 0 ; k < math.select(0 , 1 , enemyTypeIndex == TriangleEnemyIndex) ; k++) EntityCommandBufferParallelWriter.AddComponent<TriangleEnemyTag>(entityInQueryIndex , newEnemyEntity);
-                for(var k = 0 ; k < math.select(0 , 1 , enemyTypeIndex == SquareEnemyIndex) ; k++) EntityCommandBufferParallelWriter.AddComponent<SquareEnemyTag>(entityInQueryIndex , newEnemyEntity);
+                for(var k = 0 ; k < math.select(0 , 1 , enemyTypeIndex == LineEnemyIndex) ; k++) ECB.AddComponent<LineEnemyTag>(entityInQueryIndex , newEnemyEntity);
+                for(var k = 0 ; k < math.select(0 , 1 , enemyTypeIndex == TriangleEnemyIndex) ; k++) ECB.AddComponent<TriangleEnemyTag>(entityInQueryIndex , newEnemyEntity);
+                for(var k = 0 ; k < math.select(0 , 1 , enemyTypeIndex == SquareEnemyIndex) ; k++) ECB.AddComponent<SquareEnemyTag>(entityInQueryIndex , newEnemyEntity);
             }
 
             timerComponent.Value = math.select(timerComponent.Value , spawnRateComponent.Value , canSpawn);

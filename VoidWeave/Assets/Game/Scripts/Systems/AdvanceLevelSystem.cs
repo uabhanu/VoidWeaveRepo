@@ -8,21 +8,27 @@ namespace Game.Scripts.Systems
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     [UpdateAfter(typeof(WaveStateSystem))]
     [UpdateBefore(typeof(EnemySpawningSystem))]
-    public partial struct CampaignProgressionSystem : ISystem
+    public partial struct AdvanceLevelSystem : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
+            systemState.RequireForUpdate<EliteStatMultiplierComponent>();
             systemState.RequireForUpdate<EnemiesKilledComponent>();
             systemState.RequireForUpdate<EnemiesToKillComponent>();
             systemState.RequireForUpdate<EnemiesToKillIncrementComponent>();
+            systemState.RequireForUpdate<HealthMultiplierComponent>();
             systemState.RequireForUpdate<IsTestingComponent>();
             systemState.RequireForUpdate<LevelComponent>();
             systemState.RequireForUpdate<LevelToUnlockLineEnemyComponent>();
             systemState.RequireForUpdate<LastLevelComponent>();
+            systemState.RequireForUpdate<NormalStatMultiplierComponent>();
             systemState.RequireForUpdate<PlayerTag>();
             systemState.RequireForUpdate<LevelToUnlockSquareEnemyComponent>();
             systemState.RequireForUpdate<LevelToUnlockTriangleEnemyComponent>();
+            systemState.RequireForUpdate<ScalingBaseComponent>();
+            systemState.RequireForUpdate<ScalingLevelOffsetComponent>();
+            systemState.RequireForUpdate<ScalingMinLevelComponent>();
             systemState.RequireForUpdate<UnlockedEnemiesComponent>();
             systemState.RequireForUpdate<UnlockedLineEnemyComponent>();
             systemState.RequireForUpdate<UnlockedSquareEnemyComponent>();
@@ -36,13 +42,19 @@ namespace Game.Scripts.Systems
         public void OnUpdate(ref SystemState systemState)
         {
             systemState.Dependency.Complete();
-            
+
+            float eliteStatMultiplier = SystemAPI.GetSingleton<EliteStatMultiplierComponent>().Value;
+            float healthMultiplier = SystemAPI.GetSingleton<HealthMultiplierComponent>().Value;
             int isTesting = SystemAPI.GetSingleton<IsTestingComponent>().Value;
             bool isTestingBool = isTesting == 1;
             int levelToUnlockLineEnemy = SystemAPI.GetSingleton<LevelToUnlockLineEnemyComponent>().Value;
             int levelToUnlockSquareEnemy = SystemAPI.GetSingleton<LevelToUnlockSquareEnemyComponent>().Value;
             int levelToUnlockTriangleEnemy = SystemAPI.GetSingleton<LevelToUnlockTriangleEnemyComponent>().Value;
-            int maxCampaignLevel = SystemAPI.GetSingleton<LastLevelComponent>().Value;
+            int lastLevel = SystemAPI.GetSingleton<LastLevelComponent>().Value;
+            float normalStatMultiplier = SystemAPI.GetSingleton<NormalStatMultiplierComponent>().Value;
+            float scalingBase = SystemAPI.GetSingleton<ScalingBaseComponent>().Value;
+            int scalingLevelOffset = SystemAPI.GetSingleton<ScalingLevelOffsetComponent>().Value;
+            int scalingMinLevel = SystemAPI.GetSingleton<ScalingMinLevelComponent>().Value;
             uint unlockedLineEnemy = SystemAPI.GetSingleton<UnlockedLineEnemyComponent>().Value;
             uint unlockedSquareEnemy = SystemAPI.GetSingleton<UnlockedSquareEnemyComponent>().Value;
             uint unlockedTriangleEnemy = SystemAPI.GetSingleton<UnlockedTriangleEnemyComponent>().Value;
@@ -72,11 +84,9 @@ namespace Game.Scripts.Systems
             selectedTurretEntityComponent.ValueRW.Entity = new Entity { Index = turretEntityIndex , Version = turretEntityVersion };
             selectedTurretCostComponent.ValueRW.Value = math.select(selectedTurretCostComponent.ValueRO.Value , 0 , isLevelComplete);
 
-            currentHealthComponent.ValueRW.Value = math.select(currentHealthComponent.ValueRO.Value , maxHealthComponent.ValueRO.Value , isLevelComplete);
-
-            bool isNotMaxLevel = levelComponent.ValueRO.Value < maxCampaignLevel;
-            levelComponent.ValueRW.Value += math.select(0 , 1 , isLevelComplete & isNotMaxLevel);
-
+            bool isNotLastLevel = levelComponent.ValueRO.Value < lastLevel;
+            levelComponent.ValueRW.Value += math.select(0 , 1 , isLevelComplete & isNotLastLevel);
+            
             uint bitMask = 0;
             bitMask |= math.select(0 , unlockedLineEnemy , levelComponent.ValueRO.Value >= levelToUnlockLineEnemy);
             bitMask |= math.select(0 , unlockedTriangleEnemy , levelComponent.ValueRO.Value >= levelToUnlockTriangleEnemy);

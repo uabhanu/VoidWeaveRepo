@@ -5,8 +5,8 @@ namespace Game.Scripts.Systems
     using Unity.Entities;
 
     [UpdateInGroup(typeof(GameplaySystemGroup))]
-    [UpdateAfter(typeof(CampaignProgressionSystem))]
-    public partial struct LevelWinSystem : ISystem
+    [UpdateAfter(typeof(AdvanceLevelSystem))]
+    public partial struct EvaluateLevelWinConditionSystem : ISystem
     {
         private EntityQuery _lootQuery;
 

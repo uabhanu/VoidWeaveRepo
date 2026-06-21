@@ -19,7 +19,6 @@ namespace Game.Scripts.Systems
             
             systemState.RequireForUpdate<EnemiesKilledComponent>();
             systemState.RequireForUpdate<EnemiesToKillComponent>();
-            systemState.RequireForUpdate<IsTestingComponent>();
             systemState.RequireForUpdate<TimerComponent>();
             systemState.RequireForUpdate<TimerExpiredComponent>();
             systemState.RequireForUpdate<Wave1MultiplierComponent>();
@@ -41,7 +40,6 @@ namespace Game.Scripts.Systems
         {
             int enemiesKilled = SystemAPI.GetSingleton<EnemiesKilledComponent>().Value;
             int enemiesToKill = SystemAPI.GetSingleton<EnemiesToKillComponent>().Value;
-            int isTesting = SystemAPI.GetSingleton<IsTestingComponent>().Value;
             bool isTutorialActive = !_tutorialActiveQuery.IsEmpty;
             float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value;
             float wave1Multiplier = SystemAPI.GetSingleton<Wave1MultiplierComponent>().Value;

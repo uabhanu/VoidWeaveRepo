@@ -26,7 +26,7 @@ namespace Game.Scripts.Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            EntityCommandBuffer.ParallelWriter ecbParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
+            EntityCommandBuffer.ParallelWriter ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
 
             int currentEnergy = SystemAPI.GetSingleton<CurrentEnergyComponent>().Value;
             uint inputDeploy = SystemAPI.GetSingleton<InputDeployComponent>().Value;
@@ -35,7 +35,7 @@ namespace Game.Scripts.Systems
             var existingPositionsNativeArray = _turretQuery.ToComponentDataArray<LocalTransform>(Allocator.TempJob);
             var existingRadiiNativeArray = _turretQuery.ToComponentDataArray<CollisionRadiusComponent>(Allocator.TempJob);
 
-            var job = new TurretDeploymentJob { EnergyNativeReference = energyNativeReference , EntityCommandBuffer = ecbParallelWriter , ExistingPositionsNativeArray = existingPositionsNativeArray , ExistingRadiiNativeArray = existingRadiiNativeArray , InputDeploy = inputDeploy };
+            var job = new TurretDeploymentJob { ECB = ecb , EnergyNativeReference = energyNativeReference , ExistingPositionsNativeArray = existingPositionsNativeArray , ExistingRadiiNativeArray = existingRadiiNativeArray , InputDeploy = inputDeploy };
 
             job.Schedule(systemState.Dependency).Complete();
 
@@ -50,7 +50,7 @@ namespace Game.Scripts.Systems
     public partial struct TurretDeploymentJob : IJobEntity
     {
         public NativeReference<int> EnergyNativeReference;
-        public EntityCommandBuffer.ParallelWriter EntityCommandBuffer;
+        public EntityCommandBuffer.ParallelWriter ECB;
         [ReadOnly] public NativeArray<LocalTransform> ExistingPositionsNativeArray;
         [ReadOnly] public NativeArray<CollisionRadiusComponent> ExistingRadiiNativeArray;
         public uint InputDeploy;
@@ -76,9 +76,9 @@ namespace Game.Scripts.Systems
 
             for(var i = 0 ; i < spawnCount ; i++)
             {
-                Entity newTurret = EntityCommandBuffer.Instantiate(entityInQueryIndex , selectedTurretEntityComponent.Entity);
-                EntityCommandBuffer.AddComponent<DeployingTurretTag>(entityInQueryIndex , newTurret);
-                EntityCommandBuffer.SetComponent(entityInQueryIndex , newTurret , LocalTransform.FromPosition(localTransform.Position));
+                Entity newTurret = ECB.Instantiate(entityInQueryIndex , selectedTurretEntityComponent.Entity);
+                ECB.AddComponent<DeployingTurretTag>(entityInQueryIndex , newTurret);
+                ECB.SetComponent(entityInQueryIndex , newTurret , LocalTransform.FromPosition(localTransform.Position));
             }
 
             EnergyNativeReference.Value -= selectedTurretCostComponent.Value * spawnCount;

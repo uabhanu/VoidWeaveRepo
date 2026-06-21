@@ -20,11 +20,11 @@ namespace Game.Scripts.Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            EntityCommandBuffer.ParallelWriter ecbParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
+            EntityCommandBuffer.ParallelWriter ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
             
             float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value;
 
-            systemState.Dependency = new ShootJob { ECBParallelWriter = ecbParallelWriter , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
+            systemState.Dependency = new ShootJob { ECB = ecb , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
         }
     }
 
@@ -32,7 +32,7 @@ namespace Game.Scripts.Systems
     [WithAll(typeof(CanShootTag))]
     public partial struct ShootJob : IJobEntity
     {
-        public EntityCommandBuffer.ParallelWriter ECBParallelWriter;
+        public EntityCommandBuffer.ParallelWriter ECB;
         public float TimerExpired;
 
         private void Execute(in AttackRateComponent attackRateComponent , in BulletEntityComponent bulletEntityComponent , RefRW<CooldownComponent> cooldownComponent , in DamageComponent damageComponent , Entity entity , [EntityIndexInQuery] int entityIndexInQuery , in LocalToWorld localToWorld , in ProjectileCountComponent projectileCountComponent , in ProjectileSpawnPointComponent projectileSpawnPointComponent , in SpreadComponent spreadComponent)
@@ -48,7 +48,7 @@ namespace Game.Scripts.Systems
 
             for(var i = 0 ; i < spawnCount ; i++)
             {
-                Entity newBullet = ECBParallelWriter.Instantiate(entityIndexInQuery , bulletEntityComponent.Entity);
+                Entity newBullet = ECB.Instantiate(entityIndexInQuery , bulletEntityComponent.Entity);
 
                 float spreadAngle = math.radians(spreadComponent.Value);
                 float angleStep = math.select(0f , spreadAngle / math.max(1 , projectileCountComponent.Value - 1) , projectileCountComponent.Value > 1);
@@ -61,16 +61,16 @@ namespace Game.Scripts.Systems
                 float currentAngleOffset = -startOffset + angleStep * i;
                 quaternion finalRotation = math.mul(turretRotation , quaternion.RotateZ(currentAngleOffset));
 
-                ECBParallelWriter.SetComponent(entityIndexInQuery , newBullet , new DamageComponent { Value = damageComponent.Value });
-                ECBParallelWriter.SetComponent(entityIndexInQuery , newBullet , LocalTransform.FromPositionRotation(spawnWorldPos , finalRotation));
+                ECB.SetComponent(entityIndexInQuery , newBullet , new DamageComponent { Value = damageComponent.Value });
+                ECB.SetComponent(entityIndexInQuery , newBullet , LocalTransform.FromPositionRotation(spawnWorldPos , finalRotation));
 
                 // DIRECTION FIX: Rotates World-Up by the turret's final calculated orientation
                 // This forces the bullet to follow the nozzle direction precisely
                 float3 direction = math.mul(finalRotation , math.up());
-                ECBParallelWriter.SetComponent(entityIndexInQuery , newBullet , new VelocityComponent { Value = direction.xy });
+                ECB.SetComponent(entityIndexInQuery , newBullet , new VelocityComponent { Value = direction.xy });
             }
 
-            for(int i = 0 ; i < math.select(0 , 1 , isReady) ; i++) { ECBParallelWriter.AddComponent<ProjectileFiredEventTag>(entityIndexInQuery , entity); }
+            for(int i = 0 ; i < math.select(0 , 1 , isReady) ; i++) { ECB.AddComponent<ProjectileFiredEventTag>(entityIndexInQuery , entity); }
         }
     }
 }

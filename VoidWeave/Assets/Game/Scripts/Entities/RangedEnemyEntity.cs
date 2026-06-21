@@ -84,6 +84,7 @@ namespace Game.Scripts.Entities
 
                 AddComponent(entity , new EnemyTag());
                 AddComponent(entity , new SquareEnemyTag());
+                AddComponent(entity , new ScaleStatsTag());
             }
         }
         

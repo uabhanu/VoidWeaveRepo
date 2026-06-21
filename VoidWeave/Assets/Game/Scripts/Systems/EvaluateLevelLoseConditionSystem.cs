@@ -5,7 +5,7 @@ namespace Game.Scripts.Systems
     using Unity.Entities;
 
     [UpdateInGroup(typeof(GameplaySystemGroup))]
-    public partial struct LevelLoseSystem : ISystem
+    public partial struct EvaluateLevelLoseConditionSystem : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState systemState) { systemState.RequireForUpdate<EnemySpawnerTag>(); }

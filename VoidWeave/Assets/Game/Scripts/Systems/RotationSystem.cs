@@ -24,7 +24,7 @@ namespace Game.Scripts.Systems
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
             float floatTolerance = SystemAPI.GetSingleton<FloatToleranceComponent>().Value;
 
-            systemState.Dependency = new CombatRotationJob { DeltaTime = SystemAPI.Time.DeltaTime , ECBParallelWriter = ecb , FloatTolerence = floatTolerance }.ScheduleParallel(systemState.Dependency);
+            systemState.Dependency = new CombatRotationJob { DeltaTime = SystemAPI.Time.DeltaTime , ECB = ecb , FloatTolerence = floatTolerance }.ScheduleParallel(systemState.Dependency);
             systemState.Dependency = new MovementRotationJob { DeltaTime = SystemAPI.Time.DeltaTime , FloatTolerence = floatTolerance }.ScheduleParallel(systemState.Dependency);
         }
     }
@@ -34,7 +34,7 @@ namespace Game.Scripts.Systems
     public partial struct CombatRotationJob : IJobEntity
     {
         public float DeltaTime;
-        public EntityCommandBuffer.ParallelWriter ECBParallelWriter;
+        public EntityCommandBuffer.ParallelWriter ECB;
         public float FloatTolerence;
 
         private void Execute(Entity entity , [EntityIndexInQuery] int entityIndexInQuery , ref LocalTransform localTransform , in MinRotationRequiredComponent minRotationRequiredComponent , in RotationOffsetComponent rotationOffsetComponent , in RotationSpeedComponent rotationSpeedComponent , in TargetPositionComponent targetPositionComponent)
@@ -50,8 +50,8 @@ namespace Game.Scripts.Systems
             localTransform.Rotation = math.slerp(localTransform.Rotation , targetRotation , t);
 
             bool isAligned = angleDifference <= math.radians(minRotationRequiredComponent.Value);
-            for(var i = 0 ; i < math.select(0 , 1 , isAligned) ; i++) ECBParallelWriter.AddComponent<RotationCompleteTag>(entityIndexInQuery , entity);
-            for(var i = 0 ; i < math.select(0 , 1 , !isAligned) ; i++) ECBParallelWriter.RemoveComponent<RotationCompleteTag>(entityIndexInQuery , entity);
+            for(var i = 0 ; i < math.select(0 , 1 , isAligned) ; i++) ECB.AddComponent<RotationCompleteTag>(entityIndexInQuery , entity);
+            for(var i = 0 ; i < math.select(0 , 1 , !isAligned) ; i++) ECB.RemoveComponent<RotationCompleteTag>(entityIndexInQuery , entity);
         }
     }
 

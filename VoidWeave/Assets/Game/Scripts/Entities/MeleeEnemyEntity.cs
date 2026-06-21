@@ -76,6 +76,7 @@ namespace Game.Scripts.Entities
                 AddComponentObject(entity , new VfxTextureComponent { Value = mainTexture });
 
                 AddComponent(entity , new EnemyTag());
+                AddComponent(entity , new ScaleStatsTag());
             }
         }
 

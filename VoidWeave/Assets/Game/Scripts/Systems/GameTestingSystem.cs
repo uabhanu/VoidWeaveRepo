@@ -34,8 +34,9 @@ namespace Game.Scripts.Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            int currentEnergyWhileTesting = SystemAPI.GetSingleton<CurrentEnergyWhileTestingComponent>().Value;
             EntityCommandBuffer ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);
+            
+            int currentEnergyWhileTesting = SystemAPI.GetSingleton<CurrentEnergyWhileTestingComponent>().Value;
             int enemiesToKillIncrement = SystemAPI.GetSingleton<EnemiesToKillIncrementComponent>().Value;
             int enemiesToKillWhileTesting = SystemAPI.GetSingleton<EnemiesToKillWhileTestingComponent>().Value;
             float floatTolerance = SystemAPI.GetSingleton<FloatToleranceComponent>().Value;

@@ -73,6 +73,7 @@ namespace Game.Scripts.Entities
 
                 AddComponent(entity , new DashVisualTag());
                 AddComponent(entity , new PlayerTag());
+                AddComponent(entity , new ScaleStatsTag());
             }
         }
         

@@ -18,7 +18,9 @@ namespace Game.Scripts.Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            new PulseJob { EntityCommandBuffer = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter()}.ScheduleParallel();
+            EntityCommandBuffer.ParallelWriter ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
+            
+            new PulseJob { ECB = ecb }.ScheduleParallel();
         }
     }
 
@@ -27,11 +29,11 @@ namespace Game.Scripts.Systems
     [WithNone(typeof(PulseTag))]
     public partial struct PulseJob : IJobEntity
     {
-        public EntityCommandBuffer.ParallelWriter EntityCommandBuffer;
+        public EntityCommandBuffer.ParallelWriter ECB;
 
         private void Execute(Entity entity , [EntityIndexInQuery] int entityInQueryIndex , in LifetimeComponent lifetimeComponent , in TimeBeforeEntityPulseComponent timeBeforePulse)
         {
-            for(var i = 0 ; i < math.select(0 , 1 , lifetimeComponent.Value <= timeBeforePulse.Value) ; i++) EntityCommandBuffer.AddComponent(entityInQueryIndex , entity , new PulseTag());
+            for(var i = 0 ; i < math.select(0 , 1 , lifetimeComponent.Value <= timeBeforePulse.Value) ; i++) ECB.AddComponent(entityInQueryIndex , entity , new PulseTag());
         }
     }
 }

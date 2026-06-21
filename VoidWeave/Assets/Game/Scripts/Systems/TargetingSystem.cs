@@ -28,7 +28,7 @@ namespace Game.Scripts.Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            EntityCommandBuffer.ParallelWriter ecbParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
+            EntityCommandBuffer.ParallelWriter ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
             
             float3 targetDefaultPosition = SystemAPI.GetSingleton<TargetDefaultPositionComponent>().Value;
 
@@ -46,8 +46,8 @@ namespace Game.Scripts.Systems
             combinedDependencies = JobHandle.CombineDependencies(combinedDependencies , jobHandle5);
             combinedDependencies = JobHandle.CombineDependencies(combinedDependencies , jobHandle6);
 
-            JobHandle enemyTheTargetJobHandle = new EnemyTheTargetJob { ECBParallelWriter = ecbParallelWriter , TargetEntitiesNativeList = enemyEntitiesNativeList , TargetDefaultPosition = targetDefaultPosition , TargetPositionsNativeList = enemyPositionsNativeList , TargetTeamComponentsNativeList = enemyTeamComponentsNativeList }.ScheduleParallel(combinedDependencies);
-            JobHandle playerTheTargetJobHandle = new PlayerTheTargetJob { ECBParallelWriter = ecbParallelWriter , TargetEntitiesNativeList = playerEntitiesNativeList , TargetDefaultPosition = targetDefaultPosition , TargetPositionsNativeList = playerPositionsNativeList , TargetTeamComponentsNativeList = playerTeamComponentsNativeList }.ScheduleParallel(enemyTheTargetJobHandle);
+            JobHandle enemyTheTargetJobHandle = new EnemyTheTargetJob { ECB = ecb , TargetEntitiesNativeList = enemyEntitiesNativeList , TargetDefaultPosition = targetDefaultPosition , TargetPositionsNativeList = enemyPositionsNativeList , TargetTeamComponentsNativeList = enemyTeamComponentsNativeList }.ScheduleParallel(combinedDependencies);
+            JobHandle playerTheTargetJobHandle = new PlayerTheTargetJob { ECB = ecb , TargetEntitiesNativeList = playerEntitiesNativeList , TargetDefaultPosition = targetDefaultPosition , TargetPositionsNativeList = playerPositionsNativeList , TargetTeamComponentsNativeList = playerTeamComponentsNativeList }.ScheduleParallel(enemyTheTargetJobHandle);
 
             JobHandle disposeJobHandle1 = enemyEntitiesNativeList.Dispose(playerTheTargetJobHandle);
             JobHandle disposeJobHandle2 = enemyPositionsNativeList.Dispose(playerTheTargetJobHandle);
@@ -67,7 +67,7 @@ namespace Game.Scripts.Systems
     [WithAny(typeof(BeamTurretTag) , typeof(ScatterTurretTag) , typeof(StrikerTurretTag))]
     public partial struct EnemyTheTargetJob : IJobEntity
     {
-        public EntityCommandBuffer.ParallelWriter ECBParallelWriter;
+        public EntityCommandBuffer.ParallelWriter ECB;
         public float3 TargetDefaultPosition;
 
         [ReadOnly] public NativeList<Entity> TargetEntitiesNativeList;
@@ -106,8 +106,8 @@ namespace Game.Scripts.Systems
 
             bool inRangeFinal = closestTargetPosition.w <= rangeComponent.Value * rangeComponent.Value && selectedEntity != Entity.Null;
 
-            for(var i = 0 ; i < math.select(0 , 1 , inRangeFinal) ; i++) ECBParallelWriter.AddComponent<HasTargetTag>(entityIndexInQuery , entity);
-            for(var i = 0 ; i < math.select(0 , 1 , !inRangeFinal) ; i++) ECBParallelWriter.RemoveComponent<HasTargetTag>(entityIndexInQuery , entity);
+            for(var i = 0 ; i < math.select(0 , 1 , inRangeFinal) ; i++) ECB.AddComponent<HasTargetTag>(entityIndexInQuery , entity);
+            for(var i = 0 ; i < math.select(0 , 1 , !inRangeFinal) ; i++) ECB.RemoveComponent<HasTargetTag>(entityIndexInQuery , entity);
         }
     }
 
@@ -115,7 +115,7 @@ namespace Game.Scripts.Systems
     [WithAll(typeof(EnemyTag))]
     public partial struct PlayerTheTargetJob : IJobEntity
     {
-        public EntityCommandBuffer.ParallelWriter ECBParallelWriter;
+        public EntityCommandBuffer.ParallelWriter ECB;
         public float3 TargetDefaultPosition;
 
         [ReadOnly] public NativeList<Entity> TargetEntitiesNativeList;
@@ -154,8 +154,8 @@ namespace Game.Scripts.Systems
 
             bool inRangeFinal = closestTargetPosition.w <= rangeComponent.Value * rangeComponent.Value && selectedEntity != Entity.Null;
 
-            for(var i = 0 ; i < math.select(0 , 1 , inRangeFinal) ; i++) ECBParallelWriter.AddComponent<HasTargetTag>(entityIndexInQuery , entity);
-            for(var i = 0 ; i < math.select(0 , 1 , !inRangeFinal) ; i++) ECBParallelWriter.RemoveComponent<HasTargetTag>(entityIndexInQuery , entity);
+            for(var i = 0 ; i < math.select(0 , 1 , inRangeFinal) ; i++) ECB.AddComponent<HasTargetTag>(entityIndexInQuery , entity);
+            for(var i = 0 ; i < math.select(0 , 1 , !inRangeFinal) ; i++) ECB.RemoveComponent<HasTargetTag>(entityIndexInQuery , entity);
         }
     }
 }

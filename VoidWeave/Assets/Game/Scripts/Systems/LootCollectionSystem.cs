@@ -33,9 +33,11 @@ namespace Game.Scripts.Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            EntityCommandBuffer.ParallelWriter ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter();
+            
             float pickupRadius = SystemAPI.GetSingleton<LootPickupRadiusComponent>().Value;
 
-            new PickupJob { EntityCommandBufferParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter() , PlayerPos = SystemAPI.GetComponent<LocalTransform>(SystemAPI.GetSingletonEntity<PlayerTag>()).Position , PickupRadiusSq = pickupRadius * pickupRadius , ResourceNativeQueueParallelWriter = _resourceQueue.AsParallelWriter() }.ScheduleParallel(state.Dependency).Complete();
+            new PickupJob { ECB = ecb , PlayerPos = SystemAPI.GetComponent<LocalTransform>(SystemAPI.GetSingletonEntity<PlayerTag>()).Position , PickupRadiusSq = pickupRadius * pickupRadius , ResourceNativeQueueParallelWriter = _resourceQueue.AsParallelWriter() }.ScheduleParallel(state.Dependency).Complete();
 
             while(_resourceQueue.TryDequeue(out int value)) SystemAPI.GetSingletonRW<CurrentEnergyComponent>().ValueRW.Value += value;
         }
@@ -45,7 +47,7 @@ namespace Game.Scripts.Systems
     [WithAll(typeof(LootPickupTag))]
     public partial struct PickupJob : IJobEntity
     {
-        public EntityCommandBuffer.ParallelWriter EntityCommandBufferParallelWriter;
+        public EntityCommandBuffer.ParallelWriter ECB;
         public float3 PlayerPos;
         public float PickupRadiusSq;
         public NativeQueue<int>.ParallelWriter ResourceNativeQueueParallelWriter;
@@ -54,7 +56,7 @@ namespace Game.Scripts.Systems
         {
             for(var i = 0 ; i < math.select(0 , 1 , math.distancesq(localTransform.Position , PlayerPos) <= PickupRadiusSq) ; i++)
             {
-                EntityCommandBufferParallelWriter.DestroyEntity(entityInQueryIndex , entity);
+                ECB.DestroyEntity(entityInQueryIndex , entity);
                 ResourceNativeQueueParallelWriter.Enqueue(lootAmountComponent.Value);
             }
         }
