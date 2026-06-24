@@ -21,8 +21,8 @@ namespace Game.Scripts.Systems
             {
                 vfxEntitiesList.Add((damageVfxComponent.Value , localTransform , vfxColorComponent , vfxMeshComponent , vfxScaleComponent , vfxSizeComponent , vfxTextureComponent));
 
-                // Remove tag so we don't process this hit twice
-                ecb.RemoveComponent<DamageTag>(entity);
+                // Disable tag so we don't process this hit twice
+                ecb.SetComponentEnabled<DamageTag>(entity , false);
             }
 
             // 2. Now that the Query loop is finished, we can safely make structural changes
@@ -35,7 +35,7 @@ namespace Game.Scripts.Systems
                 systemState.EntityManager.AddComponentData(entityInstance , vfxToSpawn.vfxColorComponent);
                 systemState.EntityManager.AddComponentData(entityInstance, new VfxScaleComponent { Value = vfxToSpawn.vfxScaleComponent.Value });
                 systemState.EntityManager.AddComponentData(entityInstance , vfxToSpawn.vfxSizeComponent);
-                systemState.EntityManager.AddComponentData(entityInstance , new VfxUpdateTag());
+                systemState.EntityManager.SetComponentEnabled<VfxUpdateTag>(entityInstance , true);
 
                 // 3. Attach the Mesh Object safely
                 systemState.EntityManager.AddComponentObject(entityInstance , vfxToSpawn.vfxMeshComponent);

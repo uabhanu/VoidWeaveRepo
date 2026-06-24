@@ -11,26 +11,23 @@ namespace Game.Scripts.Systems
     [UpdateBefore(typeof(DeathSystem))]
     public partial struct LootSpawningSystem : ISystem
     {
+        private EntityQuery _lootQuery;
+
         [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
+            _lootQuery = SystemAPI.QueryBuilder().WithAll<LootTutorialActiveTag>().Build();
+
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
-            
+
             systemState.RequireForUpdate<LootSpawnedFirstTimeComponent>();
         }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            EntityCommandBuffer.ParallelWriter ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
-            
-            var lootQuery = SystemAPI.QueryBuilder().WithAll<LootTutorialActiveTag>().Build();
-            
-            int lootSpawnedFirstTimeValue = SystemAPI.GetSingleton<LootSpawnedFirstTimeComponent>().Value;
-            bool shouldUpdate = !lootQuery.IsEmpty;
-            SystemAPI.SetSingleton(new LootSpawnedFirstTimeComponent { Value = math.select(lootSpawnedFirstTimeValue , 1 , shouldUpdate) });
-
-            new SpawnLootJob { ECB = ecb , LootSpawnedFirstTimeValue = lootSpawnedFirstTimeValue }.ScheduleParallel();
+            SystemAPI.SetSingleton(new LootSpawnedFirstTimeComponent { Value = math.select(SystemAPI.GetSingleton<LootSpawnedFirstTimeComponent>().Value , 1 , !_lootQuery.IsEmpty) });
+            new SpawnLootJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , LootSpawnedFirstTimeValue = SystemAPI.GetSingleton<LootSpawnedFirstTimeComponent>().Value }.ScheduleParallel();
         }
     }
 
@@ -49,6 +46,16 @@ namespace Game.Scripts.Systems
             ECB.SetComponent(entityIndexInQuery , newLoot , new LootAmountComponent { Value = lootAmountComponent.Value });
 
             int isFirstLoot = math.select(0 , 1 , LootSpawnedFirstTimeValue == 0);
+
+            // =========================================================================================
+            // INTENTIONAL ARCHITECTURE EXCEPTION:
+            // Do NOT refactor the AddComponent calls below to SetComponentEnabled. 
+            // While structural changes are normally avoided during gameplay, Unity DOTS allows a 
+            // "Free Structural Change" when ECB.AddComponent immediately follows ECB.Instantiate 
+            // within the same buffer tick. The entity spawns directly into its final archetype, 
+            // causing zero performance lag. Using SetComponentEnabled here without the tags being 
+            // pre-baked into the prefabs will cause a Burst Assert crash and an infinite spawn loop.
+            // =========================================================================================
 
             for(int i = 0 ; i < isFirstLoot ; i++)
             {

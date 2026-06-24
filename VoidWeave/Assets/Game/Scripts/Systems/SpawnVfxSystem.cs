@@ -22,14 +22,14 @@ namespace Game.Scripts.Systems
             float deltaTime = SystemAPI.Time.DeltaTime;
             EntityCommandBuffer ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);
 
-            foreach(var (localTransform , timerComponent , entity) in SystemAPI.Query<RefRW<LocalTransform> , RefRW<TimerComponent>>().WithAll<SpawningTag>().WithEntityAccess())
+            foreach(var (localTransform , timerComponent , entity) in SystemAPI.Query<RefRW<LocalTransform> , RefRW<TimerComponent>>().WithAll<SpawningVfxTag>().WithEntityAccess())
             {
                 timerComponent.ValueRW.Value -= deltaTime;
 
                 float progress = math.saturate(1f - timerComponent.ValueRO.Value * 1f);
                 localTransform.ValueRW.Scale = progress;
                 
-                ecb.SetComponentEnabled<SpawningTag>(entity , timerComponent.ValueRO.Value > 0f);
+                ecb.SetComponentEnabled<SpawningVfxTag>(entity , timerComponent.ValueRO.Value > 0f);
             }
         }
     }

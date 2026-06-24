@@ -50,6 +50,7 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new CooldownComponent());
                 AddComponent(entity , new CurrentHealthComponent { Value = authoring.maxHealth });
                 AddComponent(entity , new DamageComponent { Value = authoring.damage });
+                AddComponent(entity , new DamageEventComponent());
                 AddComponent(entity , new DamageVfxComponent { Value = GetEntity(authoring.damageVfxPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new DeathVfxComponent { Value = GetEntity(authoring.deathVfxPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new LineEnemyComponent { Value = authoring.isLineEnemy });
@@ -74,9 +75,24 @@ namespace Game.Scripts.Entities
 
                 AddComponentObject(entity , new VfxMeshComponent { Value = meshFilter.sharedMesh });
                 AddComponentObject(entity , new VfxTextureComponent { Value = mainTexture });
-
+                
+                AddComponent(entity , new CanMeleeAttackTag());
+                AddComponent(entity , new DamageTag());
+                AddComponent(entity , new DeathTag());
                 AddComponent(entity , new EnemyTag());
+                AddComponent(entity , new HasTargetTag());
+                AddComponent(entity , new RotationCompleteTag());
                 AddComponent(entity , new ScaleStatsTag());
+                AddComponent(entity , new SpawningVfxTag());
+                
+                SetComponentEnabled<DamageEventComponent>(entity , false);
+                
+                SetComponentEnabled<CanMeleeAttackTag>(entity , false);
+                SetComponentEnabled<DamageTag>(entity , false);
+                SetComponentEnabled<DeathTag>(entity , false);
+                SetComponentEnabled<HasTargetTag>(entity , false);
+                SetComponentEnabled<RotationCompleteTag>(entity , false);
+                SetComponentEnabled<SpawningVfxTag>(entity , false);
             }
         }
 

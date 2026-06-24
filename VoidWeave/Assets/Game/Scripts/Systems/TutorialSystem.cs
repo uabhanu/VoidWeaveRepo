@@ -18,6 +18,7 @@ namespace Game.Scripts.Systems
             
             systemState.RequireForUpdate<InputDashComponent>();
             systemState.RequireForUpdate<InputDeployComponent>();
+            systemState.RequireForUpdate<IsTestingComponent>();
             systemState.RequireForUpdate<LevelComponent>();
             systemState.RequireForUpdate<Level1EnergyForTutorialComponent>();
             systemState.RequireForUpdate<Level2EnergyForTutorialComponent>();
@@ -35,9 +36,11 @@ namespace Game.Scripts.Systems
             int currentLevel = SystemAPI.GetSingleton<LevelComponent>().Value;
             uint inputDash = SystemAPI.GetSingleton<InputDashComponent>().Value;
             uint inputDeploy = SystemAPI.GetSingleton<InputDeployComponent>().Value;
-            int level1 = SystemAPI.GetSingleton<Level1EnergyForTutorialComponent>().Value;
-            int level2 = SystemAPI.GetSingleton<Level2EnergyForTutorialComponent>().Value;
-            int level3 = SystemAPI.GetSingleton<Level3EnergyForTutorialComponent>().Value;
+            int isTesting = SystemAPI.GetSingleton<IsTestingComponent>().Value;
+            bool isTestingBool = isTesting == 1;
+            int level1Energy = SystemAPI.GetSingleton<Level1EnergyForTutorialComponent>().Value;
+            int level2Energy = SystemAPI.GetSingleton<Level2EnergyForTutorialComponent>().Value;
+            int level3Energy = SystemAPI.GetSingleton<Level3EnergyForTutorialComponent>().Value;
             int maxTutorialLevelComponent = SystemAPI.GetSingleton<MaxLevelsForTutorialsComponent>().Value;
 
             bool levelAdvanced = !_advanceLevelQuery.IsEmpty;
@@ -46,7 +49,7 @@ namespace Game.Scripts.Systems
             int isLevel1 = math.select(0 , 1 , evaluatedLevel == 1);
             int isLevel2 = math.select(0 , 1 , evaluatedLevel == 2);
             int isLevel3 = math.select(0 , 1 , evaluatedLevel >= 3);
-            int minEnergy = isLevel1 * level1 + isLevel2 * level2 + isLevel3 * level3;
+            int minEnergy = isLevel1 * level1Energy + isLevel2 * level2Energy + isLevel3 * level3Energy;
 
             uint playerInput = SystemAPI.GetSingleton<PlayerInputComponent>().Value;
             bool hasTurretSelected = SystemAPI.GetSingleton<SelectedTurretEntityComponent>().Entity != Entity.Null;
@@ -59,7 +62,7 @@ namespace Game.Scripts.Systems
 
             bool shouldDisableLootTutorial = dashKeyPressed;
 
-            foreach(RefRW<CurrentEnergyComponent> energy in SystemAPI.Query<RefRW<CurrentEnergyComponent>>()) { energy.ValueRW.Value = math.select(energy.ValueRO.Value , minEnergy , isLevelAdvanced == 1); }
+            foreach(RefRW<CurrentEnergyComponent> energy in SystemAPI.Query<RefRW<CurrentEnergyComponent>>()) { energy.ValueRW.Value = math.select(energy.ValueRO.Value , math.max(energy.ValueRO.Value , minEnergy) , isLevelAdvanced == 1 && !isTestingBool); }
 
             foreach(var (_ , entity) in SystemAPI.Query<LootTutorialActiveTag>().WithOptions(EntityQueryOptions.IgnoreComponentEnabledState).WithEntityAccess())
             {

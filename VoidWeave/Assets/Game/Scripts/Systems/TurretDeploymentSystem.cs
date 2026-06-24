@@ -26,19 +26,22 @@ namespace Game.Scripts.Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            EntityCommandBuffer.ParallelWriter ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
-
-            int currentEnergy = SystemAPI.GetSingleton<CurrentEnergyComponent>().Value;
-            uint inputDeploy = SystemAPI.GetSingleton<InputDeployComponent>().Value;
-
-            var energyNativeReference = new NativeReference<int>(currentEnergy , Allocator.TempJob);
+            // MUST keep for disposal. Energy singleton inlined directly into the NativeReference.
+            var energyNativeReference = new NativeReference<int>(SystemAPI.GetSingleton<CurrentEnergyComponent>().Value , Allocator.TempJob);
             var existingPositionsNativeArray = _turretQuery.ToComponentDataArray<LocalTransform>(Allocator.TempJob);
             var existingRadiiNativeArray = _turretQuery.ToComponentDataArray<CollisionRadiusComponent>(Allocator.TempJob);
 
-            var job = new TurretDeploymentJob { ECB = ecb , EnergyNativeReference = energyNativeReference , ExistingPositionsNativeArray = existingPositionsNativeArray , ExistingRadiiNativeArray = existingRadiiNativeArray , InputDeploy = inputDeploy };
+            // Job scheduling and Singletons completely inlined
+            new TurretDeploymentJob 
+            { 
+                ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , 
+                EnergyNativeReference = energyNativeReference , 
+                ExistingPositionsNativeArray = existingPositionsNativeArray , 
+                ExistingRadiiNativeArray = existingRadiiNativeArray , 
+                InputDeploy = SystemAPI.GetSingleton<InputDeployComponent>().Value 
+            }.Schedule(systemState.Dependency).Complete();
 
-            job.Schedule(systemState.Dependency).Complete();
-
+            // Read the result and dispose
             SystemAPI.SetSingleton(new CurrentEnergyComponent { Value = energyNativeReference.Value });
             energyNativeReference.Dispose();
             existingPositionsNativeArray.Dispose();
@@ -77,7 +80,7 @@ namespace Game.Scripts.Systems
             for(var i = 0 ; i < spawnCount ; i++)
             {
                 Entity newTurret = ECB.Instantiate(entityInQueryIndex , selectedTurretEntityComponent.Entity);
-                ECB.AddComponent<DeployingTurretTag>(entityInQueryIndex , newTurret);
+                ECB.SetComponentEnabled<DeployingTurretTag>(entityInQueryIndex , newTurret , true);
                 ECB.SetComponent(entityInQueryIndex , newTurret , LocalTransform.FromPosition(localTransform.Position));
             }
 

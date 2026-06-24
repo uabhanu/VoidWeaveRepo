@@ -43,8 +43,23 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new TargetPositionComponent());
                 AddComponent(entity , new TeamComponent { Value = authoring.teamID });
 
+                AddComponent(entity , new CanRangeAttackTag());
+                AddComponent(entity , new DamageTag());
+                AddComponent(entity , new DeathTag());
+                AddComponent(entity , new DeployingTurretTag());
+                AddComponent(entity , new HasTargetTag());
+                AddComponent(entity , new ProjectileFiredEventTag());
+                AddComponent(entity , new RotationCompleteTag());
                 AddComponent(entity , new ScatterTurretTag());
                 AddComponent(entity , new TurretTag());
+                
+                SetComponentEnabled<CanRangeAttackTag>(entity , false);
+                SetComponentEnabled<DamageTag>(entity , false);
+                SetComponentEnabled<DeathTag>(entity , false);
+                SetComponentEnabled<DeployingTurretTag>(entity , false);
+                SetComponentEnabled<HasTargetTag>(entity , false);
+                SetComponentEnabled<ProjectileFiredEventTag>(entity , false);
+                SetComponentEnabled<RotationCompleteTag>(entity , false);
             }
         }
     }

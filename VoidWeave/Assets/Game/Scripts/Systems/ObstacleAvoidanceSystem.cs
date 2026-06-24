@@ -27,11 +27,17 @@ namespace Game.Scripts.Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
+            // MUST keep to prevent memory leak
             var obstaclePositionsNativeArray = _obstacleQuery.ToComponentDataArray<LocalTransform>(Allocator.TempJob);
-
-            var obstacleAvoidanceJob = new ObstacleAvoidanceJob { DeltaTime = SystemAPI.Time.DeltaTime , MinOverlapDistance = SystemAPI.GetSingleton<MinOverlapDistanceComponent>().Value , ObstaclePositionsNativeArray = obstaclePositionsNativeArray , SeparationDistance = SystemAPI.GetSingleton<SeparationDistanceComponent>().Value , SeparationVelocity = SystemAPI.GetSingleton<SeparationVelocityComponent>().Value };
-
-            systemState.Dependency = obstacleAvoidanceJob.ScheduleParallel(_obstacleQuery , systemState.Dependency);
+            
+            systemState.Dependency = new ObstacleAvoidanceJob 
+            { 
+                DeltaTime = SystemAPI.Time.DeltaTime , 
+                MinOverlapDistance = SystemAPI.GetSingleton<MinOverlapDistanceComponent>().Value , 
+                ObstaclePositionsNativeArray = obstaclePositionsNativeArray , 
+                SeparationDistance = SystemAPI.GetSingleton<SeparationDistanceComponent>().Value , 
+                SeparationVelocity = SystemAPI.GetSingleton<SeparationVelocityComponent>().Value 
+            }.ScheduleParallel(_obstacleQuery , systemState.Dependency);
 
             obstaclePositionsNativeArray.Dispose(systemState.Dependency);
         }

@@ -12,33 +12,33 @@ namespace Game.Scripts.Systems
     [UpdateBefore(typeof(MovementSystem))]
     public partial struct CollisionSystem : ISystem
     {
+        private EntityQuery _enemyMeleeQuery;
+        private EntityQuery _projectileQuery;
         private EntityQuery _targetQuery;
 
         [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
-            systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
-
-            // Targets: Valid victims (Players & Enemies)
+            _enemyMeleeQuery = SystemAPI.QueryBuilder().WithAll<CanMeleeAttackTag , CollisionRadiusComponent , DamageComponent , EnemyTag , LocalToWorld , TeamComponent>().WithNone<DeathTag>().Build();
+            _projectileQuery = SystemAPI.QueryBuilder().WithAll<CollisionRadiusComponent , DamageComponent , LocalToWorld , ProjectileTag , TeamComponent>().WithNone<DeathTag>().Build();
             _targetQuery = SystemAPI.QueryBuilder().WithAll<CollisionRadiusComponent , LocalToWorld , TeamComponent>().WithAny<EnemyTag , PlayerTag>().WithNone<DeathTag>().Build();
+
+            systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
         }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            EntityCommandBuffer.ParallelWriter ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
-            
+            // Native Collections MUST remain as local variables so they can be disposed
             NativeArray<Entity> targetEntitiesNativeArray = _targetQuery.ToEntityArray(Allocator.TempJob);
             NativeArray<LocalToWorld> targetPositionsNativeArray = _targetQuery.ToComponentDataArray<LocalToWorld>(Allocator.TempJob);
             NativeArray<CollisionRadiusComponent> targetRadiiNativeArray = _targetQuery.ToComponentDataArray<CollisionRadiusComponent>(Allocator.TempJob);
             NativeArray<TeamComponent> targetTeamComponentsNativeArray = _targetQuery.ToComponentDataArray<TeamComponent>(Allocator.TempJob);
 
-            // PROJECTILES (Bullet -> Player/Enemy)
-            // Kills Self (1) + Deals Entity
-            JobHandle projectileJobHandle = new CollisionJob { ECB = ecb , KillSelf = true , TargetEntitiesNativeArray = targetEntitiesNativeArray , TargetPositionsNativeArray = targetPositionsNativeArray , TargetRadiiNativeArray = targetRadiiNativeArray , TargetTeamComponentsNativeArray = targetTeamComponentsNativeArray }.ScheduleParallel(SystemAPI.QueryBuilder().WithAll<CollisionRadiusComponent , DamageComponent , LocalToWorld , ProjectileTag , TeamComponent>().WithNone<DeathTag>().Build() , systemState.Dependency);
+            // Inlined ECB and used cached queries!
+            JobHandle projectileJobHandle = new CollisionJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , KillSelf = true , TargetEntitiesNativeArray = targetEntitiesNativeArray , TargetPositionsNativeArray = targetPositionsNativeArray , TargetRadiiNativeArray = targetRadiiNativeArray , TargetTeamComponentsNativeArray = targetTeamComponentsNativeArray }.ScheduleParallel(_projectileQuery , systemState.Dependency);
 
-            // Kills Self (0) + Deals Entity
-            systemState.Dependency = new CollisionJob { ECB = ecb , KillSelf = false , TargetEntitiesNativeArray = targetEntitiesNativeArray , TargetPositionsNativeArray = targetPositionsNativeArray , TargetRadiiNativeArray = targetRadiiNativeArray , TargetTeamComponentsNativeArray = targetTeamComponentsNativeArray }.ScheduleParallel(SystemAPI.QueryBuilder().WithAll<CanMeleeAttackTag , CollisionRadiusComponent , DamageComponent , EnemyTag , LocalToWorld , TeamComponent>().WithNone<DeathTag>().Build() , projectileJobHandle);
+            systemState.Dependency = new CollisionJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , KillSelf = false , TargetEntitiesNativeArray = targetEntitiesNativeArray , TargetPositionsNativeArray = targetPositionsNativeArray , TargetRadiiNativeArray = targetRadiiNativeArray , TargetTeamComponentsNativeArray = targetTeamComponentsNativeArray }.ScheduleParallel(_enemyMeleeQuery , projectileJobHandle);
 
             targetEntitiesNativeArray.Dispose(systemState.Dependency);
             targetPositionsNativeArray.Dispose(systemState.Dependency);
@@ -68,15 +68,23 @@ namespace Game.Scripts.Systems
                 float hitRadiusSq = combinedRadius * combinedRadius;
                 bool isHit = math.distancesq(localToWorld.Position , TargetPositionsNativeArray[i].Position) <= hitRadiusSq && teamComponent.Value != TargetTeamComponentsNativeArray[i].Value;
 
-                // ADD DAMAGE EVENT
-                for(var k = 0 ; k < math.select(0 , 1 , isHit) ; k++) ECB.AddComponent(entityIndexInQuery , TargetEntitiesNativeArray[i] , new DamageEventComponent { Value = (int)damageComponent.Value });
+                // Enable Damage Event
+                for(var k = 0 ; k < math.select(0 , 1 , isHit) ; k++)
+                {
+                    // Update the actual damage number in the entity's memory chunk
+                    ECB.SetComponent(entityIndexInQuery , TargetEntitiesNativeArray[i] , new DamageEventComponent { Value = (int)damageComponent.Value });
 
-                // KILL SELF (Only if KillSelf is true)
-                for(var k = 0 ; k < math.select(0 , 1 , isHit && KillSelf) ; k++) ECB.AddComponent<DeathTag>(entityIndexInQuery , entity);
+                    // Flip the bit to 'true' so the DamageSystem and VFX System can process it
+                    ECB.SetComponentEnabled<DamageEventComponent>(entityIndexInQuery , TargetEntitiesNativeArray[i] , true);
+                }
 
-                // MELEE HIT TRIGGER
+                // Kill Self (Only if KillSelf is true)
+                for(var k = 0 ; k < math.select(0 , 1 , isHit && KillSelf) ; k++) ECB.SetComponentEnabled<DeathTag>(entityIndexInQuery , entity , true);
+                ;
+
+                // Melee Hit Trigger
                 // If we hit and we are an Enemy (KillSelf=false), add Tag to Self to trigger cooldown
-                for(var k = 0 ; k < math.select(0 , 1 , isHit && !KillSelf) ; k++) ECB.AddComponent<CanMeleeAttackTag>(entityIndexInQuery , entity);
+                for(var k = 0 ; k < math.select(0 , 1 , isHit && !KillSelf) ; k++) ECB.SetComponentEnabled<CanMeleeAttackTag>(entityIndexInQuery , entity , true);
             }
         }
     }

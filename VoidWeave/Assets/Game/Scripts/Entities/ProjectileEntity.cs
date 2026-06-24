@@ -24,7 +24,10 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new TeamComponent { Value = authoring.teamID });
                 AddComponent(entity , new VelocityComponent());
 
+                AddComponent(entity , new DeathTag());
                 AddComponent(entity , new ProjectileTag());
+                
+                SetComponentEnabled<DeathTag>(entity , false);
             }
         }
     }

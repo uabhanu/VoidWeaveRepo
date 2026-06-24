@@ -9,24 +9,18 @@ namespace Game.Scripts.Systems
     public partial struct TimerSystem : ISystem
     {
         private EntityQuery _tutorialActiveQuery;
-        
+
         [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
             systemState.RequireForUpdate<TimerComponent>();
             systemState.RequireForUpdate<TimerExpiredComponent>();
-            
+
             _tutorialActiveQuery = SystemAPI.QueryBuilder().WithAll<EnemySpawnerTag , TurretsTutorialActiveTag>().Build();
         }
 
         [BurstCompile]
-        public void OnUpdate(ref SystemState systemState)
-        {
-            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value;
-            bool isTutorialActive = !_tutorialActiveQuery.IsEmpty;
-
-            systemState.Dependency = new TimerJob { DeltaTime = SystemAPI.Time.DeltaTime , IsTutorialActive = isTutorialActive , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
-        }
+        public void OnUpdate(ref SystemState systemState) { systemState.Dependency = new TimerJob { DeltaTime = SystemAPI.Time.DeltaTime , IsTutorialActive = !_tutorialActiveQuery.IsEmpty , TimerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value }.ScheduleParallel(systemState.Dependency); }
     }
 
     [BurstCompile]

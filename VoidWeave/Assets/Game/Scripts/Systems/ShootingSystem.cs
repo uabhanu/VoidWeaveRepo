@@ -13,23 +13,16 @@ namespace Game.Scripts.Systems
         public void OnCreate(ref SystemState systemState)
         {
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
-            
+
             systemState.RequireForUpdate<TimerExpiredComponent>();
         }
 
         [BurstCompile]
-        public void OnUpdate(ref SystemState systemState)
-        {
-            EntityCommandBuffer.ParallelWriter ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
-            
-            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value;
-
-            systemState.Dependency = new ShootJob { ECB = ecb , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
-        }
+        public void OnUpdate(ref SystemState systemState) { systemState.Dependency = new ShootJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , TimerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value }.ScheduleParallel(systemState.Dependency); }
     }
 
     [BurstCompile]
-    [WithAll(typeof(CanShootTag))]
+    [WithAll(typeof(CanRangeAttackTag) , typeof(HasTargetTag) , typeof(RotationCompleteTag))]
     public partial struct ShootJob : IJobEntity
     {
         public EntityCommandBuffer.ParallelWriter ECB;
@@ -56,21 +49,20 @@ namespace Game.Scripts.Systems
                 // Using your established component for the half-offset
                 float startOffset = spreadAngle * 0.5f;
 
-                // COMBINED ROTATION: Base turret rotation + the spread offset
-                // We removed BulletRotationOffset because it is now handled by the BulletVisual child
+                // Base turret rotation + the spread offset
                 float currentAngleOffset = -startOffset + angleStep * i;
                 quaternion finalRotation = math.mul(turretRotation , quaternion.RotateZ(currentAngleOffset));
 
                 ECB.SetComponent(entityIndexInQuery , newBullet , new DamageComponent { Value = damageComponent.Value });
                 ECB.SetComponent(entityIndexInQuery , newBullet , LocalTransform.FromPositionRotation(spawnWorldPos , finalRotation));
 
-                // DIRECTION FIX: Rotates World-Up by the turret's final calculated orientation
+                // Rotates World-Up by the turret's final calculated orientation
                 // This forces the bullet to follow the nozzle direction precisely
                 float3 direction = math.mul(finalRotation , math.up());
                 ECB.SetComponent(entityIndexInQuery , newBullet , new VelocityComponent { Value = direction.xy });
             }
 
-            for(int i = 0 ; i < math.select(0 , 1 , isReady) ; i++) { ECB.AddComponent<ProjectileFiredEventTag>(entityIndexInQuery , entity); }
+            for(int i = 0 ; i < math.select(0 , 1 , isReady) ; i++) { ECB.SetComponentEnabled<ProjectileFiredEventTag>(entityIndexInQuery , entity , true); }
         }
     }
 }

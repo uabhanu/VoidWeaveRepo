@@ -12,19 +12,12 @@ namespace Game.Scripts.Systems
         public void OnCreate(ref SystemState systemState)
         {
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
-            
+
             systemState.RequireForUpdate<TimerExpiredComponent>();
         }
 
         [BurstCompile]
-        public void OnUpdate(ref SystemState systemState)
-        {
-            EntityCommandBuffer.ParallelWriter ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
-                
-            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value;
-
-            new LifetimeJob { DeltaTime = SystemAPI.Time.DeltaTime , ECB = ecb , TimerExpired = timerExpired }.ScheduleParallel();
-        }
+        public void OnUpdate(ref SystemState systemState) { new LifetimeJob { DeltaTime = SystemAPI.Time.DeltaTime , ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , TimerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value }.ScheduleParallel(); }
     }
 
     [BurstCompile]

@@ -21,11 +21,8 @@ namespace Game.Scripts.Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
-            float floatTolerance = SystemAPI.GetSingleton<FloatToleranceComponent>().Value;
-
-            systemState.Dependency = new CombatRotationJob { DeltaTime = SystemAPI.Time.DeltaTime , ECB = ecb , FloatTolerence = floatTolerance }.ScheduleParallel(systemState.Dependency);
-            systemState.Dependency = new MovementRotationJob { DeltaTime = SystemAPI.Time.DeltaTime , FloatTolerence = floatTolerance }.ScheduleParallel(systemState.Dependency);
+            systemState.Dependency = new CombatRotationJob { DeltaTime = SystemAPI.Time.DeltaTime , ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , FloatTolerence = SystemAPI.GetSingleton<FloatToleranceComponent>().Value }.ScheduleParallel(systemState.Dependency);
+            systemState.Dependency = new MovementRotationJob { DeltaTime = SystemAPI.Time.DeltaTime , FloatTolerence = SystemAPI.GetSingleton<FloatToleranceComponent>().Value }.ScheduleParallel(systemState.Dependency);
         }
     }
 
@@ -50,8 +47,7 @@ namespace Game.Scripts.Systems
             localTransform.Rotation = math.slerp(localTransform.Rotation , targetRotation , t);
 
             bool isAligned = angleDifference <= math.radians(minRotationRequiredComponent.Value);
-            for(var i = 0 ; i < math.select(0 , 1 , isAligned) ; i++) ECB.AddComponent<RotationCompleteTag>(entityIndexInQuery , entity);
-            for(var i = 0 ; i < math.select(0 , 1 , !isAligned) ; i++) ECB.RemoveComponent<RotationCompleteTag>(entityIndexInQuery , entity);
+            ECB.SetComponentEnabled<RotationCompleteTag>(entityIndexInQuery , entity , isAligned);
         }
     }
 

@@ -16,7 +16,7 @@ namespace Game.Scripts.Systems
         {
             _enemyQuery = SystemAPI.QueryBuilder().WithAll<EnemyTag , TeamComponent>().Build();
             _tutorialActiveQuery = SystemAPI.QueryBuilder().WithAll<EnemySpawnerTag , TurretsTutorialActiveTag>().Build();
-            
+
             systemState.RequireForUpdate<EnemiesKilledComponent>();
             systemState.RequireForUpdate<EnemiesToKillComponent>();
             systemState.RequireForUpdate<TimerComponent>();
@@ -38,30 +38,19 @@ namespace Game.Scripts.Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            int enemiesKilled = SystemAPI.GetSingleton<EnemiesKilledComponent>().Value;
-            int enemiesToKill = SystemAPI.GetSingleton<EnemiesToKillComponent>().Value;
-            bool isTutorialActive = !_tutorialActiveQuery.IsEmpty;
-            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value;
-            float wave1Multiplier = SystemAPI.GetSingleton<Wave1MultiplierComponent>().Value;
-            float wave2Multiplier = SystemAPI.GetSingleton<Wave2MultiplierComponent>().Value;
-            float wave3Multiplier = SystemAPI.GetSingleton<Wave3MultiplierComponent>().Value;
-            int wavesPerLevel = SystemAPI.GetSingleton<WavesPerLevelComponent>().Value;
-            int waveStateCombat = SystemAPI.GetSingleton<WaveStateCombatComponent>().Value;
-            int waveStatePrep = SystemAPI.GetSingleton<WaveStatePrepComponent>().Value;
-
             systemState.Dependency = new WaveStateJob
             {
                 AliveEnemyCount = _enemyQuery.CalculateEntityCount() ,
-                EnemiesKilled = enemiesKilled ,
-                EnemiesToKill = enemiesToKill ,
-                IsTutorialActive = isTutorialActive ,
-                TimerExpired = timerExpired ,
-                Wave1Multiplier = wave1Multiplier ,
-                Wave2Multiplier = wave2Multiplier ,
-                Wave3Multiplier = wave3Multiplier ,
-                WavesPerLevel = wavesPerLevel ,
-                WaveStateCombat = waveStateCombat ,
-                WaveStatePrep = waveStatePrep
+                EnemiesKilled = SystemAPI.GetSingleton<EnemiesKilledComponent>().Value ,
+                EnemiesToKill = SystemAPI.GetSingleton<EnemiesToKillComponent>().Value ,
+                IsTutorialActive = !_tutorialActiveQuery.IsEmpty ,
+                TimerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value ,
+                Wave1Multiplier = SystemAPI.GetSingleton<Wave1MultiplierComponent>().Value ,
+                Wave2Multiplier = SystemAPI.GetSingleton<Wave2MultiplierComponent>().Value ,
+                Wave3Multiplier = SystemAPI.GetSingleton<Wave3MultiplierComponent>().Value ,
+                WavesPerLevel = SystemAPI.GetSingleton<WavesPerLevelComponent>().Value ,
+                WaveStateCombat = SystemAPI.GetSingleton<WaveStateCombatComponent>().Value ,
+                WaveStatePrep = SystemAPI.GetSingleton<WaveStatePrepComponent>().Value
             }.ScheduleParallel(systemState.Dependency);
         }
     }

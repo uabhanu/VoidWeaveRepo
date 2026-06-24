@@ -10,9 +10,12 @@ namespace Game.Scripts.Systems
     public partial struct PauseSystem : ISystem
     {
         private bool _isManualPaused;
+        private EntityQuery _lootTutorialQuery;
 
         public void OnCreate(ref SystemState systemState)
         {
+            _lootTutorialQuery = SystemAPI.QueryBuilder().WithAll<LootTutorialActiveTag>().Build();
+            
             systemState.RequireForUpdate<DashKeyComponent>();
             
             systemState.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
@@ -25,7 +28,7 @@ namespace Game.Scripts.Systems
             Key dashKey = SystemAPI.GetSingleton<DashKeyComponent>().Value;
 
             bool isPaused = !systemState.World.GetExistingSystemManaged<GameplaySystemGroup>().Enabled;
-            bool hasLootTag = !SystemAPI.QueryBuilder().WithAll<LootTutorialActiveTag>().Build().IsEmpty;
+            bool hasLootTag = !_lootTutorialQuery.IsEmpty;
             bool dashKeyPressed = Keyboard.current != null && Keyboard.current[dashKey].wasPressedThisFrame;
 
             int triggerLootResume = math.select(0 , 1 , isPaused & hasLootTag & dashKeyPressed & !_isManualPaused);

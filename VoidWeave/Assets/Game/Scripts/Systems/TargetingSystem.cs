@@ -105,9 +105,7 @@ namespace Game.Scripts.Systems
             targetEntityComponent.Entity = selectedEntity;
 
             bool inRangeFinal = closestTargetPosition.w <= rangeComponent.Value * rangeComponent.Value && selectedEntity != Entity.Null;
-
-            for(var i = 0 ; i < math.select(0 , 1 , inRangeFinal) ; i++) ECB.AddComponent<HasTargetTag>(entityIndexInQuery , entity);
-            for(var i = 0 ; i < math.select(0 , 1 , !inRangeFinal) ; i++) ECB.RemoveComponent<HasTargetTag>(entityIndexInQuery , entity);
+            ECB.SetComponentEnabled<HasTargetTag>(entityIndexInQuery , entity , inRangeFinal);
         }
     }
 
@@ -153,9 +151,7 @@ namespace Game.Scripts.Systems
             targetEntityComponent.Entity = selectedEntity;
 
             bool inRangeFinal = closestTargetPosition.w <= rangeComponent.Value * rangeComponent.Value && selectedEntity != Entity.Null;
-
-            for(var i = 0 ; i < math.select(0 , 1 , inRangeFinal) ; i++) ECB.AddComponent<HasTargetTag>(entityIndexInQuery , entity);
-            for(var i = 0 ; i < math.select(0 , 1 , !inRangeFinal) ; i++) ECB.RemoveComponent<HasTargetTag>(entityIndexInQuery , entity);
+            ECB.SetComponentEnabled<HasTargetTag>(entityIndexInQuery , entity , inRangeFinal);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Game.Scripts.Systems
             foreach(var (dashVfx , localTransform) in SystemAPI.Query<DashVfxComponent , LocalTransform>().WithAll<DashVisualTag>())
             {
                 Entity dashTrail = ecb.Instantiate(dashVfx.Value);
-                ecb.AddComponent<VfxUpdateTag>(dashTrail);
+                ecb.SetComponentEnabled<VfxUpdateTag>(dashTrail , true);
                 ecb.SetComponent(dashTrail , localTransform);
                 ecb.SetComponent(dashTrail , SystemAPI.GetComponent<LifetimeComponent>(dashVfx.Value));
             }

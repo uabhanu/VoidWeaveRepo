@@ -33,11 +33,7 @@ namespace Game.Scripts.Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            EntityCommandBuffer.ParallelWriter ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter();
-            
-            float pickupRadius = SystemAPI.GetSingleton<LootPickupRadiusComponent>().Value;
-
-            new PickupJob { ECB = ecb , PlayerPos = SystemAPI.GetComponent<LocalTransform>(SystemAPI.GetSingletonEntity<PlayerTag>()).Position , PickupRadiusSq = pickupRadius * pickupRadius , ResourceNativeQueueParallelWriter = _resourceQueue.AsParallelWriter() }.ScheduleParallel(state.Dependency).Complete();
+            new PickupJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter() , PlayerPos = SystemAPI.GetComponent<LocalTransform>(SystemAPI.GetSingletonEntity<PlayerTag>()).Position , PickupRadiusSq = SystemAPI.GetSingleton<LootPickupRadiusComponent>().Value * SystemAPI.GetSingleton<LootPickupRadiusComponent>().Value , ResourceNativeQueueParallelWriter = _resourceQueue.AsParallelWriter() }.ScheduleParallel(state.Dependency).Complete();
 
             while(_resourceQueue.TryDequeue(out int value)) SystemAPI.GetSingletonRW<CurrentEnergyComponent>().ValueRW.Value += value;
         }

@@ -26,7 +26,7 @@ namespace Game.Scripts.Systems
                 visualEffect.SetFloat("Size" , vfxSize.ValueRO.Value);
                 visualEffect.SetTexture("Texture" , vfxTextureComponent.Value);
 
-                ecb.RemoveComponent<VfxUpdateTag>(entity);
+                ecb.SetComponentEnabled<VfxUpdateTag>(entity , false);
             }
         }
     }

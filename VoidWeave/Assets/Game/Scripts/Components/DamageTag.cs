@@ -2,5 +2,5 @@ namespace Game.Scripts.Components
 {
     using Unity.Entities;
 
-    public struct DamageTag : IComponentData {}
+    public struct DamageTag : IComponentData , IEnableableComponent {}
 }

@@ -21,19 +21,11 @@ namespace Game.Scripts.Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            float deltaTime = SystemAPI.Time.DeltaTime;
-            var elapsedTime = (float)SystemAPI.Time.ElapsedTime;
-
-            uint inputUp = SystemAPI.GetSingleton<InputUpComponent>().Value;
-            uint inputDown = SystemAPI.GetSingleton<InputDownComponent>().Value;
-            uint inputLeft = SystemAPI.GetSingleton<InputLeftComponent>().Value;
-            uint inputRight = SystemAPI.GetSingleton<InputRightComponent>().Value;
-
-            new BasicEnemyMovementJob { DeltaTime = deltaTime }.ScheduleParallel();
-            new FastEnemyMovementJob { DeltaTime = deltaTime , ElapsedTime = elapsedTime }.ScheduleParallel();
-            new InputMovementJob { DeltaTime = deltaTime , InputDown = inputDown , InputLeft = inputLeft , InputRight = inputRight , InputUp = inputUp }.ScheduleParallel();
-            new ProjectileMovementJob { DeltaTime = deltaTime }.ScheduleParallel();
-            new SlowEnemyMovementJob { DeltaTime = deltaTime }.ScheduleParallel();
+            new BasicEnemyMovementJob { DeltaTime = SystemAPI.Time.DeltaTime }.ScheduleParallel();
+            new FastEnemyMovementJob { DeltaTime = SystemAPI.Time.DeltaTime , ElapsedTime = (float)SystemAPI.Time.ElapsedTime }.ScheduleParallel();
+            new InputMovementJob { DeltaTime = SystemAPI.Time.DeltaTime , InputDown = SystemAPI.GetSingleton<InputDownComponent>().Value , InputLeft = SystemAPI.GetSingleton<InputLeftComponent>().Value , InputRight = SystemAPI.GetSingleton<InputRightComponent>().Value , InputUp = SystemAPI.GetSingleton<InputUpComponent>().Value }.ScheduleParallel();
+            new ProjectileMovementJob { DeltaTime = SystemAPI.Time.DeltaTime }.ScheduleParallel();
+            new SlowEnemyMovementJob { DeltaTime = SystemAPI.Time.DeltaTime }.ScheduleParallel();
         }
     }
 

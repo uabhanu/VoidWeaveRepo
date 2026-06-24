@@ -21,6 +21,9 @@ namespace Game.Scripts.Entities
                 
                 AddComponent(entity , new LootPickupTag());
                 AddComponent(entity , new LootTag());
+                AddComponent(entity , new PulseTag());
+                
+                SetComponentEnabled<PulseTag>(entity , false);
             }
         }
     }

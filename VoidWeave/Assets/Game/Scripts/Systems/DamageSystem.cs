@@ -39,11 +39,11 @@ namespace Game.Scripts.Systems
         {
             currentHealthComponent.Value = math.max(HealthValueForDeath , currentHealthComponent.Value - damageEventComponent.Value);
 
-            ECB.AddComponent<DamageTag>(entityIndexInQuery , entity);
+            ECB.SetComponentEnabled<DamageTag>(entityIndexInQuery , entity , true);
 
-            for(var i = 0 ; i < math.select(0 , 1 , currentHealthComponent.Value <= HealthValueForDeath) ; i++) ECB.AddComponent<DeathTag>(entityIndexInQuery , entity);
+            for(var i = 0 ; i < math.select(0 , 1 , currentHealthComponent.Value <= HealthValueForDeath) ; i++) ECB.SetComponentEnabled<DeathTag>(entityIndexInQuery , entity , true);
 
-            ECB.RemoveComponent<DamageEventComponent>(entityIndexInQuery , entity);
+            ECB.SetComponentEnabled<DamageEventComponent>(entityIndexInQuery , entity , false);
         }
     }
 }

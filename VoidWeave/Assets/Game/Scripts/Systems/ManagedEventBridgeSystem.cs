@@ -142,20 +142,17 @@ namespace Game.Scripts.Systems
                 for(int i = 0 ; i < math.select(0 , 1 , SystemAPI.HasComponent<EnemyTag>(entity)) ; i++) { AudioManagerOnDamageTakenByEnemy?.Invoke(); }
 
                 for(int i = 0 ; i < math.select(0 , 1 , SystemAPI.HasComponent<PlayerTag>(entity)) ; i++) { AudioManagerOnDamageTakenByPlayer?.Invoke(); }
-
-                ecb.RemoveComponent<DamageEventComponent>(entity);
             }
 
             foreach(var (_ , entity) in SystemAPI.Query<DashPerformedTag>().WithEntityAccess())
             {
                 OnDashPerformed?.Invoke();
-                ecb.RemoveComponent<DashPerformedTag>(entity);
+                ecb.SetComponentEnabled<DashPerformedTag>(entity , false);
             }
 
             foreach(var (_ , entity) in SystemAPI.Query<RefRO<DeathTag>>().WithAll<EnemyTag>().WithEntityAccess())
             {
                 OnEnemyDeath?.Invoke();
-                ecb.RemoveComponent<DeathTag>(entity);
             }
 
             foreach(RefRO<CurrentEnergyComponent> currentEnergyComponent in SystemAPI.Query<RefRO<CurrentEnergyComponent>>().WithChangeFilter<CurrentEnergyComponent>()) OnEnergyValueChanged?.Invoke(currentEnergyComponent.ValueRO.Value);
@@ -175,7 +172,6 @@ namespace Game.Scripts.Systems
             foreach(var (_ , entity) in SystemAPI.Query<RefRO<DeathTag>>().WithAll<PlayerTag>().WithEntityAccess())
             {
                 OnPlayerDeath?.Invoke();
-                ecb.RemoveComponent<DeathTag>(entity);
             }
 
             foreach(RefRO<LevelComponent> levelComponent in SystemAPI.Query<RefRO<LevelComponent>>().WithChangeFilter<LevelComponent>()) OnLevelValueChanged?.Invoke(levelComponent.ValueRO.Value);
@@ -190,7 +186,7 @@ namespace Game.Scripts.Systems
 
                 for(int i = 0 ; i < math.select(0 , 1 , SystemAPI.HasComponent<StrikerTurretTag>(entity)) ; i++) { AudioManagerOnProjectileFiredByStrikerTurret?.Invoke(); }
 
-                ecb.RemoveComponent<ProjectileFiredEventTag>(entity);
+                ecb.SetComponentEnabled<ProjectileFiredEventTag>(entity , false);
             }
 
             // DEPLOYMENT SOUND (Runs ONLY for new turrets) ---
@@ -201,7 +197,7 @@ namespace Game.Scripts.Systems
                 for(int i = 0 ; i < turretCooldownFinished ; i++)
                 {
                     AudioManagerOnTurretCooldownFinished?.Invoke();
-                    ecb.RemoveComponent<DeployingTurretTag>(turretEntity);
+                    ecb.SetComponentEnabled<DeployingTurretTag>(turretEntity , false);
                 }
             }
 

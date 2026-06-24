@@ -95,6 +95,7 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new GameStateComponent { Value = authoring.mainMenuState });
                 AddComponent(entity , new HealthMultiplierComponent { Value = authoring.healthMultiplierPerLevel });
                 AddComponent(entity , new HealthValueForDeathComponent { Value = authoring.healthValueForDeath });
+                AddComponent(entity , new InitializeGameTag());
                 AddComponent(entity , new InputEntityComponent { Entity = GetEntity(authoring.inputEntityPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new LastLevelComponent { Value = authoring.lastLevel });
                 AddComponent(entity , new LevelComponent { Value = authoring.startingLevel });
@@ -135,6 +136,8 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new WavesPerLevelComponent { Value = authoring.wavesPerLevel });
                 AddComponent(entity , new WaveStateCombatComponent { Value = authoring.waveStateCombat });
                 AddComponent(entity , new WaveStatePrepComponent { Value = authoring.waveStatePrep });
+                
+                SetComponentEnabled<InitializeGameTag>(entity , false);
             }
         }
 

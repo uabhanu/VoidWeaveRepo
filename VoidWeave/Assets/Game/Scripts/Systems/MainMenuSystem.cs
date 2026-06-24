@@ -27,7 +27,7 @@ namespace Game.Scripts.Systems
             var startGameRequestEntity = SystemAPI.GetSingletonEntity<StartGameRequestTag>();
 
             ecb.SetComponent(gameStateComponentEntity , new GameStateComponent { Value = playingStateComponent.Value });
-            ecb.AddComponent<InitializeGameTag>(gameStateComponentEntity);
+            ecb.SetComponentEnabled<InitializeGameTag>(gameStateComponentEntity , true);
             ecb.DestroyEntity(startGameRequestEntity);
         }
     }

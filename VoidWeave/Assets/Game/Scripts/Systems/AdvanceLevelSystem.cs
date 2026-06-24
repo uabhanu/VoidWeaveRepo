@@ -10,25 +10,23 @@ namespace Game.Scripts.Systems
     [UpdateBefore(typeof(EnemySpawningSystem))]
     public partial struct AdvanceLevelSystem : ISystem
     {
+        private EntityQuery _advanceLevelQuery;
+        
         [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
-            systemState.RequireForUpdate<EliteStatMultiplierComponent>();
+            _advanceLevelQuery = SystemAPI.QueryBuilder().WithAll<AdvanceLevelEventTag>().Build();
+            
             systemState.RequireForUpdate<EnemiesKilledComponent>();
             systemState.RequireForUpdate<EnemiesToKillComponent>();
             systemState.RequireForUpdate<EnemiesToKillIncrementComponent>();
-            systemState.RequireForUpdate<HealthMultiplierComponent>();
             systemState.RequireForUpdate<IsTestingComponent>();
             systemState.RequireForUpdate<LevelComponent>();
             systemState.RequireForUpdate<LevelToUnlockLineEnemyComponent>();
             systemState.RequireForUpdate<LastLevelComponent>();
-            systemState.RequireForUpdate<NormalStatMultiplierComponent>();
             systemState.RequireForUpdate<PlayerTag>();
             systemState.RequireForUpdate<LevelToUnlockSquareEnemyComponent>();
             systemState.RequireForUpdate<LevelToUnlockTriangleEnemyComponent>();
-            systemState.RequireForUpdate<ScalingBaseComponent>();
-            systemState.RequireForUpdate<ScalingLevelOffsetComponent>();
-            systemState.RequireForUpdate<ScalingMinLevelComponent>();
             systemState.RequireForUpdate<UnlockedEnemiesComponent>();
             systemState.RequireForUpdate<UnlockedLineEnemyComponent>();
             systemState.RequireForUpdate<UnlockedSquareEnemyComponent>();
@@ -42,19 +40,13 @@ namespace Game.Scripts.Systems
         public void OnUpdate(ref SystemState systemState)
         {
             systemState.Dependency.Complete();
-
-            float eliteStatMultiplier = SystemAPI.GetSingleton<EliteStatMultiplierComponent>().Value;
-            float healthMultiplier = SystemAPI.GetSingleton<HealthMultiplierComponent>().Value;
+            
             int isTesting = SystemAPI.GetSingleton<IsTestingComponent>().Value;
             bool isTestingBool = isTesting == 1;
             int levelToUnlockLineEnemy = SystemAPI.GetSingleton<LevelToUnlockLineEnemyComponent>().Value;
             int levelToUnlockSquareEnemy = SystemAPI.GetSingleton<LevelToUnlockSquareEnemyComponent>().Value;
             int levelToUnlockTriangleEnemy = SystemAPI.GetSingleton<LevelToUnlockTriangleEnemyComponent>().Value;
             int lastLevel = SystemAPI.GetSingleton<LastLevelComponent>().Value;
-            float normalStatMultiplier = SystemAPI.GetSingleton<NormalStatMultiplierComponent>().Value;
-            float scalingBase = SystemAPI.GetSingleton<ScalingBaseComponent>().Value;
-            int scalingLevelOffset = SystemAPI.GetSingleton<ScalingLevelOffsetComponent>().Value;
-            int scalingMinLevel = SystemAPI.GetSingleton<ScalingMinLevelComponent>().Value;
             uint unlockedLineEnemy = SystemAPI.GetSingleton<UnlockedLineEnemyComponent>().Value;
             uint unlockedSquareEnemy = SystemAPI.GetSingleton<UnlockedSquareEnemyComponent>().Value;
             uint unlockedTriangleEnemy = SystemAPI.GetSingleton<UnlockedTriangleEnemyComponent>().Value;
@@ -72,8 +64,6 @@ namespace Game.Scripts.Systems
             enemiesToKillComponent.ValueRW.Value += math.select(0 , enemiesToKillIncrementComponent.Value , isLevelComplete);
 
             Entity playerEntity = SystemAPI.GetSingletonEntity<PlayerTag>();
-            RefRW<CurrentHealthComponent> currentHealthComponent = SystemAPI.GetComponentRW<CurrentHealthComponent>(playerEntity);
-            RefRW<MaxHealthComponent> maxHealthComponent = SystemAPI.GetComponentRW<MaxHealthComponent>(playerEntity);
 
             RefRW<SelectedTurretEntityComponent> selectedTurretEntityComponent = SystemAPI.GetComponentRW<SelectedTurretEntityComponent>(playerEntity);
             RefRW<SelectedTurretCostComponent> selectedTurretCostComponent = SystemAPI.GetComponentRW<SelectedTurretCostComponent>(playerEntity);
@@ -96,8 +86,7 @@ namespace Game.Scripts.Systems
             unlockedEnemiesComponent.ValueRW.Value = math.select(unlockedEnemiesComponent.ValueRO.Value , bitMask , shouldUpdateMask);
             waveIndexComponent.ValueRW.Value = math.select(waveIndexComponent.ValueRO.Value , 0 , isLevelComplete);
 
-            var advanceLevelQuery = SystemAPI.QueryBuilder().WithAll<AdvanceLevelEventTag>().Build();
-            systemState.EntityManager.DestroyEntity(advanceLevelQuery);
+            systemState.EntityManager.DestroyEntity(_advanceLevelQuery);
         }
     }
 }

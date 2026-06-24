@@ -13,32 +13,28 @@ namespace Game.Scripts.Systems
         public void OnCreate(ref SystemState systemState)
         {
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
+            
             systemState.RequireForUpdate<TimerExpiredComponent>();
         }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
-            EntityCommandBuffer.ParallelWriter ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
+            systemState.Dependency = new CanMeleeAttackJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , TimerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value }.ScheduleParallel(systemState.Dependency);
+            systemState.Dependency = new CanRangeAttackJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , TimerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value }.ScheduleParallel(systemState.Dependency);
+
+            systemState.Dependency = new CannotMeleeAttackJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , TimerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value }.ScheduleParallel(systemState.Dependency);
+            systemState.Dependency = new CannotRangeAttackJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , TimerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value }.ScheduleParallel(systemState.Dependency);
             
-            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value;
-
-            // 1. Check Readiness (Open the Gate)
-            systemState.Dependency = new CanMeleeAttackJob { ECB = ecb , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
-            systemState.Dependency = new CanRangeAttackJob { ECB = ecb , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
-
-            systemState.Dependency = new CannotMeleeAttackJob { ECB = ecb , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
-            systemState.Dependency = new CannotRangeAttackJob { ECB = ecb , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
-
-            // 2. Reset Cooldowns (Close the Gate after Attack) - FIXED
-            systemState.Dependency = new ResetMeleeAttackCooldownJob { ECB = ecb }.ScheduleParallel(systemState.Dependency);
-            systemState.Dependency = new ResetRangedAttackCooldownJob { ECB = ecb }.ScheduleParallel(systemState.Dependency);
+            systemState.Dependency = new ResetMeleeAttackCooldownJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() }.ScheduleParallel(systemState.Dependency);
+            systemState.Dependency = new ResetRangedAttackCooldownJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() }.ScheduleParallel(systemState.Dependency);
         }
     }
 
     [BurstCompile]
-    [WithAll(typeof(AttackRateComponent))]
-    [WithNone(typeof(CanMeleeAttackTag) , typeof(DeployingTurretTag))]
+    [WithAll(typeof(AttackRateComponent) , typeof (CanMeleeAttackTag))]
+    [WithNone(typeof(DeployingTurretTag))]
+    [WithOptions(EntityQueryOptions.IgnoreComponentEnabledState)]
     public partial struct CanMeleeAttackJob : IJobEntity
     {
         public EntityCommandBuffer.ParallelWriter ECB;
@@ -46,7 +42,7 @@ namespace Game.Scripts.Systems
 
         private void Execute(in CooldownComponent cooldownComponent , Entity entity , [EntityIndexInQuery] int entityIndexInQuery)
         {
-            for(var i = 0 ; i < math.select(0 , 1 , cooldownComponent.Value <= TimerExpired) ; i++) ECB.AddComponent<CanMeleeAttackTag>(entityIndexInQuery , entity);
+            for(var i = 0 ; i < math.select(0 , 1 , cooldownComponent.Value <= TimerExpired) ; i++) ECB.SetComponentEnabled<CanMeleeAttackTag>(entityIndexInQuery , entity , true);
         }
     }
 
@@ -59,13 +55,14 @@ namespace Game.Scripts.Systems
 
         private void Execute(in CooldownComponent cooldownComponent , Entity entity , [EntityIndexInQuery] int entityIndexInQuery)
         {
-            for(var i = 0 ; i < math.select(0 , 1 , cooldownComponent.Value > TimerExpired) ; i++) ECB.RemoveComponent<CanMeleeAttackTag>(entityIndexInQuery , entity);
+            for(var i = 0 ; i < math.select(0 , 1 , cooldownComponent.Value > TimerExpired) ; i++) ECB.SetComponentEnabled<CanMeleeAttackTag>(entityIndexInQuery , entity , false);
         }
     }
 
     [BurstCompile]
-    [WithAll(typeof(AttackRateComponent) , typeof(HasTargetTag) , typeof(RotationCompleteTag))]
+    [WithAll(typeof(AttackRateComponent) , typeof(CanRangeAttackTag) , typeof(HasTargetTag) , typeof(RotationCompleteTag))]
     [WithNone(typeof(DeployingTurretTag))]
+    [WithOptions(EntityQueryOptions.IgnoreComponentEnabledState)]
     public partial struct CanRangeAttackJob : IJobEntity
     {
         public EntityCommandBuffer.ParallelWriter ECB;
@@ -73,12 +70,12 @@ namespace Game.Scripts.Systems
 
         private void Execute(in CooldownComponent cooldownComponent , Entity entity , [EntityIndexInQuery] int entityIndexInQuery)
         {
-            for(var i = 0 ; i < math.select(0 , 1 , cooldownComponent.Value <= TimerExpired) ; i++) ECB.AddComponent<CanShootTag>(entityIndexInQuery , entity);
+            for(var i = 0 ; i < math.select(0 , 1 , cooldownComponent.Value <= TimerExpired) ; i++) ECB.SetComponentEnabled<CanRangeAttackTag>(entityIndexInQuery , entity , true);
         }
     }
 
     [BurstCompile]
-    [WithAll(typeof(AttackRateComponent))]
+    [WithAll(typeof(AttackRateComponent) , typeof(CanRangeAttackTag))]
     public partial struct CannotRangeAttackJob : IJobEntity
     {
         public EntityCommandBuffer.ParallelWriter ECB;
@@ -86,7 +83,7 @@ namespace Game.Scripts.Systems
 
         private void Execute(in CooldownComponent cooldownComponent , Entity entity , [EntityIndexInQuery] int entityIndexInQuery)
         {
-            for(var i = 0 ; i < math.select(0 , 1 , cooldownComponent.Value > TimerExpired) ; i++) ECB.RemoveComponent<CanShootTag>(entityIndexInQuery , entity);
+            for(var i = 0 ; i < math.select(0 , 1 , cooldownComponent.Value > TimerExpired) ; i++) ECB.SetComponentEnabled<CanRangeAttackTag>(entityIndexInQuery , entity , false);
         }
     }
 
@@ -99,12 +96,12 @@ namespace Game.Scripts.Systems
         private void Execute(in AttackRateComponent attackRate , Entity entity , [EntityIndexInQuery] int entityIndexInQuery)
         {
             ECB.AddComponent(entityIndexInQuery , entity , new CooldownComponent { Value = attackRate.Value });
-            ECB.RemoveComponent<CanMeleeAttackTag>(entityIndexInQuery , entity);
+            ECB.SetComponentEnabled<CanMeleeAttackTag>(entityIndexInQuery , entity , false);
         }
     }
 
     [BurstCompile]
-    [WithAll(typeof(CanShootTag))]
+    [WithAll(typeof(CanRangeAttackTag))]
     public partial struct ResetRangedAttackCooldownJob : IJobEntity
     {
         public EntityCommandBuffer.ParallelWriter ECB;
@@ -113,7 +110,7 @@ namespace Game.Scripts.Systems
         {
             // Reset Entity
             ECB.AddComponent(entityIndexInQuery , entity , new CooldownComponent { Value = attackRate.Value });
-            ECB.RemoveComponent<CanShootTag>(entityIndexInQuery , entity);
+            ECB.SetComponentEnabled<CanRangeAttackTag>(entityIndexInQuery , entity , false);
         }
     }
 }

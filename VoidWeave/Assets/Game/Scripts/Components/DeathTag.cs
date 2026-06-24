@@ -2,5 +2,5 @@ namespace Game.Scripts.Components
 {
     using Unity.Entities;
 
-    public struct DeathTag : IComponentData {}
+    public struct DeathTag : IComponentData , IEnableableComponent {}
 }
