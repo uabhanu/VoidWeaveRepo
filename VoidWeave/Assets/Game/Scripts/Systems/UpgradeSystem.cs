@@ -8,9 +8,17 @@ namespace Game.Scripts.Systems
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     public partial struct UpgradeSystem : ISystem
     {
+        private EntityQuery _beamConfigQuery;
+        private EntityQuery _scatterConfigQuery;
+        private EntityQuery _strikerConfigQuery;
+        
         [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
+            _beamConfigQuery = SystemAPI.QueryBuilder().WithAll<BeamTurretTag , TurretCostComponent>().Build();
+            _scatterConfigQuery = SystemAPI.QueryBuilder().WithAll<ScatterTurretTag , TurretCostComponent>().Build();
+            _strikerConfigQuery = SystemAPI.QueryBuilder().WithAll<StrikerTurretTag , TurretCostComponent>().Build();
+            
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
 
             systemState.RequireForUpdate<CurrentEnergyComponent>();
@@ -30,7 +38,7 @@ namespace Game.Scripts.Systems
 
             foreach((RefRO<UpgradeStrikerTurretTag> _ , Entity entity) in SystemAPI.Query<RefRO<UpgradeStrikerTurretTag>>().WithEntityAccess())
             {
-                Entity configEntity = SystemAPI.QueryBuilder().WithAll<StrikerTurretTag , TurretCostComponent>().Build().GetSingletonEntity();
+                Entity configEntity = _strikerConfigQuery.GetSingletonEntity();
 
                 RefRW<TurretCostComponent> strikerTurretCost = SystemAPI.GetComponentRW<TurretCostComponent>(configEntity);
                 RefRW<TurretLevelComponent> strikerTurretLevel = SystemAPI.GetComponentRW<TurretLevelComponent>(configEntity);
@@ -40,7 +48,7 @@ namespace Game.Scripts.Systems
 
             foreach((RefRO<UpgradeScatterTurretTag> _ , Entity entity) in SystemAPI.Query<RefRO<UpgradeScatterTurretTag>>().WithEntityAccess())
             {
-                Entity configEntity = SystemAPI.QueryBuilder().WithAll<ScatterTurretTag , TurretCostComponent>().Build().GetSingletonEntity();
+                Entity configEntity = _scatterConfigQuery.GetSingletonEntity();
 
                 RefRW<TurretCostComponent> scatterTurretCost = SystemAPI.GetComponentRW<TurretCostComponent>(configEntity);
                 RefRW<TurretLevelComponent> scatterTurretLevel = SystemAPI.GetComponentRW<TurretLevelComponent>(configEntity);
@@ -50,7 +58,7 @@ namespace Game.Scripts.Systems
 
             foreach((RefRO<UpgradeBeamTurretTag> _ , Entity entity) in SystemAPI.Query<RefRO<UpgradeBeamTurretTag>>().WithEntityAccess())
             {
-                Entity configEntity = SystemAPI.QueryBuilder().WithAll<BeamTurretTag , TurretCostComponent>().Build().GetSingletonEntity();
+                Entity configEntity = _beamConfigQuery.GetSingletonEntity();
 
                 RefRW<TurretCostComponent> beamTurretCost = SystemAPI.GetComponentRW<TurretCostComponent>(configEntity);
                 RefRW<TurretLevelComponent> beamTurretLevel = SystemAPI.GetComponentRW<TurretLevelComponent>(configEntity);

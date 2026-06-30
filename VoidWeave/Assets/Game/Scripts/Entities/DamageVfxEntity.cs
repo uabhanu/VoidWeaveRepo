@@ -15,9 +15,14 @@ namespace Game.Scripts.Entities
                 var entity = GetEntity(TransformUsageFlags.Dynamic);
 
                 AddComponent(entity , new LifetimeComponent { Value = authoring.lifetime });
-                
+                AddComponent(entity , new VfxColorComponent());
+                AddComponent(entity , new VfxScaleComponent());
+                AddComponent(entity , new VfxSizeComponent());
+                AddComponentObject(entity , new VfxMeshComponent());
+                AddComponentObject(entity , new VfxTextureComponent());
+
                 AddComponent(entity , new VfxUpdateTag());
-                
+
                 SetComponentEnabled<VfxUpdateTag>(entity , false);
             }
         }

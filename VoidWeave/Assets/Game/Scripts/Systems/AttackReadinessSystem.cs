@@ -95,7 +95,9 @@ namespace Game.Scripts.Systems
 
         private void Execute(in AttackRateComponent attackRate , Entity entity , [EntityIndexInQuery] int entityIndexInQuery)
         {
-            ECB.AddComponent(entityIndexInQuery , entity , new CooldownComponent { Value = attackRate.Value });
+            ECB.SetComponent(entityIndexInQuery , entity , new CooldownComponent { Value = attackRate.Value });
+            ECB.SetComponentEnabled<CooldownComponent>(entityIndexInQuery , entity , true);
+            
             ECB.SetComponentEnabled<CanMeleeAttackTag>(entityIndexInQuery , entity , false);
         }
     }
@@ -109,7 +111,9 @@ namespace Game.Scripts.Systems
         private void Execute(in AttackRateComponent attackRate , Entity entity , [EntityIndexInQuery] int entityIndexInQuery)
         {
             // Reset Entity
-            ECB.AddComponent(entityIndexInQuery , entity , new CooldownComponent { Value = attackRate.Value });
+            ECB.SetComponent(entityIndexInQuery , entity , new CooldownComponent { Value = attackRate.Value });
+            ECB.SetComponentEnabled<CooldownComponent>(entityIndexInQuery , entity , true);
+            
             ECB.SetComponentEnabled<CanRangeAttackTag>(entityIndexInQuery , entity , false);
         }
     }

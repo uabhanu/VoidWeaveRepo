@@ -12,9 +12,13 @@ namespace Game.Scripts.Systems
     [UpdateAfter(typeof(WaveStateSystem))]
     public partial struct EnemySpawningSystem : ISystem
     {
+        private EntityQuery _playerQuery;
+        
         [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
+            _playerQuery = SystemAPI.QueryBuilder().WithAll<PlayerTag>().WithNone<DeathTag>().Build();
+            
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
 
             systemState.RequireForUpdate<ActiveWaveStateComponent>();
@@ -45,7 +49,7 @@ namespace Game.Scripts.Systems
                 InitialBitmask = SystemAPI.GetSingleton<InitialBitmaskComponent>().Value ,
                 LineEnemyEntity = SystemAPI.GetComponent<LineEnemyEntityComponent>(SystemAPI.GetSingletonEntity<EnemySpawnerTag>()).Entity ,
                 LineEnemyIndex = SystemAPI.GetSingleton<LineEnemyIndexComponent>().Value ,
-                PlayerCount = SystemAPI.QueryBuilder().WithAll<PlayerTag>().WithNone<DeathTag>().Build().CalculateEntityCount() ,
+                PlayerCount = _playerQuery.CalculateEntityCount() ,
                 RandomRangeStartValue = SystemAPI.GetSingleton<RandomRangeStartComponent>().Value ,
                 SquareEnemyEntity = SystemAPI.GetComponent<SquareEnemyEntityComponent>(SystemAPI.GetSingletonEntity<EnemySpawnerTag>()).Entity ,
                 SquareEnemyIndex = SystemAPI.GetSingleton<SquareEnemyIndexComponent>().Value ,

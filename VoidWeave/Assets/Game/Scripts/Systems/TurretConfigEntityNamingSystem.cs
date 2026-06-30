@@ -13,22 +13,22 @@ namespace Game.Scripts.Systems
         {
             EntityCommandBuffer ecb = SystemAPI.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);
 
-            foreach((StrikerTurretTag _ , Entity entity) in SystemAPI.Query<StrikerTurretTag>().WithNone<TurretDebugNamedTag>().WithEntityAccess())
+            foreach((StrikerTurretTag _ , Entity entity) in SystemAPI.Query<StrikerTurretTag>().WithDisabled<TurretDebugNamedTag>().WithEntityAccess())
             {
                 ecb.SetName(entity , new FixedString64Bytes("StrikerTurretConfig"));
-                ecb.AddComponent<TurretDebugNamedTag>(entity);
+                ecb.SetComponentEnabled<TurretDebugNamedTag>(entity , true);
             }
 
-            foreach((ScatterTurretTag _ , Entity entity) in SystemAPI.Query<ScatterTurretTag>().WithNone<TurretDebugNamedTag>().WithEntityAccess())
+            foreach((ScatterTurretTag _ , Entity entity) in SystemAPI.Query<ScatterTurretTag>().WithDisabled<TurretDebugNamedTag>().WithEntityAccess())
             {
                 ecb.SetName(entity , new FixedString64Bytes("ScatterTurretConfig"));
-                ecb.AddComponent<TurretDebugNamedTag>(entity);
+                ecb.SetComponentEnabled<TurretDebugNamedTag>(entity , true);
             }
 
-            foreach((BeamTurretTag _ , Entity entity) in SystemAPI.Query<BeamTurretTag>().WithNone<TurretDebugNamedTag>().WithEntityAccess())
+            foreach((BeamTurretTag _ , Entity entity) in SystemAPI.Query<BeamTurretTag>().WithDisabled<TurretDebugNamedTag>().WithEntityAccess())
             {
                 ecb.SetName(entity , new FixedString64Bytes("BeamTurretConfig"));
-                ecb.AddComponent<TurretDebugNamedTag>(entity);
+                ecb.SetComponentEnabled<TurretDebugNamedTag>(entity , true);
             }
         }
     }

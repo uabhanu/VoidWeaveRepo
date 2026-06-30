@@ -24,18 +24,25 @@ namespace Game.Scripts.Entities
                 AddComponent(strikerTurretEntityConfig , new StrikerTurretTag());
                 AddComponent(strikerTurretEntityConfig , new TurretCostComponent { Value = authoring.strikerTurretCost });
                 AddComponent(strikerTurretEntityConfig , new TurretEntityComponent { Entity = GetEntity(authoring.strikerTurretPrefab , TransformUsageFlags.Dynamic) });
+                AddComponent(strikerTurretEntityConfig , new TurretDebugNamedTag());
 
                 // 2. Scatter Config (New Entity)
                 Entity scatterTurretEntityConfig = CreateAdditionalEntity(TransformUsageFlags.None);
                 AddComponent(scatterTurretEntityConfig , new ScatterTurretTag());
                 AddComponent(scatterTurretEntityConfig , new TurretCostComponent { Value = authoring.scatterTurretCost });
                 AddComponent(scatterTurretEntityConfig , new TurretEntityComponent { Entity = GetEntity(authoring.scatterTurretPrefab , TransformUsageFlags.Dynamic) });
-
+                AddComponent(scatterTurretEntityConfig , new TurretDebugNamedTag());
+                
                 // 3. Beam Config (New Entity)
                 Entity beamTurretEntityConfig = CreateAdditionalEntity(TransformUsageFlags.None);
                 AddComponent(beamTurretEntityConfig , new BeamTurretTag());
                 AddComponent(beamTurretEntityConfig , new TurretCostComponent { Value = authoring.beamTurretCost });
                 AddComponent(beamTurretEntityConfig , new TurretEntityComponent { Entity = GetEntity(authoring.beamTurretPrefab , TransformUsageFlags.Dynamic) });
+                AddComponent(beamTurretEntityConfig , new TurretDebugNamedTag());
+                
+                SetComponentEnabled<TurretDebugNamedTag>(beamTurretEntityConfig , false);
+                SetComponentEnabled<TurretDebugNamedTag>(scatterTurretEntityConfig , false);
+                SetComponentEnabled<TurretDebugNamedTag>(strikerTurretEntityConfig , false);
             }
         }
     }

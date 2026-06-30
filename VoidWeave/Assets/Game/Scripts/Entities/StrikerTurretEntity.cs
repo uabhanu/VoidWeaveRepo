@@ -29,8 +29,8 @@ namespace Game.Scripts.Entities
 
                 AddComponent(entity , new AttackRateComponent { Value = authoring.attackRate });
                 AddComponent(entity , new BulletEntityComponent { Entity = GetEntity(authoring.bulletPrefab , TransformUsageFlags.Dynamic) });
-                AddComponent(entity , new CooldownComponent { Value = authoring.cooldownTime });
                 AddComponent(entity , new CollisionRadiusComponent { Value = authoring.collisionRadius });
+                AddComponent(entity , new CooldownComponent { Value = authoring.cooldownTime });
                 AddComponent(entity , new DamageComponent { Value = authoring.damage });
                 AddComponent(entity , new MinRotationRequiredComponent { Value = authoring.minRotationRequired });
                 AddComponent(entity , new ProjectileCountComponent { Value = authoring.projectileCount });
