@@ -1,7 +1,6 @@
 namespace Game.Scripts.Systems
 {
     using Components;
-    using Unity.Burst;
     using Unity.Entities;
     using Unity.Mathematics;
     using UnityEngine.InputSystem;
@@ -11,7 +10,6 @@ namespace Game.Scripts.Systems
     {
         private EntityQuery _tutorialActiveQuery;
         
-        [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
             systemState.RequireForUpdate<DashKeyComponent>();

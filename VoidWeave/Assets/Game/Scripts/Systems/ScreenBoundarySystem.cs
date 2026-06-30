@@ -7,11 +7,11 @@ namespace Game.Scripts.Systems
     using Unity.Transforms;
     using UnityEngine;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     [UpdateBefore(typeof(MovementSystem))]
     public partial struct ScreenBoundarySystem : ISystem
     {
-        [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
             systemState.RequireForUpdate<BoundaryOffsetComponent>();

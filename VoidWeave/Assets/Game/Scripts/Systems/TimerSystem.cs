@@ -5,12 +5,12 @@ namespace Game.Scripts.Systems
     using Unity.Entities;
     using Unity.Mathematics;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     public partial struct TimerSystem : ISystem
     {
         private EntityQuery _tutorialActiveQuery;
-
-        [BurstCompile]
+        
         public void OnCreate(ref SystemState systemState)
         {
             systemState.RequireForUpdate<TimerComponent>();
@@ -18,8 +18,7 @@ namespace Game.Scripts.Systems
 
             _tutorialActiveQuery = SystemAPI.QueryBuilder().WithAll<EnemySpawnerTag , TurretsTutorialActiveTag>().Build();
         }
-
-        [BurstCompile]
+        
         public void OnUpdate(ref SystemState systemState) { systemState.Dependency = new TimerJob { DeltaTime = SystemAPI.Time.DeltaTime , IsTutorialActive = !_tutorialActiveQuery.IsEmpty , TimerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value }.ScheduleParallel(systemState.Dependency); }
     }
 

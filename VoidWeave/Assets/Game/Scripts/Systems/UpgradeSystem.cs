@@ -5,6 +5,7 @@ namespace Game.Scripts.Systems
     using Unity.Entities;
     using Unity.Mathematics;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     public partial struct UpgradeSystem : ISystem
     {
@@ -12,7 +13,6 @@ namespace Game.Scripts.Systems
         private EntityQuery _scatterConfigQuery;
         private EntityQuery _strikerConfigQuery;
         
-        [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
             _beamConfigQuery = SystemAPI.QueryBuilder().WithAll<BeamTurretTag , TurretCostComponent>().Build();
@@ -26,8 +26,7 @@ namespace Game.Scripts.Systems
             systemState.RequireForUpdate<UpgradeCostBaseMultiplierComponent>();
             systemState.RequireForUpdate<UpgradeCostMultiplierComponent>();
         }
-
-        [BurstCompile]
+        
         public void OnUpdate(ref SystemState systemState)
         {
             EntityCommandBuffer ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);

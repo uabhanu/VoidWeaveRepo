@@ -4,13 +4,12 @@ namespace Game.Scripts.Systems
     using Unity.Burst;
     using Unity.Entities;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     public partial struct EvaluateLevelLoseConditionSystem : ISystem
     {
-        [BurstCompile]
         public void OnCreate(ref SystemState systemState) { systemState.RequireForUpdate<EnemySpawnerTag>(); }
-
-        [BurstCompile]
+        
         public void OnUpdate(ref SystemState systemState)
         {
             bool hasLost = false;

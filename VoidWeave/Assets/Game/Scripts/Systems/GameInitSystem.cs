@@ -4,11 +4,11 @@ namespace Game.Scripts.Systems
     using Unity.Burst;
     using Unity.Entities;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     [UpdateAfter(typeof(MainMenuSystem))]
     public partial struct GameInitSystem : ISystem
     {
-        [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
             systemState.RequireForUpdate<BeginInitializationEntityCommandBufferSystem.Singleton>();
@@ -16,8 +16,7 @@ namespace Game.Scripts.Systems
             systemState.RequireForUpdate<GameBackgroundEntityComponent>();
             systemState.RequireForUpdate<InitializeGameTag>();
         }
-
-        [BurstCompile]
+        
         public void OnUpdate(ref SystemState systemState)
         {
             var dataEntity = SystemAPI.GetSingletonEntity<GameBackgroundEntityComponent>();

@@ -6,10 +6,10 @@ namespace Game.Scripts.Systems
     using Unity.Transforms;
     using Unity.Mathematics;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(PresentationSystemGroup))]
     public partial struct EntityPulseVfxSystem : ISystem
     {
-        [BurstCompile]
         public void OnUpdate(ref SystemState systemState)
         {
             foreach(var (localTransform , pulseAmplitude , pulseFrequency) in SystemAPI.Query<RefRW<LocalTransform> , RefRO<PulseAmplitudeComponent> , RefRO<PulseFrequencyComponent>>().WithAll<PulseTag>())

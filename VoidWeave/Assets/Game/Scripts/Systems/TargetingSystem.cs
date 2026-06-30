@@ -8,14 +8,14 @@ namespace Game.Scripts.Systems
     using Unity.Mathematics;
     using Unity.Transforms;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     [UpdateBefore(typeof(ShootingSystem))]
     public partial struct TargetingSystem : ISystem
     {
         private EntityQuery _enemyTargetQuery;
         private EntityQuery _playerTargetQuery;
-
-        [BurstCompile]
+        
         public void OnCreate(ref SystemState systemState)
         {
             _enemyTargetQuery = SystemAPI.QueryBuilder().WithAll<LocalToWorld , TeamComponent , EnemyTag>().WithNone<DeathTag>().Build();
@@ -24,8 +24,7 @@ namespace Game.Scripts.Systems
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
             systemState.RequireForUpdate<TargetDefaultPositionComponent>();
         }
-
-        [BurstCompile]
+        
         public void OnUpdate(ref SystemState systemState)
         {
             EntityCommandBuffer.ParallelWriter ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();

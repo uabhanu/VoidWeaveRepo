@@ -1,9 +1,11 @@
 namespace Game.Scripts.Systems
 {
     using Components;
+    using Unity.Burst;
     using Unity.Collections;
     using Unity.Entities;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     public partial struct TurretConfigEntityNamingSystem : ISystem
     {

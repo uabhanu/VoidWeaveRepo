@@ -6,6 +6,7 @@ namespace Game.Scripts.Systems
     using Unity.Mathematics;
     using Unity.Transforms;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     [UpdateAfter(typeof(AdvanceLevelSystem))]
     [UpdateAfter(typeof(TimerSystem))]
@@ -14,7 +15,6 @@ namespace Game.Scripts.Systems
     {
         private EntityQuery _playerQuery;
         
-        [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
             _playerQuery = SystemAPI.QueryBuilder().WithAll<PlayerTag>().WithNone<DeathTag>().Build();
@@ -35,8 +35,7 @@ namespace Game.Scripts.Systems
             systemState.RequireForUpdate<TriangleEnemyIndexComponent>();
             systemState.RequireForUpdate<UnlockedEnemiesComponent>();
         }
-
-        [BurstCompile]
+        
         public void OnUpdate(ref SystemState systemState)
         {
             systemState.Dependency = new EnemySpawnJob

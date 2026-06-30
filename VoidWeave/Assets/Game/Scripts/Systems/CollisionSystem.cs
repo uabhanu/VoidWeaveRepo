@@ -8,6 +8,7 @@ namespace Game.Scripts.Systems
     using Unity.Mathematics;
     using Unity.Transforms;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     [UpdateBefore(typeof(MovementSystem))]
     public partial struct CollisionSystem : ISystem
@@ -15,8 +16,7 @@ namespace Game.Scripts.Systems
         private EntityQuery _enemyMeleeQuery;
         private EntityQuery _projectileQuery;
         private EntityQuery _targetQuery;
-
-        [BurstCompile]
+        
         public void OnCreate(ref SystemState systemState)
         {
             _enemyMeleeQuery = SystemAPI.QueryBuilder().WithAll<CanMeleeAttackTag , CollisionRadiusComponent , DamageComponent , EnemyTag , LocalToWorld , TeamComponent>().WithNone<DeathTag>().Build();
@@ -25,8 +25,7 @@ namespace Game.Scripts.Systems
 
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
         }
-
-        [BurstCompile]
+        
         public void OnUpdate(ref SystemState systemState)
         {
             // Native Collections MUST remain as local variables so they can be disposed

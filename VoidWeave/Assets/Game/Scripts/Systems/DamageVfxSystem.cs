@@ -1,14 +1,16 @@
 namespace Game.Scripts.Systems
 {
     using Components;
+    using Unity.Burst;
     using Unity.Entities;
     using Unity.Transforms;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     public partial struct DamageVfxSystem : ISystem
     {
         public void OnCreate(ref SystemState systemState) { systemState.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>(); }
-
+        
         public void OnUpdate(ref SystemState systemState)
         {
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);

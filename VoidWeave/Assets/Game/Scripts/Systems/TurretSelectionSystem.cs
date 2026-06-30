@@ -5,6 +5,7 @@ namespace Game.Scripts.Systems
     using Unity.Entities;
     using Unity.Mathematics;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     public partial struct TurretSelectionSystem : ISystem
     {
@@ -12,7 +13,6 @@ namespace Game.Scripts.Systems
         private EntityQuery _scatterQuery;
         private EntityQuery _strikerQuery;
         
-        [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
             _beamQuery = SystemAPI.QueryBuilder().WithAll<BeamTurretTag , TurretCostComponent , TurretEntityComponent>().Build();
@@ -34,8 +34,7 @@ namespace Game.Scripts.Systems
             systemState.RequireForUpdate(_scatterQuery);
             systemState.RequireForUpdate(_strikerQuery);
         }
-
-        [BurstCompile]
+        
         public void OnUpdate(ref SystemState systemState)
         {
             new TurretSelectionJob

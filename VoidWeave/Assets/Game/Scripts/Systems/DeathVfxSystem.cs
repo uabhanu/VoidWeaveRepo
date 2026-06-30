@@ -5,13 +5,13 @@ namespace Game.Scripts.Systems
     using Unity.Entities;
     using Unity.Transforms;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     [UpdateBefore(typeof(DeathSystem))]
     public partial struct DeathVfxSystem : ISystem
     {
         public void OnCreate(ref SystemState systemState) { systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>(); }
-
-        [BurstCompile]
+        
         public void OnUpdate(ref SystemState systemState) { new DeathVfxJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() }.ScheduleParallel(); }
     }
 

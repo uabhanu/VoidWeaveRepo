@@ -5,11 +5,11 @@ namespace Game.Scripts.Systems
     using Unity.Entities;
     using Unity.Mathematics;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     [UpdateBefore(typeof(MovementSystem))]
     public partial struct DashSystem : ISystem
     {
-        [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
             systemState.RequireForUpdate<DashCooldownDefaultComponent>();
@@ -19,8 +19,7 @@ namespace Game.Scripts.Systems
 
             systemState.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
         }
-
-        [BurstCompile]
+        
         public void OnUpdate(ref SystemState systemState) { systemState.Dependency = new DashJob { DashCooldownDefault = SystemAPI.GetSingleton<DashCooldownDefaultComponent>().Value , DeltaTime = SystemAPI.Time.DeltaTime , DashDurationDefault = SystemAPI.GetSingleton<DashDurationDefaultComponent>().Value , ECB = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , InputDashBit = SystemAPI.GetSingleton<InputDashComponent>().Value , TimerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value }.ScheduleParallel(systemState.Dependency); }
     }
 

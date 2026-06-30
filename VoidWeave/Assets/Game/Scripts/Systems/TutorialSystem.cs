@@ -5,13 +5,13 @@ namespace Game.Scripts.Systems
     using Unity.Entities;
     using Unity.Mathematics;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     [UpdateBefore(typeof(AdvanceLevelSystem))]
     public partial struct TutorialSystem : ISystem
     {
         private EntityQuery _advanceLevelQuery;
-
-        [BurstCompile]
+        
         public void OnCreate(ref SystemState systemState)
         {
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
@@ -29,8 +29,7 @@ namespace Game.Scripts.Systems
 
             _advanceLevelQuery = SystemAPI.QueryBuilder().WithAll<AdvanceLevelEventTag>().Build();
         }
-
-        [BurstCompile]
+        
         public void OnUpdate(ref SystemState systemState)
         {
             int currentLevel = SystemAPI.GetSingleton<LevelComponent>().Value;

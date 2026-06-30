@@ -5,13 +5,13 @@ namespace Game.Scripts.Systems
     using Unity.Entities;
     using Unity.Mathematics;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     public partial struct WaveStateSystem : ISystem
     {
         private EntityQuery _enemyQuery;
         private EntityQuery _tutorialActiveQuery;
-
-        [BurstCompile]
+        
         public void OnCreate(ref SystemState systemState)
         {
             _enemyQuery = SystemAPI.QueryBuilder().WithAll<EnemyTag , TeamComponent>().Build();
@@ -34,8 +34,7 @@ namespace Game.Scripts.Systems
             systemState.RequireForUpdate<WaveStatePrepComponent>();
             systemState.RequireForUpdate<WaveStockComponent>();
         }
-
-        [BurstCompile]
+        
         public void OnUpdate(ref SystemState systemState)
         {
             systemState.Dependency = new WaveStateJob

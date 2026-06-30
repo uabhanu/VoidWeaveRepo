@@ -6,14 +6,12 @@ namespace Game.Scripts.Systems
     using Unity.Mathematics;
     using Unity.Transforms;
 
-    [UpdateInGroup(typeof(GameplaySystemGroup))]
     [BurstCompile]
+    [UpdateInGroup(typeof(GameplaySystemGroup))]
     public partial struct MovementVfxSystem : ISystem
     {
-        [BurstCompile]
         public void OnCreate(ref SystemState systemState) { systemState.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>(); }
-
-        [BurstCompile]
+        
         public void OnUpdate(ref SystemState systemState)
         {
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);

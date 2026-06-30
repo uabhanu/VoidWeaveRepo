@@ -6,14 +6,14 @@ namespace Game.Scripts.Systems
     using Unity.Mathematics;
     using Unity.Transforms;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     [UpdateAfter(typeof(CollisionSystem))]
     [UpdateBefore(typeof(DeathSystem))]
     public partial struct LootSpawningSystem : ISystem
     {
         private EntityQuery _lootQuery;
-
-        [BurstCompile]
+        
         public void OnCreate(ref SystemState systemState)
         {
             _lootQuery = SystemAPI.QueryBuilder().WithAll<LootTutorialActiveTag>().Build();
@@ -22,8 +22,7 @@ namespace Game.Scripts.Systems
 
             systemState.RequireForUpdate<LootSpawnedFirstTimeComponent>();
         }
-
-        [BurstCompile]
+        
         public void OnUpdate(ref SystemState systemState)
         {
             SystemAPI.SetSingleton(new LootSpawnedFirstTimeComponent { Value = math.select(SystemAPI.GetSingleton<LootSpawnedFirstTimeComponent>().Value , 1 , !_lootQuery.IsEmpty) });

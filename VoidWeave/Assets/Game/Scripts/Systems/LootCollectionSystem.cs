@@ -7,13 +7,13 @@ namespace Game.Scripts.Systems
     using Unity.Mathematics;
     using Unity.Transforms;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     [UpdateAfter(typeof(MovementSystem))]
     public partial struct LootCollectionSystem : ISystem
     {
         private NativeQueue<int> _resourceQueue;
-
-        [BurstCompile]
+        
         public void OnCreate(ref SystemState systemState)
         {
             _resourceQueue = new NativeQueue<int>(Allocator.Persistent);
@@ -26,11 +26,9 @@ namespace Game.Scripts.Systems
 
             systemState.RequireForUpdate<PlayerTag>();
         }
-
-        [BurstCompile]
+        
         public void OnDestroy(ref SystemState state) { _resourceQueue.Dispose(); }
-
-        [BurstCompile]
+        
         public void OnUpdate(ref SystemState state)
         {
             new PickupJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter() , PlayerPos = SystemAPI.GetComponent<LocalTransform>(SystemAPI.GetSingletonEntity<PlayerTag>()).Position , PickupRadiusSq = SystemAPI.GetSingleton<LootPickupRadiusComponent>().Value * SystemAPI.GetSingleton<LootPickupRadiusComponent>().Value , ResourceNativeQueueParallelWriter = _resourceQueue.AsParallelWriter() }.ScheduleParallel(state.Dependency).Complete();

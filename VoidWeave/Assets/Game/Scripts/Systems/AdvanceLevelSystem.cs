@@ -5,6 +5,7 @@ namespace Game.Scripts.Systems
     using Unity.Entities;
     using Unity.Mathematics;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     [UpdateAfter(typeof(WaveStateSystem))]
     [UpdateBefore(typeof(EnemySpawningSystem))]
@@ -12,7 +13,6 @@ namespace Game.Scripts.Systems
     {
         private EntityQuery _advanceLevelQuery;
         
-        [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
             _advanceLevelQuery = SystemAPI.QueryBuilder().WithAll<AdvanceLevelEventTag>().Build();
@@ -35,8 +35,7 @@ namespace Game.Scripts.Systems
 
             systemState.RequireForUpdate<AdvanceLevelEventTag>();
         }
-
-        [BurstCompile]
+        
         public void OnUpdate(ref SystemState systemState)
         {
             systemState.Dependency.Complete();

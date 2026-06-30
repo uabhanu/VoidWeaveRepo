@@ -6,8 +6,8 @@ namespace Game.Scripts.Systems
     using Unity.Entities;
     using Unity.Mathematics;
     using Unity.Transforms;
-    using UnityEngine;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     public partial struct TurretDeploymentSystem : ISystem
     {
@@ -22,8 +22,7 @@ namespace Game.Scripts.Systems
 
             _turretQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<CollisionRadiusComponent , LocalTransform , TurretTag>().Build(ref systemState);
         }
-
-        [BurstCompile]
+        
         public void OnUpdate(ref SystemState systemState)
         {
             // MUST keep for disposal. Energy singleton inlined directly into the NativeReference.

@@ -4,13 +4,12 @@ namespace Game.Scripts.Systems
     using Unity.Burst;
     using Unity.Entities;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     public partial struct CooldownSystem : ISystem
     {
-        [BurstCompile]
         public void OnCreate(ref SystemState systemState) { systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>(); }
-
-        [BurstCompile]
+        
         public void OnUpdate(ref SystemState systemState) { systemState.Dependency = new CooldownJob { DeltaTime = SystemAPI.Time.DeltaTime }.ScheduleParallel(systemState.Dependency); }
     }
 

@@ -4,13 +4,13 @@ namespace Game.Scripts.Systems
     using Unity.Burst;
     using Unity.Entities;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     [UpdateAfter(typeof(AdvanceLevelSystem))]
     public partial struct EvaluateLevelWinConditionSystem : ISystem
     {
         private EntityQuery _lootQuery;
-
-        [BurstCompile]
+        
         public void OnCreate(ref SystemState systemState)
         {
             _lootQuery = SystemAPI.QueryBuilder().WithAll<LootPickupTag>().Build();
@@ -19,8 +19,7 @@ namespace Game.Scripts.Systems
             systemState.RequireForUpdate<EnemiesToKillComponent>();
             systemState.RequireForUpdate<IsTestingComponent>();
         }
-
-        [BurstCompile]
+        
         public void OnUpdate(ref SystemState systemState)
         {
             int enemiesKilled = SystemAPI.GetSingleton<EnemiesKilledComponent>().Value;

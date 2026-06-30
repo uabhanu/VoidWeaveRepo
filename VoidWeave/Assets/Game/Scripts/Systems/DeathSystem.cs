@@ -4,13 +4,13 @@ namespace Game.Scripts.Systems
     using Unity.Burst;
     using Unity.Entities;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     [UpdateAfter(typeof(CollisionSystem))]
     public partial struct DeathSystem : ISystem
     {
         private EntityQuery _dyingEnemyEntityQuery;
-
-        [BurstCompile]
+        
         public void OnCreate(ref SystemState systemState)
         {
             _dyingEnemyEntityQuery = SystemAPI.QueryBuilder().WithAll<DeathTag , EnemyTag>().Build();
@@ -20,8 +20,7 @@ namespace Game.Scripts.Systems
             systemState.RequireForUpdate<DeathTag>();
             systemState.RequireForUpdate<EnemiesKilledComponent>();
         }
-
-        [BurstCompile]
+        
         public void OnUpdate(ref SystemState systemState)
         {
             EntityCommandBuffer.ParallelWriter ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();

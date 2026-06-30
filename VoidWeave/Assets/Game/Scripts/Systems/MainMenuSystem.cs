@@ -4,10 +4,10 @@ namespace Game.Scripts.Systems
     using Unity.Burst;
     using Unity.Entities;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     public partial struct MainMenuSystem : ISystem
     {
-        [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
             systemState.RequireForUpdate<BeginInitializationEntityCommandBufferSystem.Singleton>();
@@ -17,8 +17,7 @@ namespace Game.Scripts.Systems
             
             systemState.RequireForUpdate<StartGameRequestTag>();
         }
-
-        [BurstCompile]
+        
         public void OnUpdate(ref SystemState systemState)
         {
             var ecb = SystemAPI.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);

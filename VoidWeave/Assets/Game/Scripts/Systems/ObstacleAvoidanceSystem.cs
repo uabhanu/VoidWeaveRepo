@@ -7,14 +7,13 @@ namespace Game.Scripts.Systems
     using Unity.Mathematics;
     using Unity.Transforms;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     [UpdateAfter(typeof(MovementSystem))]
-    [BurstCompile]
     public partial struct ObstacleAvoidanceSystem : ISystem
     {
         private EntityQuery _obstacleQuery;
-
-        [BurstCompile]
+        
         public void OnCreate(ref SystemState systemState)
         {
             _obstacleQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<CollisionRadiusComponent , LocalTransform>().WithNone<PlayerTag , ProjectileTag , TurretTag>().Build(ref systemState);
@@ -23,8 +22,7 @@ namespace Game.Scripts.Systems
             systemState.RequireForUpdate<SeparationDistanceComponent>();
             systemState.RequireForUpdate<SeparationVelocityComponent>();
         }
-
-        [BurstCompile]
+        
         public void OnUpdate(ref SystemState systemState)
         {
             // MUST keep to prevent memory leak
