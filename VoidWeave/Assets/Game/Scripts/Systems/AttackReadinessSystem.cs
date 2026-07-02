@@ -13,10 +13,10 @@ namespace Game.Scripts.Systems
         public void OnCreate(ref SystemState systemState)
         {
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
-            
+
             systemState.RequireForUpdate<TimerExpiredComponent>();
         }
-        
+
         public void OnUpdate(ref SystemState systemState)
         {
             systemState.Dependency = new CanMeleeAttackJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , TimerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value }.ScheduleParallel(systemState.Dependency);
@@ -24,14 +24,14 @@ namespace Game.Scripts.Systems
 
             systemState.Dependency = new CannotMeleeAttackJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , TimerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value }.ScheduleParallel(systemState.Dependency);
             systemState.Dependency = new CannotRangeAttackJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , TimerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value }.ScheduleParallel(systemState.Dependency);
-            
+
             systemState.Dependency = new ResetMeleeAttackCooldownJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() }.ScheduleParallel(systemState.Dependency);
             systemState.Dependency = new ResetRangedAttackCooldownJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() }.ScheduleParallel(systemState.Dependency);
         }
     }
 
     [BurstCompile]
-    [WithAll(typeof(AttackRateComponent) , typeof (CanMeleeAttackTag))]
+    [WithAll(typeof(AttackRateComponent) , typeof(CanMeleeAttackTag))]
     [WithNone(typeof(DeployingTurretTag))]
     [WithOptions(EntityQueryOptions.IgnoreComponentEnabledState)]
     public partial struct CanMeleeAttackJob : IJobEntity
@@ -67,9 +67,11 @@ namespace Game.Scripts.Systems
         public EntityCommandBuffer.ParallelWriter ECB;
         public float TimerExpired;
 
-        private void Execute(in CooldownComponent cooldownComponent , Entity entity , [EntityIndexInQuery] int entityIndexInQuery)
+        private void Execute(in CooldownComponent cooldownComponent , Entity entity , [EntityIndexInQuery] int entityIndexInQuery , EnabledRefRO<HasTargetTag> hasTarget , EnabledRefRO<RotationCompleteTag> rotationComplete)
         {
-            for(var i = 0 ; i < math.select(0 , 1 , cooldownComponent.Value <= TimerExpired) ; i++) ECB.SetComponentEnabled<CanRangeAttackTag>(entityIndexInQuery , entity , true);
+            bool isReady = cooldownComponent.Value <= TimerExpired & hasTarget.ValueRO & rotationComplete.ValueRO;
+
+            for(var i = 0 ; i < math.select(0 , 1 , isReady) ; i++) ECB.SetComponentEnabled<CanRangeAttackTag>(entityIndexInQuery , entity , true);
         }
     }
 
@@ -96,7 +98,7 @@ namespace Game.Scripts.Systems
         {
             ECB.SetComponent(entityIndexInQuery , entity , new CooldownComponent { Value = attackRate.Value });
             ECB.SetComponentEnabled<CooldownComponent>(entityIndexInQuery , entity , true);
-            
+
             ECB.SetComponentEnabled<CanMeleeAttackTag>(entityIndexInQuery , entity , false);
         }
     }
@@ -112,7 +114,7 @@ namespace Game.Scripts.Systems
             // Reset Entity
             ECB.SetComponent(entityIndexInQuery , entity , new CooldownComponent { Value = attackRate.Value });
             ECB.SetComponentEnabled<CooldownComponent>(entityIndexInQuery , entity , true);
-            
+
             ECB.SetComponentEnabled<CanRangeAttackTag>(entityIndexInQuery , entity , false);
         }
     }

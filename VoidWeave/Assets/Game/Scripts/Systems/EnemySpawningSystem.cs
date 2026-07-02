@@ -92,18 +92,7 @@ namespace Game.Scripts.Systems
 
                 Entity enemyEntityToSpawn = enemyTypeIndex == LineEnemyIndex ? LineEnemyEntity : enemyTypeIndex == SquareEnemyIndex ? SquareEnemyEntity : TriangleEnemyEntity;
                 Entity newEnemyEntity = ECB.Instantiate(entityInQueryIndex , enemyEntityToSpawn);
-
-                // =========================================================================================
-                // INTENTIONAL ARCHITECTURE EXCEPTION:
-                // Do NOT refactor the AddComponent calls below to SetComponentEnabled. 
-                // While structural changes are normally avoided during gameplay, Unity DOTS allows a 
-                // "Free Structural Change" when ECB.AddComponent immediately follows ECB.Instantiate 
-                // within the same buffer tick. The entity spawns directly into its final archetype, 
-                // causing zero performance lag. Using SetComponentEnabled here without the tags being 
-                // pre-baked into the prefabs will cause a Burst Assert crash and an infinite spawn loop.
-                // =========================================================================================
-
-                ECB.AddComponent<SpawningVfxTag>(entityInQueryIndex , newEnemyEntity);
+                
                 ECB.SetComponentEnabled<SpawningVfxTag>(entityInQueryIndex , newEnemyEntity , true);
 
                 float randomX = randomSeedComponent.Value.NextFloat(-BoundaryX , BoundaryX);
@@ -111,10 +100,6 @@ namespace Game.Scripts.Systems
                 float3 spawnPosition = new float3(randomX , randomY , 0);
 
                 ECB.SetComponent(entityInQueryIndex , newEnemyEntity , LocalTransform.FromPosition(spawnPosition).WithScale(0.0f));
-
-                for(var k = 0 ; k < math.select(0 , 1 , enemyTypeIndex == LineEnemyIndex) ; k++) ECB.AddComponent<LineEnemyTag>(entityInQueryIndex , newEnemyEntity);
-                for(var k = 0 ; k < math.select(0 , 1 , enemyTypeIndex == TriangleEnemyIndex) ; k++) ECB.AddComponent<TriangleEnemyTag>(entityInQueryIndex , newEnemyEntity);
-                for(var k = 0 ; k < math.select(0 , 1 , enemyTypeIndex == SquareEnemyIndex) ; k++) ECB.AddComponent<SquareEnemyTag>(entityInQueryIndex , newEnemyEntity);
             }
 
             timerComponent.Value = math.select(timerComponent.Value , spawnRateComponent.Value , canSpawn);
