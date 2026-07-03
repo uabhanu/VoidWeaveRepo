@@ -7,14 +7,21 @@ namespace Game.Scripts.Systems
     [UpdateInGroup(typeof(PresentationSystemGroup))]
     public partial struct DebugBoundarySystem : ISystem
     {
+        public void OnCreate(ref SystemState systemState)
+        {
+            systemState.RequireForUpdate<BoundaryOffsetComponent>();
+            systemState.RequireForUpdate<CameraOrthographicSizeComponent>();
+        }
+
         public void OnUpdate(ref SystemState systemState)
         {
-            if(!SystemAPI.TryGetSingleton<BoundaryOffsetComponent>(out var offset) || !SystemAPI.TryGetSingleton<CameraOrthographicSizeComponent>(out var camera)) return;
+            float camera = SystemAPI.GetSingleton<CameraOrthographicSizeComponent>().Value;
+            float offset = SystemAPI.GetSingleton<BoundaryOffsetComponent>().Value;
 
             float aspect = (float)Screen.width / Screen.height;
-            float bX = camera.Value * aspect - offset.Value;
-            float bY = camera.Value - offset.Value;
-            
+            float bX = camera * aspect - offset;
+            float bY = camera - offset;
+
             Vector3 topLeft = new Vector3(-bX , bY , 0);
             Vector3 topRight = new Vector3(bX , bY , 0);
             Vector3 bottomLeft = new Vector3(-bX , -bY , 0);

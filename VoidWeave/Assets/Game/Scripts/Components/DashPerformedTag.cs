@@ -2,5 +2,5 @@ namespace Game.Scripts.Components
 {
     using Unity.Entities;
 
-    public struct DashPerformedTag : IComponentData {}
+    public struct DashPerformedTag : IComponentData , IEnableableComponent {}
 }

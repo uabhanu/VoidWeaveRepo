@@ -46,7 +46,6 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new InputDeployComponent { Value = authoring.inputDeploy });
                 AddComponent(entity , new InputDownComponent { Value = authoring.inputDown });
                 AddComponent(entity , new InputLeftComponent { Value = authoring.inputLeft });
-                AddComponent(entity , new InputNoneComponent());
                 AddComponent(entity , new InputRightComponent { Value = authoring.inputRight });
                 AddComponent(entity , new InputTurret1Component { Value = authoring.inputTurret1 });
                 AddComponent(entity , new InputTurret2Component { Value = authoring.inputTurret2 });

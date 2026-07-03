@@ -2,5 +2,5 @@ namespace Game.Scripts.Components
 {
     using Unity.Entities;
 
-    public struct TurretDebugNamedTag : IComponentData {}
+    public struct TurretDebugNamedTag : IComponentData , IEnableableComponent {}
 }

@@ -2,5 +2,5 @@ namespace Game.Scripts.Components
 {
     using Unity.Entities;
 
-    public struct CanMeleeAttackTag : IComponentData {}
+    public struct CanMeleeAttackTag : IComponentData , IEnableableComponent {}
 }

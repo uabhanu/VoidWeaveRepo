@@ -5,18 +5,17 @@ namespace Game.Scripts.Systems
     using Unity.Entities;
     using Unity.Mathematics;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(SimulationSystemGroup))]
     [UpdateBefore(typeof(GameplaySystemGroup))]
     public partial struct GameTestingSystem : ISystem
     {
-        [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
 
             systemState.RequireForUpdate<CurrentEnergyComponent>();
             systemState.RequireForUpdate<CurrentEnergyWhileTestingComponent>();
-            systemState.RequireForUpdate<DoActionComponent>();
             systemState.RequireForUpdate<EnemiesToKillComponent>();
             systemState.RequireForUpdate<EnemiesToKillIncrementComponent>();
             systemState.RequireForUpdate<EnemiesToKillWhileTestingComponent>();
@@ -24,7 +23,6 @@ namespace Game.Scripts.Systems
             systemState.RequireForUpdate<IsTestingComponent>();
             systemState.RequireForUpdate<LevelComponent>();
             systemState.RequireForUpdate<LevelWhileTestingComponent>();
-            systemState.RequireForUpdate<NoActionComponent>();
             systemState.RequireForUpdate<TimerExpiredComponent>();
             systemState.RequireForUpdate<TimerWhileTestingComponent>();
             systemState.RequireForUpdate<WaveStatePrepComponent>();
@@ -32,20 +30,18 @@ namespace Game.Scripts.Systems
 
             systemState.RequireForUpdate<EnemySpawnerTag>();
         }
-
-        [BurstCompile]
+        
         public void OnUpdate(ref SystemState systemState)
         {
-            int currentEnergyWhileTesting = SystemAPI.GetSingleton<CurrentEnergyWhileTestingComponent>().Value;
-            int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
             EntityCommandBuffer ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);
+            
+            int currentEnergyWhileTesting = SystemAPI.GetSingleton<CurrentEnergyWhileTestingComponent>().Value;
             int enemiesToKillIncrement = SystemAPI.GetSingleton<EnemiesToKillIncrementComponent>().Value;
             int enemiesToKillWhileTesting = SystemAPI.GetSingleton<EnemiesToKillWhileTestingComponent>().Value;
             float floatTolerance = SystemAPI.GetSingleton<FloatToleranceComponent>().Value;
             int isTesting = SystemAPI.GetSingleton<IsTestingComponent>().Value;
-            bool isTestingBool = isTesting == doAction;
+            bool isTestingBool = isTesting == 1;
             int levelWhileTesting = SystemAPI.GetSingleton<LevelWhileTestingComponent>().Value;
-            int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
             float timerWhileTesting = SystemAPI.GetSingleton<TimerWhileTestingComponent>().Value;
             int waveStatePrep = SystemAPI.GetSingleton<WaveStatePrepComponent>().Value;
             bool isTestingMode = isTestingBool;
@@ -56,7 +52,7 @@ namespace Game.Scripts.Systems
                 SystemAPI.GetSingletonRW<CurrentEnergyComponent>().ValueRW.Value = math.select(SystemAPI.GetSingleton<CurrentEnergyComponent>().Value , currentEnergyWhileTesting , isTestingBool);
                 SystemAPI.GetSingletonRW<LevelComponent>().ValueRW.Value = math.select(SystemAPI.GetSingleton<LevelComponent>().Value , levelWhileTesting , isTestingBool);
 
-                int levelDifference = math.max(noAction , levelWhileTesting - doAction);
+                int levelDifference = math.max(0 , levelWhileTesting - 1);
                 int fastForwardedEnemiesToKill = SystemAPI.GetSingleton<EnemiesToKillComponent>().Value + levelDifference * enemiesToKillIncrement;
                 int assignedEnemiesToKill = math.select(fastForwardedEnemiesToKill , enemiesToKillWhileTesting , isTestingMode);
                 SystemAPI.GetSingletonRW<EnemiesToKillComponent>().ValueRW.Value = math.select(SystemAPI.GetSingleton<EnemiesToKillComponent>().Value , assignedEnemiesToKill , isTestingBool);
@@ -64,14 +60,14 @@ namespace Game.Scripts.Systems
                 foreach(var (timerComponent , waveIndexComponent , waveStateComponent , spawnerEntity) in SystemAPI.Query<RefRW<TimerComponent> , RefRW<WaveIndexComponent> , RefRW<WaveStateComponent>>().WithEntityAccess().WithAll<EnemySpawnerTag>())
                 {
                     timerComponent.ValueRW.Value = math.select(timerComponent.ValueRO.Value , timerWhileTesting , isTestingBool);
-                    waveIndexComponent.ValueRW.Value = math.select(waveIndexComponent.ValueRO.Value , noAction , isTestingBool);
+                    waveIndexComponent.ValueRW.Value = math.select(waveIndexComponent.ValueRO.Value , 0 , isTestingBool);
 
                     waveStateComponent.ValueRW.Value = math.select(waveStateComponent.ValueRO.Value , initialTestState , isTestingBool);
 
                     bool hasTutorialTag = SystemAPI.HasComponent<TurretsTutorialActiveTag>(spawnerEntity);
-                    int disableTutorial = math.select(noAction , doAction , hasTutorialTag & isTestingBool);
+                    int disableTutorial = math.select(0 , 1 , hasTutorialTag & isTestingBool);
 
-                    for(int i = noAction ; i < disableTutorial ; i++) { ecb.SetComponentEnabled<TurretsTutorialActiveTag>(spawnerEntity , false); }
+                    for(int i = 0 ; i < disableTutorial ; i++) { ecb.SetComponentEnabled<TurretsTutorialActiveTag>(spawnerEntity , false); }
                 }
 
                 ecb.SetComponentEnabled<IsTestingTag>(entity , false);

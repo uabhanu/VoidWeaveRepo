@@ -2,5 +2,5 @@ namespace Game.Scripts.Components
 {
     using Unity.Entities;
 
-    public struct PulseTag : IComponentData {}
+    public struct PulseTag : IComponentData , IEnableableComponent {}
 }

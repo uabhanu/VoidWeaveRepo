@@ -7,19 +7,17 @@ namespace Game.Scripts.Systems
     using Unity.Transforms;
     using UnityEngine;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     [UpdateBefore(typeof(MovementSystem))]
     public partial struct ScreenBoundarySystem : ISystem
     {
-        [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
             systemState.RequireForUpdate<BoundaryOffsetComponent>();
             systemState.RequireForUpdate<CameraOrthographicSizeComponent>();
-            systemState.RequireForUpdate<OneScaleComponent>();
             systemState.RequireForUpdate<ScreenBoundaryXComponent>();
             systemState.RequireForUpdate<ScreenBoundaryYComponent>();
-            systemState.RequireForUpdate<ZeroScaleComponent>();
         }
 
         public void OnUpdate(ref SystemState systemState)
@@ -27,10 +25,7 @@ namespace Game.Scripts.Systems
             float boundaryOffset = SystemAPI.GetSingleton<BoundaryOffsetComponent>().Value;
             float cameraSize = SystemAPI.GetSingleton<CameraOrthographicSizeComponent>().Value;
 
-            float oneScale = SystemAPI.GetSingleton<OneScaleComponent>().Value;
-            float zeroScale = SystemAPI.GetSingleton<ZeroScaleComponent>().Value;
-
-            float aspectRatio = math.select(Screen.width / math.max(oneScale , Screen.height) , oneScale , Screen.height <= zeroScale);
+            float aspectRatio = math.select(Screen.width / math.max(1f , Screen.height) , 1f , Screen.height <= 0f);
 
             float boundaryX = cameraSize * aspectRatio - boundaryOffset;
             float boundaryY = cameraSize - boundaryOffset;

@@ -12,7 +12,7 @@ namespace Game.Scripts.Systems
         public void OnUpdate(ref SystemState systemState)
         {
             var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
-            var entityCommandBuffer = ecbSingleton.CreateCommandBuffer(systemState.WorldUnmanaged);
+            var ecb = ecbSingleton.CreateCommandBuffer(systemState.WorldUnmanaged);
 
             foreach(var (vfxColor , vfxScale , vfxSize , entity) in SystemAPI.Query<RefRO<VfxColorComponent> , RefRO<VfxScaleComponent> , RefRO<VfxSizeComponent>>().WithAll<VfxUpdateTag>().WithEntityAccess())
             {
@@ -26,7 +26,7 @@ namespace Game.Scripts.Systems
                 visualEffect.SetFloat("Size" , vfxSize.ValueRO.Value);
                 visualEffect.SetTexture("Texture" , vfxTextureComponent.Value);
 
-                entityCommandBuffer.RemoveComponent<VfxUpdateTag>(entity);
+                ecb.SetComponentEnabled<VfxUpdateTag>(entity , false);
             }
         }
     }

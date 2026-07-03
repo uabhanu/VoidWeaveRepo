@@ -5,19 +5,14 @@ namespace Game.Scripts.Systems
     using Unity.Entities;
     using Unity.Transforms;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     [UpdateBefore(typeof(DeathSystem))]
     public partial struct DeathVfxSystem : ISystem
     {
         public void OnCreate(ref SystemState systemState) { systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>(); }
-
-        [BurstCompile]
-        public void OnUpdate(ref SystemState systemState)
-        {
-            var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
-
-            new DeathVfxJob { ECB = ecb }.ScheduleParallel();
-        }
+        
+        public void OnUpdate(ref SystemState systemState) { new DeathVfxJob { ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() }.ScheduleParallel(); }
     }
 
     [BurstCompile]
@@ -29,8 +24,8 @@ namespace Game.Scripts.Systems
         private void Execute(in DeathVfxComponent deathVfxComponent , [EntityIndexInQuery] int entityIndexInQuery , in LocalTransform localTransform)
         {
             Entity vfxEntity = ECB.Instantiate(entityIndexInQuery , deathVfxComponent.Value);
-            
-            ECB.AddComponent<VfxUpdateTag>(entityIndexInQuery , vfxEntity);
+
+            ECB.SetComponentEnabled<VfxUpdateTag>(entityIndexInQuery , vfxEntity , true);
             ECB.SetComponent(entityIndexInQuery , vfxEntity , localTransform);
         }
     }

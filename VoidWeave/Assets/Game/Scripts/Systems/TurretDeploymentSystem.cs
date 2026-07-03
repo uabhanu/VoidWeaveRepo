@@ -7,6 +7,7 @@ namespace Game.Scripts.Systems
     using Unity.Mathematics;
     using Unity.Transforms;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     public partial struct TurretDeploymentSystem : ISystem
     {
@@ -17,33 +18,29 @@ namespace Game.Scripts.Systems
             systemState.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
 
             systemState.RequireForUpdate<CurrentEnergyComponent>();
-            systemState.RequireForUpdate<DoActionComponent>();
             systemState.RequireForUpdate<InputDeployComponent>();
-            systemState.RequireForUpdate<InputNoneComponent>();
-            systemState.RequireForUpdate<NoActionComponent>();
 
             _turretQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<CollisionRadiusComponent , LocalTransform , TurretTag>().Build(ref systemState);
         }
-
-        [BurstCompile]
+        
         public void OnUpdate(ref SystemState systemState)
         {
-            EntityCommandBuffer.ParallelWriter ecbParallelWriter = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter();
-
-            int currentEnergy = SystemAPI.GetSingleton<CurrentEnergyComponent>().Value;
-            int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
-            uint inputDeploy = SystemAPI.GetSingleton<InputDeployComponent>().Value;
-            uint inputNone = SystemAPI.GetSingleton<InputNoneComponent>().Value;
-            int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
-
-            var energyNativeReference = new NativeReference<int>(currentEnergy , Allocator.TempJob);
+            // MUST keep for disposal. Energy singleton inlined directly into the NativeReference.
+            var energyNativeReference = new NativeReference<int>(SystemAPI.GetSingleton<CurrentEnergyComponent>().Value , Allocator.TempJob);
             var existingPositionsNativeArray = _turretQuery.ToComponentDataArray<LocalTransform>(Allocator.TempJob);
             var existingRadiiNativeArray = _turretQuery.ToComponentDataArray<CollisionRadiusComponent>(Allocator.TempJob);
 
-            var job = new TurretDeploymentJob { DoAction = doAction , EnergyNativeReference = energyNativeReference , EntityCommandBuffer = ecbParallelWriter , ExistingPositionsNativeArray = existingPositionsNativeArray , ExistingRadiiNativeArray = existingRadiiNativeArray , InputDeploy = inputDeploy , InputNone = inputNone , NoAction = noAction };
+            // Job scheduling and Singletons completely inlined
+            new TurretDeploymentJob 
+            { 
+                ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , 
+                EnergyNativeReference = energyNativeReference , 
+                ExistingPositionsNativeArray = existingPositionsNativeArray , 
+                ExistingRadiiNativeArray = existingRadiiNativeArray , 
+                InputDeploy = SystemAPI.GetSingleton<InputDeployComponent>().Value 
+            }.Schedule(systemState.Dependency).Complete();
 
-            job.Schedule(systemState.Dependency).Complete();
-
+            // Read the result and dispose
             SystemAPI.SetSingleton(new CurrentEnergyComponent { Value = energyNativeReference.Value });
             energyNativeReference.Dispose();
             existingPositionsNativeArray.Dispose();
@@ -54,40 +51,36 @@ namespace Game.Scripts.Systems
     [BurstCompile]
     public partial struct TurretDeploymentJob : IJobEntity
     {
-        public int DoAction;
         public NativeReference<int> EnergyNativeReference;
-        public EntityCommandBuffer.ParallelWriter EntityCommandBuffer;
+        public EntityCommandBuffer.ParallelWriter ECB;
         [ReadOnly] public NativeArray<LocalTransform> ExistingPositionsNativeArray;
         [ReadOnly] public NativeArray<CollisionRadiusComponent> ExistingRadiiNativeArray;
         public uint InputDeploy;
-        public uint InputNone;
-        public int NoAction;
 
         private void Execute(in CollisionRadiusComponent collisionRadiusComponent , [EntityIndexInQuery] int entityInQueryIndex , in LocalTransform localTransform , in PlayerInputComponent playerInputComponent , in SelectedTurretCostComponent selectedTurretCostComponent , in SelectedTurretEntityComponent selectedTurretEntityComponent)
         {
-            float isPositionValid = DoAction;
+            bool isPositionValid = true;
 
             for(int i = 0 ; i < ExistingPositionsNativeArray.Length ; i++)
             {
                 float combinedRadius = collisionRadiusComponent.Value + ExistingRadiiNativeArray[i].Value;
                 float minDistSq = combinedRadius * combinedRadius;
                 float distSq = math.distancesq(localTransform.Position.xy , ExistingPositionsNativeArray[i].Position.xy);
-
-                isPositionValid = math.select(isPositionValid , NoAction , distSq < minDistSq);
+                isPositionValid &= distSq >= minDistSq;
             }
 
             bool canAfford = EnergyNativeReference.Value >= selectedTurretCostComponent.Value;
             bool hasValidTurret = selectedTurretEntityComponent.Entity != Entity.Null;
-            bool isDeployAction = (playerInputComponent.Value & InputDeploy) != InputNone;
-            bool isOkToDeploy = (int)isPositionValid == DoAction;
+            bool isDeployAction = (playerInputComponent.Value & InputDeploy) != 0;
+            bool isOkToDeploy = isPositionValid;
 
-            int spawnCount = math.select(NoAction , DoAction , isDeployAction && canAfford && hasValidTurret && isOkToDeploy);
+            int spawnCount = math.select(0 , 1 , isDeployAction && canAfford && hasValidTurret && isOkToDeploy);
 
             for(var i = 0 ; i < spawnCount ; i++)
             {
-                Entity newTurret = EntityCommandBuffer.Instantiate(entityInQueryIndex , selectedTurretEntityComponent.Entity);
-                EntityCommandBuffer.AddComponent<DeployingTurretTag>(entityInQueryIndex , newTurret);
-                EntityCommandBuffer.SetComponent(entityInQueryIndex , newTurret , LocalTransform.FromPosition(localTransform.Position));
+                Entity newTurret = ECB.Instantiate(entityInQueryIndex , selectedTurretEntityComponent.Entity);
+                ECB.SetComponentEnabled<DeployingTurretTag>(entityInQueryIndex , newTurret , true);
+                ECB.SetComponent(entityInQueryIndex , newTurret , LocalTransform.FromPosition(localTransform.Position));
             }
 
             EnergyNativeReference.Value -= selectedTurretCostComponent.Value * spawnCount;

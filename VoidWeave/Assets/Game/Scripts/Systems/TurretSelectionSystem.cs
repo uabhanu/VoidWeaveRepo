@@ -5,66 +5,52 @@ namespace Game.Scripts.Systems
     using Unity.Entities;
     using Unity.Mathematics;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     public partial struct TurretSelectionSystem : ISystem
     {
-        [BurstCompile]
+        private EntityQuery _beamQuery;
+        private EntityQuery _scatterQuery;
+        private EntityQuery _strikerQuery;
+        
         public void OnCreate(ref SystemState systemState)
         {
+            _beamQuery = SystemAPI.QueryBuilder().WithAll<BeamTurretTag , TurretCostComponent , TurretEntityComponent>().Build();
+            _scatterQuery = SystemAPI.QueryBuilder().WithAll<ScatterTurretTag , TurretCostComponent , TurretEntityComponent>().Build();
+            _strikerQuery = SystemAPI.QueryBuilder().WithAll<StrikerTurretTag , TurretCostComponent , TurretEntityComponent>().Build();
+            
             systemState.RequireForUpdate<BeamTurretUnlockLevelComponent>();
-            systemState.RequireForUpdate<InputNoneComponent>();
             systemState.RequireForUpdate<InputTurret1Component>();
             systemState.RequireForUpdate<InputTurret2Component>();
             systemState.RequireForUpdate<InputTurret3Component>();
             systemState.RequireForUpdate<LevelComponent>();
             systemState.RequireForUpdate<ScatterTurretUnlockLevelComponent>();
 
-            systemState.RequireForUpdate(SystemAPI.QueryBuilder().WithAll<StrikerTurretTag , TurretCostComponent , TurretEntityComponent>().Build());
-            systemState.RequireForUpdate(SystemAPI.QueryBuilder().WithAll<ScatterTurretTag , TurretCostComponent , TurretEntityComponent>().Build());
             systemState.RequireForUpdate(SystemAPI.QueryBuilder().WithAll<BeamTurretTag , TurretCostComponent , TurretEntityComponent>().Build());
-        }
+            systemState.RequireForUpdate(SystemAPI.QueryBuilder().WithAll<ScatterTurretTag , TurretCostComponent , TurretEntityComponent>().Build());
+            systemState.RequireForUpdate(SystemAPI.QueryBuilder().WithAll<StrikerTurretTag , TurretCostComponent , TurretEntityComponent>().Build());
 
-        [BurstCompile]
+            systemState.RequireForUpdate(_beamQuery);
+            systemState.RequireForUpdate(_scatterQuery);
+            systemState.RequireForUpdate(_strikerQuery);
+        }
+        
         public void OnUpdate(ref SystemState systemState)
         {
-            EntityQuery strikerTurretQuery = SystemAPI.QueryBuilder().WithAll<StrikerTurretTag , TurretEntityComponent>().Build();
-            EntityQuery scatterTurretQuery = SystemAPI.QueryBuilder().WithAll<ScatterTurretTag , TurretEntityComponent>().Build();
-            EntityQuery beamTurretQuery = SystemAPI.QueryBuilder().WithAll<BeamTurretTag , TurretEntityComponent>().Build();
-
-            Entity strikerTurretConfigEntity = strikerTurretQuery.GetSingletonEntity();
-            Entity scatterTurretConfigEntity = scatterTurretQuery.GetSingletonEntity();
-            Entity beamTurretConfigEntity = beamTurretQuery.GetSingletonEntity();
-
-            Entity strikerTurretEntity = SystemAPI.GetComponent<TurretEntityComponent>(strikerTurretConfigEntity).Entity;
-            Entity scatterTurretEntity = SystemAPI.GetComponent<TurretEntityComponent>(scatterTurretConfigEntity).Entity;
-            Entity beamTurretEntity = SystemAPI.GetComponent<TurretEntityComponent>(beamTurretConfigEntity).Entity;
-
-            int strikerTurretCost = SystemAPI.GetComponent<TurretCostComponent>(strikerTurretConfigEntity).Value;
-            int scatterTurretCost = SystemAPI.GetComponent<TurretCostComponent>(scatterTurretConfigEntity).Value;
-            int beamTurretCost = SystemAPI.GetComponent<TurretCostComponent>(beamTurretConfigEntity).Value;
-
-            int beamTurretUnlockLevel = SystemAPI.GetSingleton<BeamTurretUnlockLevelComponent>().Value;
-            uint inputNone = SystemAPI.GetSingleton<InputNoneComponent>().Value;
-            uint inputTurret1 = SystemAPI.GetSingleton<InputTurret1Component>().Value;
-            uint inputTurret2 = SystemAPI.GetSingleton<InputTurret2Component>().Value;
-            uint inputTurret3 = SystemAPI.GetSingleton<InputTurret3Component>().Value;
-            int scatterTurretUnlockLevel = SystemAPI.GetSingleton<ScatterTurretUnlockLevelComponent>().Value;
-
             new TurretSelectionJob
             {
-                BeamTurretCost = beamTurretCost ,
-                BeamTurretEntity = beamTurretEntity ,
-                BeamTurretUnlockLevel = beamTurretUnlockLevel ,
+                BeamTurretCost = SystemAPI.GetComponent<TurretCostComponent>(_beamQuery.GetSingletonEntity()).Value ,
+                BeamTurretEntity = SystemAPI.GetComponent<TurretEntityComponent>(_beamQuery.GetSingletonEntity()).Entity ,
+                BeamTurretUnlockLevel = SystemAPI.GetSingleton<BeamTurretUnlockLevelComponent>().Value ,
                 CurrentLevel = SystemAPI.GetSingleton<LevelComponent>().Value ,
-                InputNone = inputNone ,
-                InputTurret1 = inputTurret1 ,
-                InputTurret2 = inputTurret2 ,
-                InputTurret3 = inputTurret3 ,
-                ScatterTurretCost = scatterTurretCost ,
-                ScatterTurretEntity = scatterTurretEntity ,
-                ScatterTurretUnlockLevel = scatterTurretUnlockLevel ,
-                StrikerTurretCost = strikerTurretCost ,
-                StrikerTurretEntity = strikerTurretEntity
+                InputTurret1 = SystemAPI.GetSingleton<InputTurret1Component>().Value ,
+                InputTurret2 = SystemAPI.GetSingleton<InputTurret2Component>().Value ,
+                InputTurret3 = SystemAPI.GetSingleton<InputTurret3Component>().Value ,
+                ScatterTurretCost = SystemAPI.GetComponent<TurretCostComponent>(_scatterQuery.GetSingletonEntity()).Value ,
+                ScatterTurretEntity = SystemAPI.GetComponent<TurretEntityComponent>(_scatterQuery.GetSingletonEntity()).Entity ,
+                ScatterTurretUnlockLevel = SystemAPI.GetSingleton<ScatterTurretUnlockLevelComponent>().Value ,
+                StrikerTurretCost = SystemAPI.GetComponent<TurretCostComponent>(_strikerQuery.GetSingletonEntity()).Value ,
+                StrikerTurretEntity = SystemAPI.GetComponent<TurretEntityComponent>(_strikerQuery.GetSingletonEntity()).Entity
             }.ScheduleParallel();
         }
     }
@@ -76,7 +62,6 @@ namespace Game.Scripts.Systems
         public Entity BeamTurretEntity;
         public int BeamTurretUnlockLevel;
         public int CurrentLevel;
-        public uint InputNone;
         public uint InputTurret1;
         public uint InputTurret2;
         public uint InputTurret3;
@@ -90,9 +75,9 @@ namespace Game.Scripts.Systems
         {
             // Input Flags: Replaced 64, 128, 256 with InputTurret Components
             // Replaced 0 with Value
-            bool strikerTurretKeyPressed = (playerInputComponent.Value & InputTurret1) != InputNone;
-            bool scatterTurretKeyPressed = (playerInputComponent.Value & InputTurret2) != InputNone;
-            bool beamTurretKeyPressed = (playerInputComponent.Value & InputTurret3) != InputNone;
+            bool strikerTurretKeyPressed = (playerInputComponent.Value & InputTurret1) != 0;
+            bool scatterTurretKeyPressed = (playerInputComponent.Value & InputTurret2) != 0;
+            bool beamTurretKeyPressed = (playerInputComponent.Value & InputTurret3) != 0;
 
             // Check Unlocks: Replaced 2 and 3 with UnlockLevel Components
             bool scatterTurretUnlocked = scatterTurretKeyPressed && CurrentLevel >= ScatterTurretUnlockLevel;

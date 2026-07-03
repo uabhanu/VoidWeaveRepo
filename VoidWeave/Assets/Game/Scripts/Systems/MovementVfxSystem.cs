@@ -6,14 +6,12 @@ namespace Game.Scripts.Systems
     using Unity.Mathematics;
     using Unity.Transforms;
 
-    [UpdateInGroup(typeof(GameplaySystemGroup))]
     [BurstCompile]
+    [UpdateInGroup(typeof(GameplaySystemGroup))]
     public partial struct MovementVfxSystem : ISystem
     {
-        [BurstCompile]
         public void OnCreate(ref SystemState systemState) { systemState.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>(); }
-
-        [BurstCompile]
+        
         public void OnUpdate(ref SystemState systemState)
         {
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);
@@ -29,7 +27,7 @@ namespace Game.Scripts.Systems
                     ecb.SetComponent(trailVfxEntity , localTransform);
 
                     var lifetimeData = SystemAPI.GetComponent<LifetimeComponent>(movementVfxComponent.Value);
-                    ecb.AddComponent<VfxUpdateTag>(trailVfxEntity);
+                    ecb.SetComponentEnabled<VfxUpdateTag>(trailVfxEntity , true);
                     ecb.SetComponent(trailVfxEntity , lifetimeData);
 
                     lastSpawnPositionComponent.ValueRW.Value = localTransform.Position;

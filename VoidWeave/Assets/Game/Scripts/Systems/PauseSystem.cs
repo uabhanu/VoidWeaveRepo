@@ -3,21 +3,21 @@ namespace Game.Scripts.Systems
     using Components;
     using Unity.Entities;
     using Unity.Mathematics;
+    using UnityEngine;
     using UnityEngine.InputSystem;
-    using UnityEngine.VFX;
 
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     public partial struct PauseSystem : ISystem
     {
         private bool _isManualPaused;
+        private EntityQuery _lootTutorialQuery;
 
         public void OnCreate(ref SystemState systemState)
         {
-            systemState.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
+            _lootTutorialQuery = SystemAPI.QueryBuilder().WithAll<LootTutorialActiveTag>().Build();
 
             systemState.RequireForUpdate<DashKeyComponent>();
-            systemState.RequireForUpdate<DoActionComponent>();
-            systemState.RequireForUpdate<NoActionComponent>();
+            systemState.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
         }
 
         public void OnUpdate(ref SystemState systemState)
@@ -25,32 +25,30 @@ namespace Game.Scripts.Systems
             EntityCommandBuffer ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged);
 
             Key dashKey = SystemAPI.GetSingleton<DashKeyComponent>().Value;
-            int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
-            int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
 
             bool isPaused = !systemState.World.GetExistingSystemManaged<GameplaySystemGroup>().Enabled;
-            bool hasLootTag = !SystemAPI.QueryBuilder().WithAll<LootTutorialActiveTag>().Build().IsEmpty;
+            bool hasLootTag = !_lootTutorialQuery.IsEmpty;
             bool dashKeyPressed = Keyboard.current != null && Keyboard.current[dashKey].wasPressedThisFrame;
 
-            int triggerLootResume = math.select(noAction , doAction , isPaused & hasLootTag & dashKeyPressed & !_isManualPaused);
-            
-            for(int i = noAction ; i < triggerLootResume ; i++)
-            {
-                ecb.AddComponent<LootTutorialResumeTag>(ecb.CreateEntity());
+            int triggerLootResume = math.select(0 , 1 , isPaused & hasLootTag & dashKeyPressed & !_isManualPaused);
 
+            for(int i = 0 ; i < triggerLootResume ; i++)
+            {
+                // ACCEPTABLE EXCEPTION: AddComponent is safe here because it is applied to a brand new ecb.CreateEntity() at birth. 
+                // It does not force an existing entity to move memory chunks.
+                ecb.AddComponent<LootTutorialResumeTag>(ecb.CreateEntity());
                 foreach(var (_ , activeEntity) in SystemAPI.Query<RefRO<LootTutorialActiveTag>>().WithEntityAccess()) { SystemAPI.SetComponentEnabled<LootTutorialActiveTag>(activeEntity , false); }
             }
 
             foreach((RefRO<LootTutorialPauseTag> _ , Entity entity) in SystemAPI.Query<RefRO<LootTutorialPauseTag>>().WithEntityAccess())
             {
                 ecb.DestroyEntity(entity);
+                int executePause = math.select(0 , 1 , hasLootTag);
 
-                int executePause = math.select(noAction , doAction , hasLootTag);
-
-                for(int i = noAction ; i < executePause ; i++)
+                for(int i = 0 ; i < executePause ; i++)
                 {
-                    systemState.World.GetExistingSystemManaged<GameplaySystemGroup>().Enabled = false;
-                    foreach(var vfx in SystemAPI.Query<SystemAPI.ManagedAPI.UnityEngineComponent<VisualEffect>>()) { vfx.Value.pause = true; }
+                    systemState.World.GetExistingSystemManaged<GameplaySystemGroup>().Enabled = false; //ECS Pause
+                    Time.timeScale = 0f; //Unity Pause
                 }
             }
 
@@ -58,23 +56,28 @@ namespace Game.Scripts.Systems
             {
                 ecb.DestroyEntity(entity);
                 _isManualPaused = true;
-                systemState.World.GetExistingSystemManaged<GameplaySystemGroup>().Enabled = false;
-                foreach(var vfx in SystemAPI.Query<SystemAPI.ManagedAPI.UnityEngineComponent<VisualEffect>>()) { vfx.Value.pause = true; }
+                systemState.World.GetExistingSystemManaged<GameplaySystemGroup>().Enabled = false; //ECS Pause
+                Time.timeScale = 0f; //Unity Pause
             }
 
             foreach((RefRO<LootTutorialResumeTag> _ , Entity entity) in SystemAPI.Query<RefRO<LootTutorialResumeTag>>().WithEntityAccess())
             {
                 ecb.DestroyEntity(entity);
-                systemState.World.GetExistingSystemManaged<GameplaySystemGroup>().Enabled = true;
-                foreach(var vfx in SystemAPI.Query<SystemAPI.ManagedAPI.UnityEngineComponent<VisualEffect>>()) { vfx.Value.pause = false; }
+                systemState.World.GetExistingSystemManaged<GameplaySystemGroup>().Enabled = true; //ECS Resume
+                Time.timeScale = 1f; //Unity Resume
             }
 
             foreach((RefRO<ResumeInputTag> _ , Entity entity) in SystemAPI.Query<RefRO<ResumeInputTag>>().WithEntityAccess())
             {
                 ecb.DestroyEntity(entity);
+                int executeResume = math.select(1 , 0 , hasLootTag);
                 _isManualPaused = false;
-                systemState.World.GetExistingSystemManaged<GameplaySystemGroup>().Enabled = true;
-                foreach(var vfx in SystemAPI.Query<SystemAPI.ManagedAPI.UnityEngineComponent<VisualEffect>>()) { vfx.Value.pause = false; }
+                
+                for(int i = 0 ; i < executeResume ; i++)
+                {
+                    systemState.World.GetExistingSystemManaged<GameplaySystemGroup>().Enabled = true; //ECS Resume
+                    Time.timeScale = 1f; //Unity Resume
+                }
             }
         }
     }

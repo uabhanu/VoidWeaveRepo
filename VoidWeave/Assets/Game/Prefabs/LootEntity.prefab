@@ -136,4 +136,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entities.LootEntity
   lifetime: 20
+  pulseAmplitude: 0.2
+  pulseFrequency: 10.1
   timeBeforeEntityPulse: 4.5

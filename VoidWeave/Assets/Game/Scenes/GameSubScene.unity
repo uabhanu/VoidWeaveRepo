@@ -151,7 +151,7 @@ MonoBehaviour:
   currentEnergyWhileTesting: 1000
   enemiesToKillWhileTesting: 3
   isTesting: 0
-  levelWhileTesting: 9
+  levelWhileTesting: 1
   muteWhileTesting: 0
   timerWhileTesting: 3
 --- !u!4 &64175127
@@ -234,16 +234,12 @@ MonoBehaviour:
   boundaryOffset: 1.4
   bulletRotationOffset: 1.570796
   cameraOrthographicSize: 5
-  collisionActive: 1
-  collisionNone: 0
   damageMultiplierPerLevel: 0.05
-  doAction: 1
   eliteStatMultiplier: 2.1
   floatTolerance: 0.001
   lastLevel: 10
   maxTurretLevel: 3
   normalStatMultiplier: 1
-  noAction: 0
   enemiesToKill: 20
   enemiesToKillIncrement: 5
   enemySpawnerEntityPrefab: {fileID: 9071633379703226984, guid: 55c28ec5c3d184f40a1b0224da9a5ea4, type: 3}
@@ -262,9 +258,6 @@ MonoBehaviour:
   minEnemiesToKill: 0
   minOverlapDistance: 0.01
   minStartingLevel: 0
-  movementActive: 1
-  movementNone: 0
-  oneScale: 1
   playerEntityPrefab: {fileID: 4043072570545550109, guid: 3cefbfe9652710640b54b28569aed323, type: 3}
   playingState: 1
   scalingBase: 1
@@ -273,8 +266,6 @@ MonoBehaviour:
   scatterTurretUnlockLevel: 2
   separationDistance: 1.6
   separationVelocity: 25.5
-  spreadHalfMultiplier: 0
-  spreadZero: 0
   squareEnemyUnlockLevel: 3
   startingLevel: 1
   targetDefaultPosition: 100000
@@ -282,7 +273,6 @@ MonoBehaviour:
   triangleEnemyUnlockLevel: 2
   turretConfigEntityPrefab: {fileID: 1521002163540263446, guid: 64eb09c65643256499a17ec4c8315219, type: 3}
   unlockedLineEnemy: 1
-  unlockedNone: 0
   unlockedSquareEnemy: 4
   unlockedTriangleEnemy: 2
   upgradeCostBaseMultiplier: 1
@@ -293,7 +283,6 @@ MonoBehaviour:
   wavesPerLevel: 3
   waveStateCombat: 1
   waveStatePrep: 0
-  zeroScale: 0
 --- !u!1 &3052477988530282150
 GameObject:
   m_ObjectHideFlags: 0

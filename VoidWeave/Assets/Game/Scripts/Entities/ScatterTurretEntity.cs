@@ -29,9 +29,9 @@ namespace Game.Scripts.Entities
 
                 AddComponent(entity , new AttackRateComponent { Value = authoring.attackRate });
                 AddComponent(entity , new BulletEntityComponent { Entity = GetEntity(authoring.bulletPrefab , TransformUsageFlags.Dynamic) });
-                AddComponent(entity , new DamageComponent { Value = authoring.damage });
-                AddComponent(entity , new CooldownComponent { Value = authoring.cooldownTime });
                 AddComponent(entity , new CollisionRadiusComponent { Value = authoring.collisionRadius });
+                AddComponent(entity , new CooldownComponent { Value = authoring.cooldownTime });
+                AddComponent(entity , new DamageComponent { Value = authoring.damage });
                 AddComponent(entity , new MinRotationRequiredComponent{ Value = authoring.minRotationRequired });
                 AddComponent(entity , new ProjectileCountComponent { Value = authoring.projectileCount });
                 AddComponent(entity , new ProjectileSpawnPointComponent { Value = authoring.projectileSpawnPoint.localPosition });
@@ -43,8 +43,23 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new TargetPositionComponent());
                 AddComponent(entity , new TeamComponent { Value = authoring.teamID });
 
+                AddComponent(entity , new CanRangeAttackTag());
+                AddComponent(entity , new DamageTag());
+                AddComponent(entity , new DeathTag());
+                AddComponent(entity , new DeployingTurretTag());
+                AddComponent(entity , new HasTargetTag());
+                AddComponent(entity , new ProjectileFiredEventTag());
+                AddComponent(entity , new RotationCompleteTag());
                 AddComponent(entity , new ScatterTurretTag());
                 AddComponent(entity , new TurretTag());
+                
+                SetComponentEnabled<CanRangeAttackTag>(entity , false);
+                SetComponentEnabled<DamageTag>(entity , false);
+                SetComponentEnabled<DeathTag>(entity , false);
+                SetComponentEnabled<DeployingTurretTag>(entity , false);
+                SetComponentEnabled<HasTargetTag>(entity , false);
+                SetComponentEnabled<ProjectileFiredEventTag>(entity , false);
+                SetComponentEnabled<RotationCompleteTag>(entity , false);
             }
         }
     }

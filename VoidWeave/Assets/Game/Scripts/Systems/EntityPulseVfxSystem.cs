@@ -6,18 +6,16 @@ namespace Game.Scripts.Systems
     using Unity.Transforms;
     using Unity.Mathematics;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(PresentationSystemGroup))]
     public partial struct EntityPulseVfxSystem : ISystem
     {
-        [BurstCompile]
-        public void OnUpdate(ref SystemState state)
+        public void OnUpdate(ref SystemState systemState)
         {
-            float time = (float)SystemAPI.Time.ElapsedTime;
-
-            foreach(RefRW<LocalTransform> transform in SystemAPI.Query<RefRW<LocalTransform>>().WithAll<PulseTag>())
+            foreach(var (localTransform , pulseAmplitude , pulseFrequency) in SystemAPI.Query<RefRW<LocalTransform> , RefRO<PulseAmplitudeComponent> , RefRO<PulseFrequencyComponent>>().WithAll<PulseTag>())
             {
-                float scale = 1.0f + math.sin(time * 10.0f) * 0.2f;
-                transform.ValueRW.Scale = scale;
+                float scale = 1.0f + math.sin((float)SystemAPI.Time.ElapsedTime * pulseFrequency.ValueRO.Value) * pulseAmplitude.ValueRO.Value;
+                localTransform.ValueRW.Scale = scale;
             }
         }
     }

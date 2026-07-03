@@ -44,6 +44,7 @@ namespace Game.Scripts.Entities
                 AddComponent(entity , new BaseMoveSpeedComponent { Value = authoring.moveSpeed });
                 AddComponent(entity , new CollisionRadiusComponent { Value = authoring.collisionRadius });
                 AddComponent(entity , new CurrentHealthComponent { Value = authoring.maxHealth });
+                AddComponent(entity , new DamageEventComponent());
                 AddComponent(entity , new DamageVfxComponent { Value = GetEntity(authoring.damageVfxPrefab , TransformUsageFlags.Dynamic) });
                 AddComponent(entity , new DashCooldownComponent { Value = authoring.dashCooldownDefault });
                 AddComponent(entity , new DashCooldownDefaultComponent { Value = authoring.dashCooldownDefault });
@@ -71,8 +72,20 @@ namespace Game.Scripts.Entities
                 AddComponentObject(entity , new VfxMeshComponent { Value = meshFilter.sharedMesh });
                 AddComponentObject(entity , new VfxTextureComponent { Value = mainTexture });
 
+                AddComponent(entity , new DamageTag());
+                AddComponent(entity , new DashPerformedTag());
                 AddComponent(entity , new DashVisualTag());
+                AddComponent(entity , new DeathTag());
                 AddComponent(entity , new PlayerTag());
+                AddComponent(entity , new RotationCompleteTag());
+                AddComponent(entity , new ScaleStatsTag());
+                
+                SetComponentEnabled<DamageEventComponent>(entity , false);
+                
+                SetComponentEnabled<DamageTag>(entity , false);
+                SetComponentEnabled<DashPerformedTag>(entity , false);
+                SetComponentEnabled<DeathTag>(entity , false);
+                SetComponentEnabled<RotationCompleteTag>(entity , false);
             }
         }
         

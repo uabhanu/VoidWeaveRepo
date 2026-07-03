@@ -5,35 +5,22 @@ namespace Game.Scripts.Systems
     using Unity.Entities;
     using Unity.Mathematics;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     [UpdateBefore(typeof(MovementSystem))]
     public partial struct DashSystem : ISystem
     {
-        [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
             systemState.RequireForUpdate<DashCooldownDefaultComponent>();
             systemState.RequireForUpdate<DashDurationDefaultComponent>();
             systemState.RequireForUpdate<InputDashComponent>();
-            systemState.RequireForUpdate<MovementActiveComponent>();
-            systemState.RequireForUpdate<MovementNoneComponent>();
             systemState.RequireForUpdate<TimerExpiredComponent>();
 
             systemState.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
         }
-
-        [BurstCompile]
-        public void OnUpdate(ref SystemState systemState)
-        {
-            float dashCooldownDefault = SystemAPI.GetSingleton<DashCooldownDefaultComponent>().Value;
-            float dashDurationDefault = SystemAPI.GetSingleton<DashDurationDefaultComponent>().Value;
-            uint inputDash = SystemAPI.GetSingleton<InputDashComponent>().Value;
-            float movementActive = SystemAPI.GetSingleton<MovementActiveComponent>().Value;
-            float movementNone = SystemAPI.GetSingleton<MovementNoneComponent>().Value;
-            float timerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value;
-
-            systemState.Dependency = new DashJob { DashCooldownDefault = dashCooldownDefault , DeltaTime = SystemAPI.Time.DeltaTime , DashDurationDefault = dashDurationDefault , Ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , InputDashBit = inputDash , MovementActive = movementActive , MovementNone = movementNone , TimerExpired = timerExpired }.ScheduleParallel(systemState.Dependency);
-        }
+        
+        public void OnUpdate(ref SystemState systemState) { systemState.Dependency = new DashJob { DashCooldownDefault = SystemAPI.GetSingleton<DashCooldownDefaultComponent>().Value , DeltaTime = SystemAPI.Time.DeltaTime , DashDurationDefault = SystemAPI.GetSingleton<DashDurationDefaultComponent>().Value , ECB = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(systemState.WorldUnmanaged).AsParallelWriter() , InputDashBit = SystemAPI.GetSingleton<InputDashComponent>().Value , TimerExpired = SystemAPI.GetSingleton<TimerExpiredComponent>().Value }.ScheduleParallel(systemState.Dependency); }
     }
 
     [BurstCompile]
@@ -43,19 +30,17 @@ namespace Game.Scripts.Systems
         public float DashCooldownDefault;
         public float DashDurationDefault;
         public float DeltaTime;
-        public EntityCommandBuffer.ParallelWriter Ecb;
+        public EntityCommandBuffer.ParallelWriter ECB;
         public uint InputDashBit;
-        public float MovementActive;
-        public float MovementNone;
         public float TimerExpired;
 
         private void Execute(in BaseMoveSpeedComponent baseMoveSpeedComponent , ref DashCooldownComponent dashCooldownComponent , ref DashDurationComponent dashDurationComponent , in DashMultiplierComponent dashMultiplierComponent , EnabledRefRW<DashVisualTag> dashVisualTag , Entity entity , ref MoveSpeedComponent moveSpeedComponent , in PlayerInputComponent playerInputComponent)
         {
-            bool isDashInputActive = (playerInputComponent.Value & InputDashBit) != (int)MovementNone;
+            bool isDashInputActive = (playerInputComponent.Value & InputDashBit) != 0;
             bool isCooldownReady = dashCooldownComponent.Value <= TimerExpired;
 
             int shouldDash = math.select(0 , 1 , isDashInputActive && isCooldownReady);
-            for(int i = 0 ; i < shouldDash ; i++) { Ecb.AddComponent<DashPerformedTag>(entity.Index , entity); }
+            for(int i = 0 ; i < shouldDash ; i++) { ECB.SetComponentEnabled<DashPerformedTag>(entity.Index , entity , true); }
 
             dashDurationComponent.Value = math.select(math.max(TimerExpired , dashDurationComponent.Value - DeltaTime) , DashDurationDefault , isDashInputActive && isCooldownReady);
             dashCooldownComponent.Value = math.select(math.max(TimerExpired , dashCooldownComponent.Value - DeltaTime) , DashCooldownDefault , isDashInputActive && isCooldownReady);
@@ -63,7 +48,7 @@ namespace Game.Scripts.Systems
             bool isDashing = dashDurationComponent.Value > TimerExpired;
 
             dashVisualTag.ValueRW = isDashing;
-            moveSpeedComponent.Value = baseMoveSpeedComponent.Value * math.select(MovementActive , dashMultiplierComponent.Value , isDashing);
+            moveSpeedComponent.Value = baseMoveSpeedComponent.Value * math.select(1 , dashMultiplierComponent.Value , isDashing);
         }
     }
 }

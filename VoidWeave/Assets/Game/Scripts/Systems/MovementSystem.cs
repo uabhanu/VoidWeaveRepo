@@ -6,42 +6,25 @@ namespace Game.Scripts.Systems
     using Unity.Mathematics;
     using Unity.Transforms;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     public partial struct MovementSystem : ISystem
     {
-        [BurstCompile]
         public void OnCreate(ref SystemState systemState)
         {
             systemState.RequireForUpdate<InputUpComponent>();
             systemState.RequireForUpdate<InputDownComponent>();
             systemState.RequireForUpdate<InputLeftComponent>();
-            systemState.RequireForUpdate<InputNoneComponent>();
             systemState.RequireForUpdate<InputRightComponent>();
-
-            systemState.RequireForUpdate<MovementActiveComponent>();
-            systemState.RequireForUpdate<MovementNoneComponent>();
         }
-
-        [BurstCompile]
+        
         public void OnUpdate(ref SystemState systemState)
         {
-            float deltaTime = SystemAPI.Time.DeltaTime;
-            var elapsedTime = (float)SystemAPI.Time.ElapsedTime;
-
-            uint inputUp = SystemAPI.GetSingleton<InputUpComponent>().Value;
-            uint inputDown = SystemAPI.GetSingleton<InputDownComponent>().Value;
-            uint inputLeft = SystemAPI.GetSingleton<InputLeftComponent>().Value;
-            uint inputNone = SystemAPI.GetSingleton<InputNoneComponent>().Value;
-            uint inputRight = SystemAPI.GetSingleton<InputRightComponent>().Value;
-
-            float movementActive = SystemAPI.GetSingleton<MovementActiveComponent>().Value;
-            float movementNone = SystemAPI.GetSingleton<MovementNoneComponent>().Value;
-
-            new BasicEnemyMovementJob { DeltaTime = deltaTime }.ScheduleParallel();
-            new FastEnemyMovementJob { DeltaTime = deltaTime , ElapsedTime = elapsedTime , MovementNone = movementNone }.ScheduleParallel();
-            new InputMovementJob { DeltaTime = deltaTime , InputDown = inputDown , InputLeft = inputLeft , InputNone = inputNone , InputRight = inputRight , InputUp = inputUp , MovementActive = movementActive , MovementNone = movementNone }.ScheduleParallel();
-            new ProjectileMovementJob { DeltaTime = deltaTime }.ScheduleParallel();
-            new SlowEnemyMovementJob { DeltaTime = deltaTime , MovementActive = movementActive , MovementNone = movementNone }.ScheduleParallel();
+            new BasicEnemyMovementJob { DeltaTime = SystemAPI.Time.DeltaTime }.ScheduleParallel();
+            new FastEnemyMovementJob { DeltaTime = SystemAPI.Time.DeltaTime , ElapsedTime = (float)SystemAPI.Time.ElapsedTime }.ScheduleParallel();
+            new InputMovementJob { DeltaTime = SystemAPI.Time.DeltaTime , InputDown = SystemAPI.GetSingleton<InputDownComponent>().Value , InputLeft = SystemAPI.GetSingleton<InputLeftComponent>().Value , InputRight = SystemAPI.GetSingleton<InputRightComponent>().Value , InputUp = SystemAPI.GetSingleton<InputUpComponent>().Value }.ScheduleParallel();
+            new ProjectileMovementJob { DeltaTime = SystemAPI.Time.DeltaTime }.ScheduleParallel();
+            new SlowEnemyMovementJob { DeltaTime = SystemAPI.Time.DeltaTime }.ScheduleParallel();
         }
     }
 
@@ -53,20 +36,17 @@ namespace Game.Scripts.Systems
         public float DeltaTime;
         public uint InputDown;
         public uint InputLeft;
-        public uint InputNone;
         public uint InputRight;
         public uint InputUp;
-        public float MovementActive;
-        public float MovementNone;
 
         private void Execute(ref LocalTransform localTransform , ref MoveDirectionComponent moveDirectionComponent , in MoveSpeedComponent moveSpeedComponent , in PlayerInputComponent playerInputComponent)
         {
             uint selectedInput = playerInputComponent.Value;
 
-            float down = math.select(MovementNone , MovementActive , (selectedInput & InputDown) != InputNone);
-            float left = math.select(MovementNone , MovementActive , (selectedInput & InputLeft) != InputNone);
-            float right = math.select(MovementNone , MovementActive , (selectedInput & InputRight) != InputNone);
-            float up = math.select(MovementNone , MovementActive , (selectedInput & InputUp) != InputNone);
+            float down = math.select(0 , 1 , (selectedInput & InputDown) != 0);
+            float left = math.select(0 , 1 , (selectedInput & InputLeft) != 0);
+            float right = math.select(0 , 1 , (selectedInput & InputRight) != 0);
+            float up = math.select(0 , 1 , (selectedInput & InputUp) != 0);
 
             // Construct Vector
             var input = new float2(right - left , up - down);
@@ -99,7 +79,6 @@ namespace Game.Scripts.Systems
     {
         public float DeltaTime;
         public float ElapsedTime;
-        public float MovementNone;
 
         private void Execute(ref LocalTransform localTransform , ref MoveDirectionComponent moveDirectionComponent , in MovementZigZagAmplitudeComponent movementZigZagAmplitudeComponent , in MovementZigZagFrequencyComponent movementZigZagFrequencyComponent , in MoveSpeedComponent moveSpeedComponent , in TargetPositionComponent targetPositionComponent , in TriangleEnemyComponent triangleEnemyComponent)
         {
@@ -110,14 +89,14 @@ namespace Game.Scripts.Systems
 
             // Calculate perpendicular vector (Tangent) for the Zig-Zag offset
             // Rotates direction by 90 degrees in 2D: (x, y) -> (-y, x)
-            var tangent = new float3(-direction.y , direction.x , MovementNone);
+            var tangent = new float3(-direction.y , direction.x , 0);
 
             // Apply Sine Wave to Tangent
             // Frequency = 10f (Speed of wiggle), Amplitude = 2.0f (Width of wiggle)
             float sineOffset = math.sin(ElapsedTime * movementZigZagFrequencyComponent.Value) * movementZigZagAmplitudeComponent.Value;
 
             float2 velocity2D = direction.xy + tangent.xy * sineOffset;
-            float3 velocity = new float3(velocity2D , MovementNone);
+            float3 velocity = new float3(velocity2D , 0);
             moveDirectionComponent.Value = math.normalizesafe(velocity);
 
             // Combine Forward + Sideways Movement
@@ -140,8 +119,6 @@ namespace Game.Scripts.Systems
     public partial struct SlowEnemyMovementJob : IJobEntity
     {
         public float DeltaTime;
-        public float MovementActive;
-        public float MovementNone;
 
         private void Execute(ref LocalTransform localTransform , ref MoveDirectionComponent moveDirectionComponent , in MoveSpeedComponent moveSpeedComponent , in RangeComponent rangeComponent , in TargetPositionComponent targetPositionComponent)
         {
@@ -150,7 +127,7 @@ namespace Game.Scripts.Systems
 
             // Logic: If DistanceSq > RangeSq, we move (1). If DistanceSq <= RangeSq, we stop (0).
             // This prevents moving while reloading.
-            float shouldMove = math.select(MovementActive , MovementNone , distanceSq <= rangeSq);
+            float shouldMove = math.select(1 , 0 , distanceSq <= rangeSq);
 
             float3 direction = math.normalizesafe(targetPositionComponent.Value - localTransform.Position);
             moveDirectionComponent.Value = direction;

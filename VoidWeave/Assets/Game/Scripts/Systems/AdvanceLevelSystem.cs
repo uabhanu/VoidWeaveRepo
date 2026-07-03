@@ -5,15 +5,18 @@ namespace Game.Scripts.Systems
     using Unity.Entities;
     using Unity.Mathematics;
 
+    [BurstCompile]
     [UpdateInGroup(typeof(GameplaySystemGroup))]
     [UpdateAfter(typeof(WaveStateSystem))]
     [UpdateBefore(typeof(EnemySpawningSystem))]
-    public partial struct CampaignProgressionSystem : ISystem
+    public partial struct AdvanceLevelSystem : ISystem
     {
-        [BurstCompile]
+        private EntityQuery _advanceLevelQuery;
+        
         public void OnCreate(ref SystemState systemState)
         {
-            systemState.RequireForUpdate<DoActionComponent>();
+            _advanceLevelQuery = SystemAPI.QueryBuilder().WithAll<AdvanceLevelEventTag>().Build();
+            
             systemState.RequireForUpdate<EnemiesKilledComponent>();
             systemState.RequireForUpdate<EnemiesToKillComponent>();
             systemState.RequireForUpdate<EnemiesToKillIncrementComponent>();
@@ -21,35 +24,29 @@ namespace Game.Scripts.Systems
             systemState.RequireForUpdate<LevelComponent>();
             systemState.RequireForUpdate<LevelToUnlockLineEnemyComponent>();
             systemState.RequireForUpdate<LastLevelComponent>();
-            systemState.RequireForUpdate<NoActionComponent>();
             systemState.RequireForUpdate<PlayerTag>();
             systemState.RequireForUpdate<LevelToUnlockSquareEnemyComponent>();
             systemState.RequireForUpdate<LevelToUnlockTriangleEnemyComponent>();
             systemState.RequireForUpdate<UnlockedEnemiesComponent>();
             systemState.RequireForUpdate<UnlockedLineEnemyComponent>();
-            systemState.RequireForUpdate<UnlockedNoneComponent>();
             systemState.RequireForUpdate<UnlockedSquareEnemyComponent>();
             systemState.RequireForUpdate<UnlockedTriangleEnemyComponent>();
             systemState.RequireForUpdate<WaveIndexComponent>();
 
             systemState.RequireForUpdate<AdvanceLevelEventTag>();
         }
-
-        [BurstCompile]
+        
         public void OnUpdate(ref SystemState systemState)
         {
             systemState.Dependency.Complete();
-
-            int doAction = SystemAPI.GetSingleton<DoActionComponent>().Value;
+            
             int isTesting = SystemAPI.GetSingleton<IsTestingComponent>().Value;
-            bool isTestingBool = isTesting == doAction;
-            int noAction = SystemAPI.GetSingleton<NoActionComponent>().Value;
+            bool isTestingBool = isTesting == 1;
             int levelToUnlockLineEnemy = SystemAPI.GetSingleton<LevelToUnlockLineEnemyComponent>().Value;
             int levelToUnlockSquareEnemy = SystemAPI.GetSingleton<LevelToUnlockSquareEnemyComponent>().Value;
             int levelToUnlockTriangleEnemy = SystemAPI.GetSingleton<LevelToUnlockTriangleEnemyComponent>().Value;
-            int maxCampaignLevel = SystemAPI.GetSingleton<LastLevelComponent>().Value;
+            int lastLevel = SystemAPI.GetSingleton<LastLevelComponent>().Value;
             uint unlockedLineEnemy = SystemAPI.GetSingleton<UnlockedLineEnemyComponent>().Value;
-            uint unlockedNone = SystemAPI.GetSingleton<UnlockedNoneComponent>().Value;
             uint unlockedSquareEnemy = SystemAPI.GetSingleton<UnlockedSquareEnemyComponent>().Value;
             uint unlockedTriangleEnemy = SystemAPI.GetSingleton<UnlockedTriangleEnemyComponent>().Value;
 
@@ -62,38 +59,33 @@ namespace Game.Scripts.Systems
 
             bool isLevelComplete = enemiesKilledComponent.ValueRO.Value >= enemiesToKillComponent.ValueRO.Value;
 
-            enemiesKilledComponent.ValueRW.Value = math.select(enemiesKilledComponent.ValueRO.Value , noAction , isLevelComplete);
-            enemiesToKillComponent.ValueRW.Value += math.select(noAction , enemiesToKillIncrementComponent.Value , isLevelComplete);
+            enemiesKilledComponent.ValueRW.Value = math.select(enemiesKilledComponent.ValueRO.Value , 0 , isLevelComplete);
+            enemiesToKillComponent.ValueRW.Value += math.select(0 , enemiesToKillIncrementComponent.Value , isLevelComplete);
 
             Entity playerEntity = SystemAPI.GetSingletonEntity<PlayerTag>();
-            RefRW<CurrentHealthComponent> currentHealthComponent = SystemAPI.GetComponentRW<CurrentHealthComponent>(playerEntity);
-            RefRW<MaxHealthComponent> maxHealthComponent = SystemAPI.GetComponentRW<MaxHealthComponent>(playerEntity);
 
             RefRW<SelectedTurretEntityComponent> selectedTurretEntityComponent = SystemAPI.GetComponentRW<SelectedTurretEntityComponent>(playerEntity);
             RefRW<SelectedTurretCostComponent> selectedTurretCostComponent = SystemAPI.GetComponentRW<SelectedTurretCostComponent>(playerEntity);
 
-            int turretEntityIndex = math.select(selectedTurretEntityComponent.ValueRO.Entity.Index , -doAction , isLevelComplete);
-            int turretEntityVersion = math.select(selectedTurretEntityComponent.ValueRO.Entity.Version , noAction , isLevelComplete);
+            int turretEntityIndex = math.select(selectedTurretEntityComponent.ValueRO.Entity.Index , -1 , isLevelComplete);
+            int turretEntityVersion = math.select(selectedTurretEntityComponent.ValueRO.Entity.Version , 0 , isLevelComplete);
 
             selectedTurretEntityComponent.ValueRW.Entity = new Entity { Index = turretEntityIndex , Version = turretEntityVersion };
-            selectedTurretCostComponent.ValueRW.Value = math.select(selectedTurretCostComponent.ValueRO.Value , noAction , isLevelComplete);
+            selectedTurretCostComponent.ValueRW.Value = math.select(selectedTurretCostComponent.ValueRO.Value , 0 , isLevelComplete);
 
-            currentHealthComponent.ValueRW.Value = math.select(currentHealthComponent.ValueRO.Value , maxHealthComponent.ValueRO.Value , isLevelComplete);
-
-            bool isNotMaxLevel = levelComponent.ValueRO.Value < maxCampaignLevel;
-            levelComponent.ValueRW.Value += math.select(noAction , doAction , isLevelComplete & isNotMaxLevel);
-
-            uint bitMask = unlockedNone;
-            bitMask |= (uint)math.select(noAction , unlockedLineEnemy , levelComponent.ValueRO.Value >= levelToUnlockLineEnemy);
-            bitMask |= (uint)math.select(noAction , unlockedTriangleEnemy , levelComponent.ValueRO.Value >= levelToUnlockTriangleEnemy);
-            bitMask |= (uint)math.select(noAction , unlockedSquareEnemy , levelComponent.ValueRO.Value >= levelToUnlockSquareEnemy);
+            bool isNotLastLevel = levelComponent.ValueRO.Value < lastLevel;
+            levelComponent.ValueRW.Value += math.select(0 , 1 , isLevelComplete & isNotLastLevel);
+            
+            uint bitMask = 0;
+            bitMask |= math.select(0 , unlockedLineEnemy , levelComponent.ValueRO.Value >= levelToUnlockLineEnemy);
+            bitMask |= math.select(0 , unlockedTriangleEnemy , levelComponent.ValueRO.Value >= levelToUnlockTriangleEnemy);
+            bitMask |= math.select(0 , unlockedSquareEnemy , levelComponent.ValueRO.Value >= levelToUnlockSquareEnemy);
 
             bool shouldUpdateMask = isLevelComplete || isTestingBool;
             unlockedEnemiesComponent.ValueRW.Value = math.select(unlockedEnemiesComponent.ValueRO.Value , bitMask , shouldUpdateMask);
-            waveIndexComponent.ValueRW.Value = math.select(waveIndexComponent.ValueRO.Value , noAction , isLevelComplete);
+            waveIndexComponent.ValueRW.Value = math.select(waveIndexComponent.ValueRO.Value , 0 , isLevelComplete);
 
-            var advanceLevelQuery = SystemAPI.QueryBuilder().WithAll<AdvanceLevelEventTag>().Build();
-            systemState.EntityManager.DestroyEntity(advanceLevelQuery);
+            systemState.EntityManager.DestroyEntity(_advanceLevelQuery);
         }
     }
 }
